@@ -16,66 +16,44 @@ public function toArray(Request $request): array
 {
 
 
-return [
+    return [
 
 
-'id'=>$this->id,
+        'id' => $this->id,
+
+        'employee' => [
+
+            'id' => $this->employee?->id,
+
+            'full_name' => $this->employee?->full_name,
+
+            'employee_id_number' => $this->employee?->employee_id_number
+
+        ],
 
 
+        'item'=>[
 
-'employee'=>[
+            'id' => $this->payrollItemType?->id,
 
-'id'=>$this->employee?->id,
+            'name' => $this->payrollItemType?->name,
 
-'name'=>$this->employee?->full_name,
+            'item_kind' => $this->payrollItemType?->item_kind,
 
-'employee_number'=>
-$this->employee?->employee_id_number
-
-],
+        ],
 
 
+        'value' => $this->value,
+
+        'effective_date' => $this->effective_from?->format('Y-m-d'),
+
+        // 'effective_to'=>
+        // $this->effective_to?->format('Y-m-d'),
+
+    ];
 
 
-'item'=>[
-
-'id'=>$this->payrollItemType?->id,
-
-'name'=>$this->payrollItemType?->name,
-
-
-'type'=>$this->payrollItemType?->item_kind,
-
-
-'is_percentage'=>
-$this->payrollItemType?->is_percentage
-
-],
-
-
-
-
-'value'=>$this->value,
-
-
-
-'effective_from'=>
-$this->effective_from?->format('Y-m-d'),
-
-
-
-'effective_to'=>
-$this->effective_to?->format('Y-m-d'),
-
-
-
-'created_at'=>$this->created_at
-
-
-];
-
-
-}
+    }
 
 
 }

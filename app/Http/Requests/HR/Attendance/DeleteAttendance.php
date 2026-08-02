@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Client;
+namespace App\Http\Requests\HR\Attendance;
 
 use App\Http\Requests\Base\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class DeleteCartList extends BaseRequest
+class DeleteAttendance extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,17 +23,11 @@ class DeleteCartList extends BaseRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
+            'id' => [
                 'bail',
                 'required',
                 'integer',
-                'exists:users,id'
-            ],
-            'cart_id' => [
-                'bail',
-                'required',
-                'integer',
-                'exists:cart_products,id'
+                'exists:attendance,id'
             ],
         ];
     }

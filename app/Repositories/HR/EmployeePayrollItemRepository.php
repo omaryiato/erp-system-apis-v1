@@ -2,7 +2,7 @@
 
 namespace App\Repositories\HR;
 
-
+use App\Models\HR\Employee;
 use App\Models\HR\EmployeePayrollItem;
 
 
@@ -10,126 +10,105 @@ use App\Models\HR\EmployeePayrollItem;
 class EmployeePayrollItemRepository{
 
 
-public function all()
-{
+    public function getAllEmployeePayrolls()
+    {
 
-return EmployeePayrollItem::with([
-    'employee',
-    'payrollItemType'
-])
-->latest()
-->get();
+        return EmployeePayrollItem::with([
+            'employee',
+            'payrollItemType'
+        ])
+        ->latest()
+        ->get();
 
-}
-
-
-
-
-public function find($id)
-{
-
-return EmployeePayrollItem::with([
-    'employee',
-    'payrollItemType'
-])
-->findOrFail($id);
-
-}
+    }
 
 
 
 
+    public function getEmployeePayrollDetails(EmployeePayrollItem $employeePayroll)
+    {
 
-public function create(array $data)
-{
+        return $employeePayroll->load([
+            'employee',
+            'payrollItemType'
+        ]);
 
-return EmployeePayrollItem::create($data);
+    }
 
-}
+
+
+    public function addNewEmployeePayroll(array $employee_payroll_request)
+    {
+
+        return EmployeePayrollItem::create($employee_payroll_request);
+
+    }
 
 
 
 
 
-public function update($id,array $data)
-{
-
-$item =
-EmployeePayrollItem::findOrFail($id);
-
-
-$item->update($data);
-
-
-return $item;
-
-}
+    public function updateEmployeePayroll(EmployeePayrollItem $employeePayroll, array $employee_payroll_request)
+    {
+        $employeePayroll->update($employee_payroll_request);
+        return $employeePayroll;
+    }
 
 
 
 
-public function delete($id)
-{
-
-return EmployeePayrollItem::findOrFail($id)
-->delete();
-
-}
+    public function deleteEmployeePayroll(EmployeePayrollItem $employeePayroll)
+    {
+        return $employeePayroll->delete();
+    }
 
 
 
+    public function getEmployeePayrolls(Employee $employee)
+    {
 
+        return EmployeePayrollItem::with(
+            'payrollItemType'
+        )
+        ->where('employee_id',$employee->id)
+        ->get();
 
-
-
-public function employeeItems($employeeId)
-{
-
-return EmployeePayrollItem::with(
-    'payrollItemType'
-)
-->where(
-    'employee_id',
-    $employeeId
-)
-->get();
-
-}
+    }
 
 
 
 
 
-public function activeItems($employeeId,$date)
-{
+    // public function activeItems($employeeId,$date)
+    // {
 
 
-return EmployeePayrollItem::with(
-    'payrollItemType'
-)
-->where(
-    'employee_id',
-    $employeeId
-)
-->whereDate(
-    'effective_from',
-    '<=',
-    $date
-)
-->where(function($q) use($date){
+    // return EmployeePayrollItem::with(
+    //     'payrollItemType'
+    // )
+    // ->where(
+    //     'employee_id',
+    //     $employeeId
+    // )
+    // ->whereDate(
+    //     'effective_from',
+    //     '<=',
+    //     $date
+    // )
+    // ->where(function($q) use($date){
 
-    $q->whereNull('effective_to')
-      ->orWhereDate(
-          'effective_to',
-          '>=',
-          $date
-      );
+    //     $q->whereNull('effective_to')
+    //     ->orWhereDate(
+    //         'effective_to',
+    //         '>=',
+    //         $date
+    //     );
 
-})
-->get();
+    // })
+    // ->get();
 
 
-}
+    // }
 
 
 

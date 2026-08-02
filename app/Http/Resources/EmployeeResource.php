@@ -16,47 +16,36 @@ public function toArray(Request $request): array
 {
     return [
 
-    'id'=>$this->id,
+        'id' => $this->id,
 
-    'employee_number'
-    =>$this->employee_id_number,
+        'employee_id_number' => $this->employee_id_number,
 
+        'full_name' => $this->full_name,
 
-    'name'
-    =>$this->full_name,
+        'national_id' => $this->national_id,
 
+        'department' => [
+            'id' => $this->department?->id,
+            'name' => $this->department?->name
+        ],
 
-    'national_id'
-    =>$this->national_id,
+        'position' => [
+            'id' => $this->position?->id,
+            'name' => $this->position?->name
+        ],
 
+        'hire_date' => $this->hire_date?->format('Y-m-d'),
+        'termination_date' => $this->termination_date?->format('Y-m-d'),
 
-    'department'=>[
-        'id'=>$this->department?->id,
-        'name'=>$this->department?->name
-    ],
+        'status' => $this->status,
 
+        'base_salary' => $this->base_salary,
 
-    'position'=>[
-        'id'=>$this->position?->id,
-        'name'=>$this->position?->name
-    ],
+        // 'shift_id' => $this->shift_id,
+        // 'biometric_code' => $this->biometric_code,
 
-
-    'hire_date'
-    =>$this->hire_date?->format('Y-m-d'),
-
-
-    'status'
-    =>$this->status,
-
-
-    'salary'
-    =>$this->base_salary,
-
-
-    'created_at'
-    =>$this->created_at
-
+        'created_at'  => $this->created_at?->format('Y-m-d H:i:s'),
+        'updated_at'  => $this->updated_at?->format('Y-m-d H:i:s'),
 
     ];
 }

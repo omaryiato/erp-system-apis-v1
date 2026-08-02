@@ -20,44 +20,33 @@ class EmployeeRepository
 
 
 
-    public function getEmployeeDetails($id)
+    public function getEmployeeDetails(Employee $employee)
     {
-
-        return Employee::with([
+        return $employee->load([
             'department',
             'position'
-        ])
-        ->findOrFail($id);
-
+        ]);
     }
 
 
-
-    public function addNewEmployee(array $data)
+    public function addNewEmployee(array $employee_request)
     {
-        return Employee::create($data);
+        return Employee::create($employee_request);
     }
 
 
-
-    public function updateEmployeeInfo($id,array $data)
+    public function updateEmployeeInfo(Employee $employee,array $employee_request)
     {
-
-        $employee = Employee::findOrFail($id);
-
-        $employee->update($data);
-
+        $employee->update($employee_request);
         return $employee;
-
     }
 
 
 
-    public function deleteEmployee($id)
+    public function deleteEmployee(Employee $employee)
     {
-
-        return Employee::findOrFail($id)->delete();
-
+        $employee->delete();
+        return $employee;
     }
 
 

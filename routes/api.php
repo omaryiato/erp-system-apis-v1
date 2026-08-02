@@ -9,63 +9,65 @@ use App\Http\Controllers\HR\EmployeePayrollItemController;
 
 
 
+Route::group(['prefix' => 'hr'], function () {
 
+    /*************************************** Employee APIs  ******************************************/
 
-Route::apiResource(
-    'employees',
-    EmployeeController::class
-);
+        Route::apiResource(
+            'employees',
+            EmployeeController::class
+        );
 
+    /*************************************** Attendance APIs  ******************************************/
 
-
-
-Route::apiResource(
-    'attendance',
-    AttendanceController::class
-);
-
-
-
-Route::get(
-    'employees/{employee}/attendance',
-    [
-        AttendanceController::class,
-        'employeeAttendance'
-    ]
-);
+        Route::apiResource(
+            'attendance',
+            AttendanceController::class
+        );
 
 
 
-Route::apiResource(
-    'payroll-item-types',
-    PayrollItemTypeController::class
-);
+        Route::get(
+            'employees/{employee}/attendance',
+            [
+                AttendanceController::class,
+                'employeeAttendance'
+            ]
+        );
 
 
+    /*************************************** Payroll Item Types APIs  ******************************************/
 
 
+        Route::apiResource(
+            'payroll-item-types',
+            PayrollItemTypeController::class
+        );
 
-Route::apiResource(
-    'employee-payroll-items',
-    EmployeePayrollItemController::class
-);
-
-
-
-Route::get(
-'employees/{employee}/payroll-items',
-[
-EmployeePayrollItemController::class,
-'employeeItems'
-]
-);
+    /*************************************** Employee Payroll Item APIs  ******************************************/
 
 
+        Route::apiResource(
+            'employee-payroll',
+            EmployeePayrollItemController::class
+        );
 
-Route::get(
-'employees/{employee}/active-payroll-items',
-[
-EmployeePayrollItemController::class,
-'activeItems'
-]
-);
+
+        Route::get(
+        'employees/{employee}/payroll',
+        [
+        EmployeePayrollItemController::class,
+        'employeePayroll'
+        ]
+        );
+
+
+        // Route::get(
+        // 'employees/{employee}/active-payroll-items',
+        // [
+        // EmployeePayrollItemController::class,
+        // 'activeItems'
+        // ]
+        // );
+
+});

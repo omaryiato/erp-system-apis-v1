@@ -4,83 +4,60 @@ namespace App\Repositories\HR;
 
 
 use App\Models\HR\Attendance;
+use App\Models\HR\Employee;
 
 class AttendanceRepository
 {
 
     public function getAllAttendance()
     {
-
         return Attendance::with('employee')
                 ->latest()
                 ->get();
-
     }
 
 
 
 
-    public function getAttendanceDetails($id)
+    public function getAttendanceDetails(Attendance $attendance)
     {
-
-        return Attendance::with('employee')
-                ->findOrFail($id);
-
+        return $attendance->load('employee');
     }
 
 
 
 
-    public function AddNewAttendance(array $data)
+    public function AddNewAttendance(array $attendance_request)
     {
-
-        return Attendance::create($data);
-
+        return Attendance::create($attendance_request);
     }
 
 
 
 
-    public function updateAttendanceInfo($id,array $data)
+    public function updateAttendance(Attendance $attendance,array $attendance_request)
     {
-
-        $attendance =
-            Attendance::findOrFail($id);
-
-
-        $attendance->update($data);
-
-
+        $attendance->update($attendance_request);
         return $attendance;
-
     }
 
 
 
 
-    public function deleteAttendance($id)
+    public function deleteAttendance(Attendance $attendance)
     {
-
-        return Attendance::findOrFail($id)
-                         ->delete();
-
+        $attendance->delete();
+        return $attendance;
     }
 
 
 
 
 
-    public function employeeAttendance(
-        $employeeId,
-        $from=null,
-        $to=null
-    )
+    public function employeeAttendance(Employee $employee, $from=null, $to=null)
     {
 
-        $query = Attendance::where(
-            'employee_id',
-            $employeeId
-        );
+        $query = Attendance::where('employee_id', $employee->id);
 
 
         if($from)

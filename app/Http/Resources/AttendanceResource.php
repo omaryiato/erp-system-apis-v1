@@ -16,67 +16,41 @@ public function toArray(Request $request): array
 {
 
 
-return [
+    return [
+
+        'id'=>$this->id,
 
 
-'id'=>$this->id,
+        'employee' => [
+
+            'id' => $this->employee?->id,
+
+            'employee_id_number' => $this->employee?->employee_id_number,
+
+            'full_name' => $this->employee?->full_name
+
+        ],
 
 
-'employee'=>[
+        'work_date' => $this->work_date?->format('Y-m-d'),
 
-    'id'=>$this->employee?->id,
+        'check_in' => $this->check_in?->format('Y-m-d H:i:s'),
 
-    'employee_number'=>
-        $this->employee?->employee_id_number,
+        'check_out' => $this->check_out?->format('Y-m-d H:i:s'),
 
+        'source' => $this->source,
 
-    'name'=>
-        $this->employee?->full_name
+        'status' => $this->status,
 
-],
+        // 'late_minutes' => $this->late_minutes,
 
-
-
-'work_date'=>
-$this->work_date?->format('Y-m-d'),
+        'notes' => $this->notes,
 
 
+        'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
 
 
-'check_in'=>
-$this->check_in?->format('Y-m-d H:i:s'),
-
-
-
-'check_out'=>
-$this->check_out?->format('Y-m-d H:i:s'),
-
-
-
-'source'=>
-$this->source,
-
-
-
-'status'=>
-$this->status,
-
-
-
-'late_minutes'=>
-$this->late_minutes,
-
-
-
-'notes'=>
-$this->notes,
-
-
-'created_at'=>
-$this->created_at
-
-
-];
+    ];
 
 
 }
