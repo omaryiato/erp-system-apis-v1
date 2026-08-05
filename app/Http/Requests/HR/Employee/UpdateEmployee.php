@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\HR\Employee;
 
-
+use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -21,49 +21,90 @@ public function rules()
 {
 
 
-return [
+    return [
 
-'employee_id_number'
-=>'sometimes|string|max:30|unique:employees,employee_id_number,'.$this->employee,
+        'employee_id_number' => [
+            'bail',
+            'required',
+            'string',
+            'max:30',
+            'unique:employees'
+        ],
 
+        'full_name' => [
+            'bail',
+            'required',
+            'string',
+            'max:30',
+        ],
 
-'full_name'
-=>'sometimes|string|max:200',
+        'national_id' => [
+            'bail',
+            'nullable',
+            'string',
+            'max:50',
+        ],
 
+        'department_id' => [
+            'bail',
+            'nullable',
+            'exists:departments,id',
+        ],
 
-'national_id'
-=>'nullable|string|max:50',
-
-
-'department_id'
-=>'nullable|exists:departments,id',
-
-
-'position_id'
-=>'nullable|exists:positions,id',
-
-
-'hire_date'
-=>'nullable|date',
-
-
-'termination_date'
-=>'nullable|date',
-
-
-'status'
-=>'nullable|in:active,suspended,terminated,on_leave',
-
-
-'base_salary'
-=>'nullable|numeric|min:0',
-
-
-'biometric_code'
-=>'nullable|string|max:50'
+        'position_id' => [
+            'bail',
+            'nullable',
+            'exists:positions,id',
+        ],
 
 
-];
+        'hire_date' => [
+            'bail',
+            'required',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                },
+        ],
+
+        'termination_date' => [
+            'bail',
+            'nullable',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                },
+        ],
+
+        'status' => [
+            'bail',
+            'required',
+            'in:active,suspended,terminated,on_leave',
+        ],
+
+        'base_salary' => [
+            'bail',
+            'required',
+            'numeric',
+            'min:0',
+        ],
+
+        'shift_id' => [
+            'bail',
+            'nullable',
+            'integer',
+        ],
+
+        'biometric_code' => [
+            'bail',
+            'nullable',
+            'string',
+            'max:50',
+        ],
+
+    ];
 
 
 }

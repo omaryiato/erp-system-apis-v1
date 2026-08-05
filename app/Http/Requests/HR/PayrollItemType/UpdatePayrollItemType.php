@@ -23,38 +23,39 @@ public function rules()
 {
 
 
-return [
+    return [
 
 
-'name'=>
-'sometimes|string|max:100',
+        'name' => [
+            'bail',
+            'required',
+            'string',
+            'max:100',
+        ],
 
+        'item_kind' => [
+            'bail',
+            'required',
+            'in:allowance,deduction',
+        ],
 
+        'is_percentage' => [
+            'bail',
+            'boolean',
+        ],
 
+        'default_value' => [
+            'bail',
+            'numeric',
+            'min:0',
+        ],
 
-'item_kind'=>
-'sometimes|in:allowance,deduction',
+        'is_active' => [
+            'bail',
+            'boolean',
+        ],
 
-
-
-
-'is_percentage'=>
-'sometimes|boolean',
-
-
-
-
-'default_value'=>
-'sometimes|numeric|min:0',
-
-
-
-
-'is_active'=>
-'sometimes|boolean'
-
-
-];
+    ];
 
 
 }

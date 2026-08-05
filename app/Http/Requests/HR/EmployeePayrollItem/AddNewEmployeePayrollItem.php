@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\HR\EmployeePayrollItem;
 
-
+use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -23,37 +23,42 @@ public function rules()
 {
 
 
-return [
+    return [
 
 
-'employee_id'=>
-'required|exists:employees,id',
+        'employee_id' => [
+            'bail',
+            'required',
+            'exists:employees,id',
+        ],
 
+        'payroll_item_type_id' => [
+            'bail',
+            'required',
+            'exists:payroll_item_types,id',
+        ],
 
+        'value' => [
+            'bail',
+            'required',
+            'numeric',
+            'min:0',
+        ],
 
-'payroll_item_type_id'=>
-'required|exists:payroll_item_types,id',
+        'effective_from' => [
+            'bail',
+            'required',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                },
+        ],
 
+        // 'effective_to'=>
+        // 'nullable|date|after_or_equal:effective_from'
 
-
-
-'value'=>
-'required|numeric|min:0',
-
-
-
-
-'effective_from'=>
-'required|date',
-
-
-
-
-'effective_to'=>
-'nullable|date|after_or_equal:effective_from'
-
-
-];
+    ];
 
 
 }

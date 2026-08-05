@@ -28,7 +28,7 @@ Route::group(['prefix' => 'hr'], function () {
 
 
         Route::get(
-            'employees/{employee}/attendance',
+            'employee/attendance/{employee}',
             [
                 AttendanceController::class,
                 'employeeAttendance'
@@ -54,7 +54,7 @@ Route::group(['prefix' => 'hr'], function () {
 
 
         Route::get(
-        'employees/{employee}/payroll',
+        'employee/payroll/{employee}',
         [
         EmployeePayrollItemController::class,
         'employeePayroll'

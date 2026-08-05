@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\HR\Attendance;
 
-
+use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -22,55 +22,78 @@ public function authorize()
 public function rules()
 {
 
-return [
+    return [
 
 
-'employee_id'=>
-'required|exists:employees,id',
+        'employee_id'=> [
+            'bail',
+            'required',
+            'exists:employees,id'
+        ],
 
+        'work_date' => [
+            'bail',
+            'required',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                }
+        ],
 
-'work_date'=>
-'required|date',
+        'check_in' => [
+            'bail',
+            'nullable',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                }
+        ],
 
+        'check_out' => [
+            'bail',
+            'nullable',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                },
+            'after_or_equal:check_in'
+        ],
 
+        'source' => [
+            'bail',
+            'required',
+            'in:manual,device,mobile,system'
+        ],
 
-'check_in'=>
-'nullable|date',
+        'status' => [
+            'bail',
+            'required',
+            'in:present,absent,late,half_day,on_leave',
+        ],
 
+        'late_minutes' => [
+            'bail',
+            'nullable',
+            'integer',
+            'min:0',
+        ],
 
+        'notes' => [
+            'bail',
+            'nullable',
+            'string',
+        ],
 
-'check_out'=>
-'nullable|date|after_or_equal:check_in',
+        'created_by' => [
+            'bail',
+            'nullable',
+            'integer',
+        ],
 
-
-
-
-'source'=>
-'required|in:manual,device,mobile,system',
-
-
-
-
-'status'=>
-'required|in:present,absent,late,half_day,on_leave',
-
-
-
-
-'late_minutes'=>
-'nullable|integer|min:0',
-
-
-
-'notes'=>
-'nullable|string',
-
-
-
-'created_by'=>
-'nullable|integer'
-
-];
+    ];
 
 
 }

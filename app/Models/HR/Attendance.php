@@ -11,6 +11,9 @@ class Attendance extends Model
 
     use HasFactory;
 
+    protected $table = 'attendance';
+
+    public $timestamps = false;
 
     protected $fillable = [
 
@@ -32,7 +35,8 @@ class Attendance extends Model
 
         'work_date'=>'date',
         'check_in'=>'datetime',
-        'check_out'=>'datetime'
+        'check_out'=>'datetime',
+        'created_at'=>'datetime',
 
     ];
 

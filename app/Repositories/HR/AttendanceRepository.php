@@ -54,7 +54,7 @@ class AttendanceRepository
 
 
 
-    public function employeeAttendance(Employee $employee, $from=null, $to=null)
+    public function employeeAttendance(Employee $employee, $from = null, $to = null)
     {
 
         $query = Attendance::where('employee_id', $employee->id);

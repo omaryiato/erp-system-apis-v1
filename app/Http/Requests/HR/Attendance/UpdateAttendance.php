@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\HR\Attendance;
 
-
+use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
 
@@ -22,42 +22,74 @@ public function authorize()
 public function rules()
 {
 
-return [
+    return [
 
 
-'check_in'=>
-'nullable|date',
+        'employee_id'=> [
+            'bail',
+            'required',
+            'exists:employees,id'
+        ],
+
+        'work_date' => [
+            'bail',
+            'required',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                }
+        ],
+
+        'check_in' => [
+            'bail',
+            'nullable',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                }
+        ],
+
+        'check_out' => [
+            'bail',
+            'nullable',
+            function ($attribute, $value, $fail) {
+                    if (!ResponseHelper::isValidDate($value)) {
+                        $fail(trans('validation.date_invalid'));
+                    }
+                },
+            'after_or_equal:check_in'
+        ],
 
 
-
-'check_out'=>
-'nullable|date|after_or_equal:check_in',
-
-
-
-
-'source'=>
-'nullable|in:manual,device,mobile,system',
+        'source' => [
+            'bail',
+            'required',
+            'in:manual,device,mobile,system'
+        ],
 
 
+        'status' => [
+            'bail',
+            'required',
+            'in:present,absent,late,half_day,on_leave',
+        ],
 
+        'late_minutes' => [
+            'bail',
+            'nullable',
+            'integer',
+            'min:0',
+        ],
 
-'status'=>
-'nullable|in:present,absent,late,half_day,on_leave',
+        'notes' => [
+            'bail',
+            'nullable',
+            'string',
+        ],
 
-
-
-
-'late_minutes'=>
-'nullable|integer|min:0',
-
-
-
-'notes'=>
-'nullable|string'
-
-
-];
+    ];
 
 
 }

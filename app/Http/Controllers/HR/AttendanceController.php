@@ -118,10 +118,10 @@ class AttendanceController extends Controller
 
 
 
-    public function destroy(DeleteAttendance $request)
+    public function destroy(Attendance $attendance)
     {
         return ResponseHelper::success(
-                $this->service->deleteAttendance($request->validated()),
+                $this->service->deleteAttendance($attendance),
                 [
                     'en' => trans('validation.delete_attendance', [], 'en'),
                     'ar' => trans('validation.delete_attendance', [], 'ar'),

@@ -12,6 +12,8 @@ class PayrollItemType extends Model
 
     use HasFactory;
 
+    protected $table = 'payroll_item_types';
+
 
     protected $fillable = [
 

@@ -65,9 +65,9 @@ class AttendanceService
 
 
 
-    public function deleteAttendance(array $attendance_request)
+    public function deleteAttendance(Attendance $attendance)
     {
-        $attendance = $this->repository->getAttendanceDetails($attendance_request['id']);
+        // $attendance = $this->repository->getAttendanceDetails($attendance_request['id']);
         return $this->repository->deleteAttendance($attendance);
     }
 
@@ -82,12 +82,13 @@ class AttendanceService
         $attendance_data =  [
             'employee_id' => $attendance_request['employee_id'] ?? null,
             'work_date' => $attendance_request['work_date'] ?? null,
-            'check_in' => $attendance_request['check_in'],
-            'check_out' => $attendance_request['check_out'] ?? null,
+            'check_in' => $attendance_request['check_in'] ?? now(),
+            'check_out' => $attendance_request['check_out'] ?? now(),
             'source' => $attendance_request['source'] ?? null,
             'status' => $attendance_request['status'] ?? null,
             'late_minutes' => $attendance_request['late_minutes'] ?? null,
             'notes' => $attendance_request['notes'] ?? 'active',
+            'created_at' => now(),
         ];
 
         if (isset($attendance_request['created_by'])) {

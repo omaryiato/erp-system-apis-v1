@@ -13,6 +13,8 @@ class EmployeePayrollItem extends Model
 
     use HasFactory;
 
+    protected $table = 'employee_payroll_items';
+
 
 
     protected $fillable = [
