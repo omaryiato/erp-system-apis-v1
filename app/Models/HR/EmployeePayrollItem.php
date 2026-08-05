@@ -15,7 +15,7 @@ class EmployeePayrollItem extends Model
 
     protected $table = 'employee_payroll_items';
 
-
+    public $timestamps = false;
 
     protected $fillable = [
 

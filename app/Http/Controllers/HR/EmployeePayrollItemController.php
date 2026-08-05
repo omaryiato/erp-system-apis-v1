@@ -122,10 +122,10 @@ class EmployeePayrollItemController extends Controller
 
 
 
-    public function destroy(DeleteEmployeePayroll $request)
+    public function destroy(EmployeePayrollItem $employeePayroll)
     {
         return ResponseHelper::success(
-                $this->service->deleteEmployeePayroll($request->validated()),
+                $this->service->deleteEmployeePayroll($employeePayroll),
                 [
                     'en' => trans('validation.delete_employee_payroll', [], 'en'),
                     'ar' => trans('validation.delete_employee_payroll', [], 'ar'),

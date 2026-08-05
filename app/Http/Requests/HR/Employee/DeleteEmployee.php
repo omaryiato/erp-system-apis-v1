@@ -29,12 +29,6 @@ class DeleteEmployee extends BaseRequest
                 'integer',
                 'exists:employees,id'
             ],
-
-            'updated_by' => [
-                'bail',
-                'required',
-                'integer'
-            ],
         ];
     }
 }

@@ -54,10 +54,10 @@ class EmployeePayrollItemService
     }
 
 
-    public function deleteEmployeePayroll(array  $employee_payroll_request)
+    public function deleteEmployeePayroll(EmployeePayrollItem  $employeePayroll)
     {
-        $employee_payroll_details = $this->repository->getEmployeePayrollDetails($employee_payroll_request['id']);
-        return $this->repository->deleteEmployeePayroll($employee_payroll_details);
+        // $employee_payroll_details = $this->repository->getEmployeePayrollDetails($employee_payroll_request['id']);
+        return $this->repository->deleteEmployeePayroll($employeePayroll);
     }
 
     public function getEmployeePayrolls(Employee $employee)

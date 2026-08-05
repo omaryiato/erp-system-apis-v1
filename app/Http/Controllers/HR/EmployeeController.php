@@ -108,11 +108,11 @@ class EmployeeController extends Controller
     }
 
 
-    public function destroy(DeleteEmployee $request)
+    public function destroy(Employee $employee)
     {
 
         return ResponseHelper::success(
-                $this->service->deleteEmployee($request->validated()),
+                $this->service->deleteEmployee($employee),
                 [
                     'en' => trans('validation.delete_employee', [], 'en'),
                     'ar' => trans('validation.delete_employee', [], 'ar'),

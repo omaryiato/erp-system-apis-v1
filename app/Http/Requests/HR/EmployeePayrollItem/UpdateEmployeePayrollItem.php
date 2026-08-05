@@ -25,6 +25,18 @@ public function rules()
 
     return [
 
+        'employee_id' => [
+            'bail',
+            'required',
+            'exists:employees,id',
+        ],
+
+        'payroll_item_type_id' => [
+            'bail',
+            'required',
+            'exists:payroll_item_types,id',
+        ],
+
         'value' => [
             'bail',
             'required',

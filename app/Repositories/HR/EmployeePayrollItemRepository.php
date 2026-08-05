@@ -17,7 +17,6 @@ class EmployeePayrollItemRepository{
             'employee',
             'payrollItemType'
         ])
-        ->latest()
         ->get();
 
     }

@@ -44,9 +44,9 @@ class EmployeeService
     }
 
 
-    public function deleteEmployee(array $employee_request)
+    public function deleteEmployee(Employee $employee)
     {
-        $employee = $this->repository->getEmployeeDetails($employee_request['id']);
+        // $employee = $this->repository->getEmployeeDetails($employee_request['id']);
         return $this->repository->deleteEmployee($employee);
     }
 
