@@ -3,8 +3,11 @@
 namespace App\Models\HR;
 
 use App\Models\Core\Company;
+use App\Models\HR\PayslipItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 
 class PayrollItemType extends Model
@@ -63,6 +66,12 @@ class PayrollItemType extends Model
             EmployeePayrollItem::class
         );
 
+    }
+
+
+    public function payslipItems(): HasMany
+    {
+        return $this->hasMany(PayslipItem::class);
     }
 
 

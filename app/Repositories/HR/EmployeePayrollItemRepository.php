@@ -61,18 +61,33 @@ class EmployeePayrollItemRepository{
         return $employeePayroll->delete();
     }
 
+    public function getEmployeePayrolls(
+    Employee $employee,
+    ?int $month = null,
+    ?int $year = null
+    ) {
+        $month ??= now()->month;
+        $year ??= now()->year;
 
-
-    public function getEmployeePayrolls(Employee $employee)
-    {
-
-        return EmployeePayrollItem::with(
-            'payrollItemType'
-        )
-        ->where('employee_id',$employee->id)
-        ->get();
-
+        return EmployeePayrollItem::with('payrollItemType')
+            ->where('employee_id', $employee->id)
+            ->whereYear('effective_from', '<=', $year)
+            ->whereMonth('effective_from', '<=', $month)
+            ->get();
     }
+
+
+
+    // public function getEmployeePayrolls(Employee $employee)
+    // {
+
+    //     return EmployeePayrollItem::with(
+    //         'payrollItemType'
+    //     )
+    //     ->where('employee_id',$employee->id)
+    //     ->get();
+
+    // }
 
 
 

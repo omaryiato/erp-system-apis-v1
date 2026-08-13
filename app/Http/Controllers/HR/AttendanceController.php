@@ -134,7 +134,7 @@ class AttendanceController extends Controller
 
     public function employeeAttendance(Employee $employee)
     {
-        $employee_attendance = $this->service->employeeAttendance($employee, request('from'), request('to'));
+        $employee_attendance = $this->service->employeeAttendance($employee, request('month'), request('year'));
 
         return ResponseHelper::success(
                 AttendanceResource::collection($employee_attendance),

@@ -2,8 +2,12 @@
 
 namespace App\Models\HR;
 
+use App\Models\HR\EmployeePayrollTransaction;
+use App\Models\HR\Payslip;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Employee extends Model
 {
@@ -62,6 +66,18 @@ class Employee extends Model
     public function payrollItems()
     {
         return $this->hasMany(EmployeePayrollItem::class);
+    }
+
+    public function payslips(): HasMany
+    {
+        return $this->hasMany(Payslip::class);
+    }
+
+    public function payrollTransactions(): HasMany
+    {
+        return $this->hasMany(
+            EmployeePayrollTransaction::class
+        );
     }
 
 }

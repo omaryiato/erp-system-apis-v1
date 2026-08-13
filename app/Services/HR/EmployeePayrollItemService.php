@@ -60,9 +60,9 @@ class EmployeePayrollItemService
         return $this->repository->deleteEmployeePayroll($employeePayroll);
     }
 
-    public function getEmployeePayrolls(Employee $employee)
+    public function getEmployeePayrolls(Employee $employee, int $month, int $year)
     {
-        return $this->repository->getEmployeePayrolls($employee);
+        return $this->repository->getEmployeePayrolls($employee, $month, $year);
     }
 
     public function prepareEmployeePayrollInfo(array $employee_payroll_request)

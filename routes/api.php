@@ -7,6 +7,58 @@ use App\Http\Controllers\HR\AttendanceController;
 use App\Http\Controllers\HR\PayrollItemTypeController;
 use App\Http\Controllers\HR\EmployeePayrollItemController;
 
+use App\Http\Controllers\HR\PayrollPeriodController;
+use App\Http\Controllers\HR\PayslipController;
+use App\Http\Controllers\HR\EmployeePayrollTransactionController;
+use App\Http\Controllers\HR\PayrollProcessingController;
+
+Route::prefix('payroll')->group(function () {
+
+    Route::apiResource(
+        'periods',
+        PayrollPeriodController::class
+    );
+
+    Route::post(
+        'periods/{payrollPeriod}/process',
+        [PayrollProcessingController::class, 'process']
+    );
+
+    Route::get(
+        'payslips',
+        [PayslipController::class, 'index']
+    );
+
+    Route::get(
+        'payslips/{payslip}',
+        [PayslipController::class, 'show']
+    );
+
+    Route::post(
+        'payslips/{payslip}/approve',
+        [PayslipController::class, 'approve']
+    );
+
+    Route::post(
+        'payslips/{payslip}/pay',
+        [PayslipController::class, 'pay']
+    );
+
+    Route::apiResource(
+        'transactions',
+        EmployeePayrollTransactionController::class
+    )->only([
+        'index',
+        'store',
+        'show',
+    ]);
+
+    Route::post(
+        'transactions/{transaction}/cancel',
+        [EmployeePayrollTransactionController::class, 'cancel']
+    );
+});
+
 
 
 Route::group(['prefix' => 'hr'], function () {

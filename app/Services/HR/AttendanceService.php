@@ -72,9 +72,9 @@ class AttendanceService
     }
 
 
-    public function employeeAttendance(Employee $employee,  $from, $to)
+    public function employeeAttendance(Employee $employee, int $month, int $year)
     {
-        return $this->repository->employeeAttendance($employee, $from, $to);
+        return $this->repository->employeeAttendance($employee, $month, $year);
     }
 
     public function prepareAttendanceInfo(array $attendance_request)

@@ -52,41 +52,51 @@ class AttendanceRepository
 
 
 
-
-
-    public function employeeAttendance(Employee $employee, $from = null, $to = null)
+    public function employeeAttendance(Employee $employee, ?int $month = null, ?int $year = null)
     {
-
-        $query = Attendance::where('employee_id', $employee->id);
-
-
-        if($from)
-        {
-            $query->whereDate(
-                'work_date',
-                '>=',
-                $from
-            );
-        }
-
-
-
-        if($to)
-        {
-            $query->whereDate(
-                'work_date',
-                '<=',
-                $to
-            );
-        }
-
-
-
-        return $query
+        $month ??= now()->month;
+        $year ??= now()->year;
+        return Attendance::where('employee_id', $employee->id)
+            ->whereYear('work_date', $year)
+            ->whereMonth('work_date', $month)
             ->orderBy('work_date')
             ->get();
-
     }
+
+
+    // public function employeeAttendance(Employee $employee, $from = null, $to = null)
+    // {
+
+    //     $query = Attendance::where('employee_id', $employee->id);
+
+
+    //     if($from)
+    //     {
+    //         $query->whereDate(
+    //             'work_date',
+    //             '>=',
+    //             $from
+    //         );
+    //     }
+
+
+
+    //     if($to)
+    //     {
+    //         $query->whereDate(
+    //             'work_date',
+    //             '<=',
+    //             $to
+    //         );
+    //     }
+
+
+
+    //     return $query
+    //         ->orderBy('work_date')
+    //         ->get();
+
+    // }
 
 
 

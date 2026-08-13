@@ -141,7 +141,7 @@ class EmployeePayrollItemController extends Controller
     public function employeePayroll(Employee $employee)
     {
         return ResponseHelper::success(
-                    EmployeePayrollItemResource::collection($this->service->getEmployeePayrolls($employee)),
+                    EmployeePayrollItemResource::collection($this->service->getEmployeePayrolls($employee, request('month'), request('year'))),
                     [
                         'en' => trans('validation.get_employee_payroll_list', [], 'en'),
                         'ar' => trans('validation.get_employee_payroll_list', [], 'ar'),
