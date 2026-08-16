@@ -63,6 +63,7 @@ class EmployeeService
             'status' => $employee_request['status'] ?? 'active',
             'base_salary' => $employee_request['base_salary'] ?? 0,
             'shift_id' => $employee_request['shift_id'] ?? null,
+            'pay_type' => $employee_request['pay_type'] ?? 'daily',
             'biometric_code' => $employee_request['biometric_code'] ?? null,
         ];
     }

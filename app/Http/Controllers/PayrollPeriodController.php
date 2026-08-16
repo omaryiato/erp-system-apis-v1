@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\HR;
+namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\HR\PayrollPeriod\AddNewPayrollPeriod;
-use App\Http\Requests\Hr\PayrollPeriod\UpdatePayrollPeriod;
-use App\Http\Requests\HR\PayrollPeriod\UpdatePayrollPeriodRequest;
+use App\Http\Requests\PayrollPeriodRequest;
 use App\Http\Resources\PayrollPeriodResource;
-use App\Models\HR\PayrollPeriod;
-use App\Services\HR\PayrollPeriodService;
+use App\Models\PayrollPeriod;
+use App\Services\PayrollPeriodService;
 use Exception;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayrollPeriodController extends Controller
@@ -24,7 +22,8 @@ class PayrollPeriodController extends Controller
     {
         return ResponseHelper::success(
                 PayrollPeriodResource::collection(
-                        $this->service->getAll()),
+                    $this->service->all()
+                ),
                 [
                     'en' => trans('validation.get_payroll_period', [], 'en'),
                     'ar' => trans('validation.get_payroll_period', [], 'ar'),
@@ -33,13 +32,17 @@ class PayrollPeriodController extends Controller
             );
     }
 
-    public function store(AddNewPayrollPeriod $request)
-    {
+    public function store(
+        PayrollPeriodRequest $request
+    ) {
+
         try {
-            $period_details = $this->service->create($request->validated());
+            $period = $this->service->create(
+                    $request->validated()
+                );
 
             return ResponseHelper::success(
-                    new PayrollPeriodResource($period_details),
+                    new PayrollPeriodResource($period),
                     [
                         'en' => trans('validation.add_new_period', [], 'en'),
                         'ar' => trans('validation.add_new_period', [], 'ar'),
@@ -55,14 +58,13 @@ class PayrollPeriodController extends Controller
                 $exception->getMessage(),
                 500);
         }
-
     }
 
-    public function show(PayrollPeriod $payrollPeriod)
+    public function show(PayrollPeriod $period)
     {
         return ResponseHelper::success(
                 new PayrollPeriodResource(
-                    $this->service->find($payrollPeriod->id)
+                    $period
                 ),
                 [
                     'en' => trans('validation.get_period', [], 'en'),
@@ -72,15 +74,13 @@ class PayrollPeriodController extends Controller
             );
     }
 
-    public function update(UpdatePayrollPeriod $request,PayrollPeriod $payrollPeriod)
+    public function close(PayrollPeriod $period)
     {
         try {
-            $period_details = $this->service->update(
-                        $payrollPeriod,
-                        $request->validated()
-                    );
+            $period = $this->service->close($period);
+
             return ResponseHelper::success(
-                new PayrollPeriodResource($period_details),
+                new PayrollPeriodResource($period),
                 [
                     'en' => trans('validation.update_employee', [], 'en'),
                     'ar' => trans('validation.update_employee', [], 'ar'),
@@ -98,18 +98,39 @@ class PayrollPeriodController extends Controller
         }
     }
 
-    public function destroy(PayrollPeriod $payrollPeriod)
-    {
+    public function report(
+        Request $request,
+        PayrollPeriod $period
+    ) {
 
-        $this->service->delete($payrollPeriod);
+        try {
 
-        return ResponseHelper::success(
-                null,
+            $report = $this->service->report(
+                $period,
+                $request->integer('employee_id')
+                    ?: null
+            );
+
+
+            return ResponseHelper::success(
                 [
-                    'en' => trans('validation.delete_period', [], 'en'),
-                    'ar' => trans('validation.delete_period', [], 'ar'),
+                    'period' => new PayrollPeriodResource($period),
+                    'data' => $report
+                ],
+                [
+                    'en' => trans('validation.update_employee', [], 'en'),
+                    'ar' => trans('validation.update_employee', [], 'ar'),
                 ],
                 Response::HTTP_CREATED
             );
+        } catch (Exception $exception) {
+            return ResponseHelper::error(
+                [
+                    'en' => trans('validation.exception_error', [], 'en'),
+                    'ar' => trans('validation.exception_error', [], 'ar'),
+                ],
+                $exception->getMessage(),
+                500);
+        }
     }
 }
