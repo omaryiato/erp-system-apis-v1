@@ -17,7 +17,7 @@ class EmployeeTransactionRequest extends BaseRequest
         return [
             'employee_id' => [
                 'required',
-                'exists:employees,id',
+                'exists:employees_v1,id',
             ],
 
             'type' => [

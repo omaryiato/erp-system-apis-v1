@@ -22,7 +22,7 @@ class EmployeeRequest extends BaseRequest
                 'nullable',
                 'string',
                 'max:30',
-                Rule::unique('employees', 'employee_number')
+                Rule::unique('employees_v1', 'employee_number')
                     ->ignore($employee?->id),
             ],
 

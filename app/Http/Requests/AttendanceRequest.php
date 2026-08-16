@@ -17,7 +17,7 @@ class AttendanceRequest extends BaseRequest
         return [
             'employee_id' => [
                 'required',
-                'exists:employees,id',
+                'exists:employees_v1,id',
             ],
 
             'work_date' => [
