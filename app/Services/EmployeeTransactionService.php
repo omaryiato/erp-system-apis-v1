@@ -18,7 +18,7 @@ class EmployeeTransactionService
 
     public function create(array $data): EmployeeTransaction
     {
-        return $this->repository->create($data);
+        return $this->repository->create($this->prepareTransactionInfo($data));
     }
 
     public function update(
@@ -27,7 +27,7 @@ class EmployeeTransactionService
     ): EmployeeTransaction {
         return $this->repository->update(
             $transaction,
-            $data
+            $this->prepareTransactionInfo($data)
         );
     }
 
@@ -48,5 +48,18 @@ class EmployeeTransactionService
                 $from,
                 $to
             );
+    }
+
+    public function prepareTransactionInfo(array $attendance_request)
+    {
+        $attendance_data =  [
+            'employee_id' => $attendance_request['employee_id'] ?? null,
+            'type' => $attendance_request['type'] ?? null,
+            'amount' => $attendance_request['amount'] ?? null,
+            'transaction_date' => $attendance_request['transaction_date'] ?? now(),
+            'description' => $attendance_request['description'] ?? null,
+        ];
+
+        return $attendance_data;
     }
 }

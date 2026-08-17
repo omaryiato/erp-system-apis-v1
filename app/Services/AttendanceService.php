@@ -28,7 +28,7 @@ class AttendanceService
             $data
         );
 
-        return $this->repository->create($data);
+        return $this->repository->create($this->prepareAttendanceInfo($data));
     }
 
     public function update(
@@ -44,7 +44,7 @@ class AttendanceService
 
         return $this->repository->update(
             $attendance,
-            $data
+            $this->prepareAttendanceInfo($data)
         );
     }
 
@@ -89,5 +89,21 @@ class AttendanceService
         $data['overtime_amount'] = $overtimeAmount;
 
         return $data;
+    }
+
+    public function prepareAttendanceInfo(array $attendance_request)
+    {
+
+        $attendance_data =  [
+            'employee_id' => $attendance_request['employee_id'] ?? null,
+            'work_date' => $attendance_request['work_date'] ?? null,
+            'check_in' => $attendance_request['check_in'] ?? now(),
+            'check_out' => $attendance_request['check_out'] ?? null,
+            'worked_hours' => $attendance_request['worked_hours'] ?? 8,
+            'overtime_hours' => $attendance_request['overtime_hours'] ?? 0,
+            'notes' => $attendance_request['notes'] ?? 'active',
+        ];
+
+        return $attendance_data;
     }
 }

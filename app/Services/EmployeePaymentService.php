@@ -18,7 +18,7 @@ class EmployeePaymentService
 
     public function create(array $data): EmployeePayment
     {
-        return $this->repository->create($data);
+        return $this->repository->create($this->preparePaymentInfo($data));
     }
 
     public function update(
@@ -27,7 +27,7 @@ class EmployeePaymentService
     ): EmployeePayment {
         return $this->repository->update(
             $payment,
-            $data
+            $this->preparePaymentInfo($data)
         );
     }
 
@@ -48,5 +48,21 @@ class EmployeePaymentService
                 $from,
                 $to
             );
+    }
+
+    public function preparePaymentInfo(array $attendance_request)
+    {
+
+        $attendance_data =  [
+            'employee_id' => $attendance_request['employee_id'] ?? null,
+            'payment_date' => $attendance_request['payment_date'] ?? now(),
+            'amount' => $attendance_request['amount'] ?? null,
+            'payment_type' => $attendance_request['payment_type'] ?? null,
+            'period_start' => $attendance_request['period_start'] ?? 8,
+            'period_end' => $attendance_request['period_end'] ?? 0,
+            'notes' => $attendance_request['notes'] ?? 'active',
+        ];
+
+        return $attendance_data;
     }
 }

@@ -26,7 +26,7 @@ class PayrollPeriodService
 
     public function create(array $data): PayrollPeriod
     {
-        return $this->repository->create($data);
+        return $this->repository->create($this->preparePayrollInfo($data));
     }
 
     public function close(PayrollPeriod $period): PayrollPeriod
@@ -188,5 +188,18 @@ class PayrollPeriodService
                 ],
             ];
         });
+    }
+
+
+    public function preparePayrollInfo(array $attendance_request)
+    {
+
+        $attendance_data =  [
+            'name' => $attendance_request['name'] ?? null,
+            'period_start' => $attendance_request['period_start'] ?? null,
+            'period_end' => $attendance_request['period_end'] ?? null,
+        ];
+
+        return $attendance_data;
     }
 }
