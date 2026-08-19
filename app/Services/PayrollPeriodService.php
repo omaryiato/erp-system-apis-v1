@@ -202,4 +202,10 @@ class PayrollPeriodService
 
         return $attendance_data;
     }
+
+    public function delete(
+        PayrollPeriod $period
+    ): void {
+        $this->repository->delete($period);
+    }
 }

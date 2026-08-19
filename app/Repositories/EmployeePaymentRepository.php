@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\EmployeePayment;
 use App\Models\Employee;
+use Carbon\Carbon;
 
 class EmployeePaymentRepository
 {
@@ -36,29 +37,55 @@ class EmployeePaymentRepository
         $payment->delete();
     }
 
+    // public function employeePayments(
+    //     Employee $employee,
+    //     ?string $from = null,
+    //     ?string $to = null
+    // ) {
+    //     return $employee->payments()
+    //         ->when(
+    //             $from,
+    //             fn ($q) => $q->whereDate(
+    //                 'payment_date',
+    //                 '>=',
+    //                 $from
+    //             )
+    //         )
+    //         ->when(
+    //             $to,
+    //             fn ($q) => $q->whereDate(
+    //                 'payment_date',
+    //                 '<=',
+    //                 $to
+    //             )
+    //         )
+    //         ->latest('payment_date')
+    //         ->get();
+    // }
+
     public function employeePayments(
         Employee $employee,
         ?string $from = null,
         ?string $to = null
     ) {
-        return $employee->payments()
-            ->when(
-                $from,
-                fn ($q) => $q->whereDate(
-                    'payment_date',
-                    '>=',
-                    $from
-                )
-            )
-            ->when(
-                $to,
-                fn ($q) => $q->whereDate(
-                    'payment_date',
-                    '<=',
-                    $to
-                )
-            )
+
+        $query = $employee->payments();
+
+        if ($from) {
+            $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+
+            $query->whereDate('payment_date', '>=', $fromDate);
+        }
+
+        if ($to) {
+            $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+
+            $query->whereDate('payment_date', '<=', $toDate);
+        }
+
+        return $query
             ->latest('payment_date')
             ->get();
+
     }
 }

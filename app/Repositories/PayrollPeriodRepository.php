@@ -30,4 +30,10 @@ class PayrollPeriodRepository
 
         return $period->refresh();
     }
+
+    public function delete(
+        PayrollPeriod $period
+    ): void {
+        $period->delete();
+    }
 }

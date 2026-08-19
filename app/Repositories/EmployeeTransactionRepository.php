@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\EmployeeTransaction;
 use App\Models\Employee;
+use Carbon\Carbon;
 
 class EmployeeTransactionRepository
 {
@@ -42,24 +43,50 @@ class EmployeeTransactionRepository
         ?string $from = null,
         ?string $to = null
     ) {
-        return $employee->transactions()
-            ->when(
-                $from,
-                fn ($q) => $q->whereDate(
-                    'transaction_date',
-                    '>=',
-                    $from
-                )
-            )
-            ->when(
-                $to,
-                fn ($q) => $q->whereDate(
-                    'transaction_date',
-                    '<=',
-                    $to
-                )
-            )
+
+        $query = $employee->transactions();
+
+        if ($from) {
+            $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+
+            $query->whereDate('transaction_date', '>=', $fromDate);
+        }
+
+        if ($to) {
+            $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+
+            $query->whereDate('transaction_date', '<=', $toDate);
+        }
+
+        return $query
             ->latest('transaction_date')
             ->get();
+
     }
+
+    // public function employeeTransactions(
+    //     Employee $employee,
+    //     ?string $from = null,
+    //     ?string $to = null
+    // ) {
+    //     return $employee->transactions()
+    //         ->when(
+    //             $from,
+    //             fn ($q) => $q->whereDate(
+    //                 'transaction_date',
+    //                 '>=',
+    //                 $from
+    //             )
+    //         )
+    //         ->when(
+    //             $to,
+    //             fn ($q) => $q->whereDate(
+    //                 'transaction_date',
+    //                 '<=',
+    //                 $to
+    //             )
+    //         )
+    //         ->latest('transaction_date')
+    //         ->get();
+    // }
 }

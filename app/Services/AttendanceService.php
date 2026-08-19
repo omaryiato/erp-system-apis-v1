@@ -48,6 +48,12 @@ class AttendanceService
         );
     }
 
+    public function delete(
+        Attendance $attendance
+    ): void {
+        $this->repository->delete($attendance);
+    }
+
     public function employeeAttendance(
         Employee $employee,
         ?string $from = null,
@@ -106,4 +112,22 @@ class AttendanceService
 
         return $attendance_data;
     }
+
+    public function getAllHistory()
+    {
+        return $this->repository->getAllHistory();
+    }
+
+    public function employeeHistoryAttendance(
+        Employee $employee,
+        ?string $from = null,
+        ?string $to = null
+    ) {
+        return $this->repository->employeeHistoryAttendance(
+            $employee,
+            $from,
+            $to
+        );
+    }
+
 }

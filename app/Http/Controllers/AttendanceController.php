@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceRequest;
 use App\Http\Resources\AttendanceResource;
 use App\Models\Attendance;
+use App\Models\AttendanceHistory;
 use App\Models\Employee;
 use App\Services\AttendanceService;
 use Exception;
@@ -107,6 +108,20 @@ class AttendanceController extends Controller
 
     }
 
+    public function destroy(
+        Attendance $attendance
+    ) {
+
+        return ResponseHelper::success(
+                $this->service->delete($attendance),
+                [
+                    'en' => trans('validation.delete_attendance', [], 'en'),
+                    'ar' => trans('validation.delete_attendance', [], 'ar'),
+                ],
+                Response::HTTP_CREATED
+            );
+    }
+
     public function employeeAttendance(
         Request $request,
         Employee $employee
@@ -131,4 +146,59 @@ class AttendanceController extends Controller
             );
 
     }
+
+    public function attendanceHistory()
+    {
+        return ResponseHelper::success(
+                    AttendanceResource::collection($this->service->getAllHistory()),
+                    [
+                        'en' => trans('validation.get_attendance_history_list', [], 'en'),
+                        'ar' => trans('validation.get_attendance_history_list', [], 'ar'),
+                    ],
+                    Response::HTTP_OK
+                );
+
+    }
+
+    public function attendanceHistoryDetails(AttendanceHistory $attendanceHistory)
+    {
+        return ResponseHelper::success(
+                new AttendanceResource($attendanceHistory),
+                [
+                    'en' => trans('validation.get_attendance_history_details', [], 'en'),
+                    'ar' => trans('validation.get_attendance_history_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
+    }
+
+    public function employeeHistoryAttendance(
+        Request $request,
+        Employee $employee
+    ) {
+
+        $attendance = $this->service
+            ->employeeHistoryAttendance(
+                $employee,
+                $request->from,
+                $request->to
+            );
+
+        return ResponseHelper::success(
+                AttendanceResource::collection(
+                        $attendance
+                    ),
+                [
+                    'en' => trans('validation.get_employee_attendance_history', [], 'en'),
+                    'ar' => trans('validation.get_employee_attendance_history', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
+
+    }
+
+
+
+
+
 }

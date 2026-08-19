@@ -37,6 +37,13 @@ class Employee extends Model
             'employee_id'
         );
     }
+    public function attendanceHistory(): HasMany
+    {
+        return $this->hasMany(
+            AttendanceHistory::class,
+            'employee_id'
+        );
+    }
 
     public function transactions(): HasMany
     {

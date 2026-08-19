@@ -27,6 +27,7 @@ class AttendanceResource extends JsonResource
             'daily_amount' => $this->daily_amount,
             'overtime_amount' => $this->overtime_amount,
             'notes' => $this->notes,
+            'is_paid' => $this->is_paid ?? 0,
         ];
     }
 }

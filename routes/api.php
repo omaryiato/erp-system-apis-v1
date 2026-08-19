@@ -177,6 +177,26 @@ Route::prefix('hr')->group(function () {
         [AttendanceController::class, 'employeeAttendance']
     );
 
+    Route::delete(
+        'attendance/{attendance}',
+        [AttendanceController::class, 'destroy']
+    );
+
+    Route::get(
+        'attendance/history',
+        [AttendanceController::class, 'attendanceHistory']
+    );
+
+    Route::get(
+        'attendance/history/{attendance}',
+        [AttendanceController::class, 'attendanceHistoryDetails']
+    );
+
+    Route::get(
+        'employees/{employee}/history/attendance',
+        [AttendanceController::class, 'employeeHistoryAttendance']
+    );
+
 
     /*
     |--------------------------------------------------------------------------
@@ -288,4 +308,29 @@ Route::prefix('hr')->group(function () {
         'payroll-periods/{period}/report',
         [PayrollPeriodController::class, 'report']
     );
+
+    Route::delete(
+        'payroll-periods/{period}',
+        [PayrollPeriodController::class, 'destroy']
+    );
+});
+
+use Illuminate\Support\Facades\DB;
+
+Route::get('truncate', function () {
+
+    DB::statement('TRUNCATE TABLE
+        payroll_periods_v1,
+        employee_payments_v1,
+        employee_transactions_v1,
+        attendance_history_v1,
+        attendance_v1,
+        employees_v1
+        RESTART IDENTITY CASCADE
+    ');
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Payroll tables truncated successfully.',
+    ]);
 });

@@ -133,4 +133,18 @@ class PayrollPeriodController extends Controller
                 500);
         }
     }
+
+    public function destroy(
+        PayrollPeriod $period
+    ) {
+
+        return ResponseHelper::success(
+                $this->service->delete($period),
+                [
+                    'en' => trans('validation.delete_period', [], 'en'),
+                    'ar' => trans('validation.delete_period', [], 'ar'),
+                ],
+                Response::HTTP_CREATED
+            );
+    }
 }
