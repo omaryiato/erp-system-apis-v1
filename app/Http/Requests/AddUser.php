@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Dashboard\User;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\Base\BaseRequest;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Validation\Rule;
 
 
-class UpdateUser extends BaseRequest
+class AddUser extends BaseRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +23,6 @@ class UpdateUser extends BaseRequest
      */
     public function rules(): array
     {
-        $id = $this->route("user");
-
         return [
             'full_name' => [
                 'required',
@@ -37,9 +34,7 @@ class UpdateUser extends BaseRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users', 'user_name')
-                        ->ignore($id)
-                        ->where('id', $this->input('id')),
+                'unique:users,user_name',
             ],
 
             'phone_number' => [
@@ -52,9 +47,7 @@ class UpdateUser extends BaseRequest
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email_address')
-                        ->ignore($id)
-                        ->where('id', $this->input('id')),
+                'unique:users,email_address',
             ],
 
             'password' => [
@@ -74,6 +67,12 @@ class UpdateUser extends BaseRequest
                 'nullable',
                 'integer',
                 'in:0,1,2',
+            ],
+
+            'created_by' => [
+                'required',
+                'integer',
+                'exists:users,id'
             ],
 
             'updated_by' => [

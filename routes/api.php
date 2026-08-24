@@ -130,190 +130,220 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeeTransactionController;
 use App\Http\Controllers\EmployeePaymentController;
 use App\Http\Controllers\PayrollPeriodController;
+use App\Http\Controllers\UserController;
 
-Route::prefix('hr')->group(function () {
+use App\Http\Controllers\API\AuthController;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Employees
-    |--------------------------------------------------------------------------
-    */
+Route::post('/login', [AuthController::class, 'login']);
 
-    Route::apiResource(
-        'employees',
-        EmployeeController::class
-    );
+Route::middleware([
+    'auth:sanctum',
+    'admin.access',
+    'audit'
+])->group(function () {
 
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Attendance
-    |--------------------------------------------------------------------------
-    */
+    Route::get('/refresh', [AuthController::class, 'refresh']);
 
-    Route::get(
-        'attendance',
-        [AttendanceController::class, 'index']
-    );
+    Route::prefix('hr')->group(function () {
 
-    Route::post(
-        'attendance',
-        [AttendanceController::class, 'store']
-    );
+        /*
+        |--------------------------------------------------------------------------
+        | Employees
+        |--------------------------------------------------------------------------
+        */
+
+        Route::apiResource(
+            'employees',
+            EmployeeController::class
+        );
 
 
-    Route::get(
-        'attendance/{attendance}',
-        [AttendanceController::class, 'show']
-    );
+        /*
+        |--------------------------------------------------------------------------
+        | Attendance
+        |--------------------------------------------------------------------------
+        */
 
-    Route::put(
-        'attendance/{attendance}',
-        [AttendanceController::class, 'update']
-    );
+        Route::get(
+            'attendance',
+            [AttendanceController::class, 'index']
+        );
 
-    Route::get(
-        'employees/{employee}/attendance',
-        [AttendanceController::class, 'employeeAttendance']
-    );
-
-    Route::delete(
-        'attendance/{attendance}',
-        [AttendanceController::class, 'destroy']
-    );
-
-    Route::get(
-        'attendance/history',
-        [AttendanceController::class, 'attendanceHistory']
-    );
-
-    Route::get(
-        'attendance/history/{attendance}',
-        [AttendanceController::class, 'attendanceHistoryDetails']
-    );
-
-    Route::get(
-        'employees/{employee}/history/attendance',
-        [AttendanceController::class, 'employeeHistoryAttendance']
-    );
+        Route::post(
+            'attendance',
+            [AttendanceController::class, 'store']
+        );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Transactions
-    |--------------------------------------------------------------------------
-    */
+        Route::get(
+            'attendance/{attendance}',
+            [AttendanceController::class, 'show']
+        );
 
-    Route::get(
-        'transactions',
-        [EmployeeTransactionController::class, 'index']
-    );
+        Route::put(
+            'attendance/{attendance}',
+            [AttendanceController::class, 'update']
+        );
 
-    Route::post(
-        'transactions',
-        [EmployeeTransactionController::class, 'store']
-    );
+        Route::get(
+            'employees/{employee}/attendance',
+            [AttendanceController::class, 'employeeAttendance']
+        );
 
-    Route::get(
-        'transactions/{transaction}',
-        [EmployeeTransactionController::class, 'show']
-    );
+        Route::delete(
+            'attendance/{attendance}',
+            [AttendanceController::class, 'destroy']
+        );
 
-    Route::put(
-        'transactions/{transaction}',
-        [EmployeeTransactionController::class, 'update']
-    );
+        Route::get(
+            'attendance/history',
+            [AttendanceController::class, 'attendanceHistory']
+        );
 
-    Route::delete(
-        'transactions/{transaction}',
-        [EmployeeTransactionController::class, 'destroy']
-    );
+        Route::get(
+            'attendance/history/{attendance}',
+            [AttendanceController::class, 'attendanceHistoryDetails']
+        );
 
-    Route::get(
-        'employees/{employee}/transactions',
-        [
-            EmployeeTransactionController::class,
-            'employeeTransactions'
-        ]
-    );
+        Route::get(
+            'employees/{employee}/history/attendance',
+            [AttendanceController::class, 'employeeHistoryAttendance']
+        );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Payments
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | Transactions
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get(
-        'payments',
-        [EmployeePaymentController::class, 'index']
-    );
+        Route::get(
+            'transactions',
+            [EmployeeTransactionController::class, 'index']
+        );
 
-    Route::post(
-        'payments',
-        [EmployeePaymentController::class, 'store']
-    );
+        Route::post(
+            'transactions',
+            [EmployeeTransactionController::class, 'store']
+        );
 
-    Route::get(
-        'payments/{payment}',
-        [EmployeePaymentController::class, 'show']
-    );
+        Route::get(
+            'transactions/{transaction}',
+            [EmployeeTransactionController::class, 'show']
+        );
 
-    Route::put(
-        'payments/{payment}',
-        [EmployeePaymentController::class, 'update']
-    );
+        Route::put(
+            'transactions/{transaction}',
+            [EmployeeTransactionController::class, 'update']
+        );
 
-    Route::delete(
-        'payments/{payment}',
-        [EmployeePaymentController::class, 'destroy']
-    );
+        Route::delete(
+            'transactions/{transaction}',
+            [EmployeeTransactionController::class, 'destroy']
+        );
 
-    Route::get(
-        'employees/{employee}/payments',
-        [
-            EmployeePaymentController::class,
-            'employeePayments'
-        ]
-    );
+        Route::get(
+            'employees/{employee}/transactions',
+            [
+                EmployeeTransactionController::class,
+                'employeeTransactions'
+            ]
+        );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Payroll Periods
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | Payments
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get(
-        'payroll-periods',
-        [PayrollPeriodController::class, 'index']
-    );
+        Route::get(
+            'payments',
+            [EmployeePaymentController::class, 'index']
+        );
 
-    Route::post(
-        'payroll-periods',
-        [PayrollPeriodController::class, 'store']
-    );
+        Route::post(
+            'payments',
+            [EmployeePaymentController::class, 'store']
+        );
 
-    Route::get(
-        'payroll-periods/{period}',
-        [PayrollPeriodController::class, 'show']
-    );
+        Route::get(
+            'payments/{payment}',
+            [EmployeePaymentController::class, 'show']
+        );
 
-    Route::post(
-        'payroll-periods/{period}/close',
-        [PayrollPeriodController::class, 'close']
-    );
+        Route::put(
+            'payments/{payment}',
+            [EmployeePaymentController::class, 'update']
+        );
 
-    Route::get(
-        'payroll-periods/{period}/report',
-        [PayrollPeriodController::class, 'report']
-    );
+        Route::delete(
+            'payments/{payment}',
+            [EmployeePaymentController::class, 'destroy']
+        );
 
-    Route::delete(
-        'payroll-periods/{period}',
-        [PayrollPeriodController::class, 'destroy']
-    );
+        Route::get(
+            'employees/{employee}/payments',
+            [
+                EmployeePaymentController::class,
+                'employeePayments'
+            ]
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payroll Periods
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            'payroll-periods',
+            [PayrollPeriodController::class, 'index']
+        );
+
+        Route::post(
+            'payroll-periods',
+            [PayrollPeriodController::class, 'store']
+        );
+
+        Route::get(
+            'payroll-periods/{period}',
+            [PayrollPeriodController::class, 'show']
+        );
+
+        Route::post(
+            'payroll-periods/{period}/close',
+            [PayrollPeriodController::class, 'close']
+        );
+
+        Route::get(
+            'payroll-periods/{period}/report',
+            [PayrollPeriodController::class, 'report']
+        );
+
+        Route::delete(
+            'payroll-periods/{period}',
+            [PayrollPeriodController::class, 'destroy']
+        );
+    });
+
+     /***************************************** Users *******************************************/
+
+        Route::apiResource('user', UserController::class);
+
+        // Route::GET('user', [UserController::class, 'index']);
+        // Route::GET('user/{user}', [UserController::class, 'show']);
+        // Route::POST('user', [UserController::class, 'store']);
+        // Route::POST('user/{user}', [UserController::class, 'update']);
+        // Route::DELETE('user/{user}', [UserController::class, 'destroy']);
+
+
+
 });
+
 
 use Illuminate\Support\Facades\DB;
 
@@ -325,7 +355,8 @@ Route::get('truncate', function () {
         employee_transactions_v1,
         attendance_history_v1,
         attendance_v1,
-        employees_v1
+        employees_v1,
+        users_v1
         RESTART IDENTITY CASCADE
     ');
 
