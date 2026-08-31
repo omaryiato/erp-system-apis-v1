@@ -125,14 +125,28 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\EmployeeTransactionController;
-use App\Http\Controllers\EmployeePaymentController;
-use App\Http\Controllers\PayrollPeriodController;
+use App\Http\Controllers\Attendance\EmployeeController;
+use App\Http\Controllers\Attendance\AttendanceController;
+use App\Http\Controllers\Attendance\EmployeeTransactionController;
+use App\Http\Controllers\Attendance\EmployeePaymentController;
+use App\Http\Controllers\Attendance\PayrollPeriodController;
 use App\Http\Controllers\UserController;
 
+
+use App\Http\Controllers\Inventory\CategoryController;
+use App\Http\Controllers\Inventory\ItemController;
+use App\Http\Controllers\Inventory\ProjectController;
+use App\Http\Controllers\Inventory\SupplierController;
+use App\Http\Controllers\Inventory\PurchaseController;
+
+
+
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\Inventory\CashTransactionController;
+use App\Http\Controllers\Inventory\ExpenseController;
+use App\Http\Controllers\Inventory\RevenueController;
+use App\Http\Controllers\Inventory\ReportsController;
+
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -328,6 +342,181 @@ Route::middleware([
             'payroll-periods/{period}',
             [PayrollPeriodController::class, 'destroy']
         );
+    });
+
+
+    Route::prefix('inventory')->group(function () {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Categories
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'categories',
+                CategoryController::class
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Items
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'items',
+                ItemController::class
+            );
+
+            Route::get(
+                'items/{id}/snapshots',
+                [ItemController::class, 'snapshots']
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Projects
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'projects',
+                ProjectController::class
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Suppliers
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'suppliers',
+                SupplierController::class
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Purchases
+            |--------------------------------------------------------------------------
+            */
+
+
+            Route::apiResource(
+                'purchases',
+                PurchaseController::class
+            )->only([
+                'index',
+                'store',
+                'show',
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Expenses
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'expenses',
+                ExpenseController::class
+            )->only([
+                'index',
+                'store',
+                'show',
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Revenues
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'revenues',
+                RevenueController::class
+            )->only([
+                'index',
+                'store',
+                'show',
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Cash Transaction
+            |--------------------------------------------------------------------------
+            */
+
+            Route::post(
+                'cash-transactions',
+                [CashTransactionController::class, 'store']
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Reports
+            |--------------------------------------------------------------------------
+            */
+
+            Route::prefix('reports')
+                ->controller(ReportsController::class)
+                ->group(function () {
+
+                    Route::get(
+                        'financial-summary',
+                        'financialSummary'
+                    );
+
+                    Route::get(
+                        'cash-flow',
+                        'cashFlow'
+                    );
+
+                    Route::get(
+                        'expenses',
+                        'expenses'
+                    );
+
+                    Route::get(
+                        'revenues',
+                        'revenues'
+                    );
+
+                    Route::get(
+                        'projects/{projectId}/financial',
+                        'projectFinancial'
+                    );
+
+                    Route::get(
+                        'suppliers/{supplierId}/financial',
+                        'supplierFinancial'
+                    );
+
+                    Route::get(
+                        'outstanding-expenses',
+                        'outstandingExpenses'
+                    );
+
+                    Route::get(
+                        'outstanding-revenues',
+                        'outstandingRevenues'
+                    );
+
+                    Route::get(
+                        'cash-transactions',
+                        'cashTransactions'
+                    );
+
+                    Route::get(
+                        'monthly-financial',
+                        'monthlyFinancial'
+                    );
+                });
+
     });
 
      /***************************************** Users *******************************************/
