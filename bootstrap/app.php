@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Http\Middleware\ApiAuditLogger;
 use App\Http\Middleware\DataValidation;
 use App\Http\Middleware\UserAccessibility;
+use Illuminate\Auth\AuthenticationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -64,6 +65,22 @@ return Application::configure(basePath: dirname(__DIR__))
                         'ar' => trans('validation.data_not_found', [], 'ar'),
                     ],
                     Response::HTTP_NOT_FOUND
+                );
+            }
+        });
+
+        $exceptions->render(function (
+            AuthenticationException $e,
+            $request
+        ) {
+            if ($request->is('api/*')) {
+                return ResponseHelper::error(
+                    null,
+                    [
+                        'en' => trans('validation.unauthenticated', [], 'en'),
+                        'ar' => trans('validation.unauthenticated', [], 'ar'),
+                    ],
+                    Response::HTTP_UNAUTHORIZED
                 );
             }
         });
