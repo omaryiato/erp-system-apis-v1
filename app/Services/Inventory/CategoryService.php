@@ -16,9 +16,9 @@ class CategoryService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Category
+    public function getDetails(Category $category): ?Category
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($category);
     }
 
     public function create(array $category_request): Category
@@ -45,7 +45,6 @@ class CategoryService
     {
         $category_data =  [
             'name' => $category_request['name'] ?? null,
-            'code' => $category_request['code'] ?? null,
             'description' => $category_request['description'] ?? null,
             'status' => $category_request['status'] ?? null,
         ];

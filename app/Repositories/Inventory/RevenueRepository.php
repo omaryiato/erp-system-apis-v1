@@ -7,21 +7,18 @@ use App\Models\Inventory\Revenue;
 class RevenueRepository
 {
     public function getAll() {
-        return Revenue::query()
-            ->with([
+        return Revenue::with([
                 'project',
             ])
-            ->latest('id');
+            ->get();
     }
 
-    public function getDetails(int $id): ?Revenue
+    public function getDetails(Revenue $revenue): ?Revenue
     {
-        return Revenue::query()
-            ->with([
+        return $revenue->load([
                 'project',
                 'cashTransactions',
-            ])
-            ->find($id);
+            ]);
     }
 
     public function create(array $revenue_request): Revenue

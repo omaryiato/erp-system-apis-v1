@@ -8,16 +8,12 @@ class ItemRepository
 {
     public function getAll()
     {
-        return Item::query()
-            ->with('category')
-            ->latest('id');
+        return Item::with('category')->get();
     }
 
-    public function getDetails(int $id): ?Item
+    public function getDetails(Item $item): ?Item
     {
-        return Item::query()
-            ->with('category')
-            ->find($id);
+        return $item->load('category');
     }
 
     public function create(array $item_request): Item

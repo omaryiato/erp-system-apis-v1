@@ -8,35 +8,33 @@ class PurchaseRepository
 {
     public function getAll()
     {
-        return Purchase::query()
-            ->with([
+        return Purchase::with([
                 'supplier',
                 'items.item',
+                'items.allocations.project'
             ])
-            ->latest('id');
+            ->get();
     }
 
-    public function getDetails(int $id): ?Purchase
+    public function getDetails(Purchase $purchase): ?Purchase
     {
-        return Purchase::query()
-            ->with([
+        return $purchase->load([
                 'supplier',
                 'items.item',
                 'items.allocations.project',
-            ])
-            ->find($id);
+            ]);
     }
 
-    public function create(array $data): Purchase
+    public function create(array $purchase_request): Purchase
     {
-        return Purchase::create($data);
+        return Purchase::create($purchase_request);
     }
 
     public function update(
         Purchase $purchase,
-        array $data
+        array $purchase_request
     ): Purchase {
-        $purchase->update($data);
+        $purchase->update($purchase_request);
 
         return $purchase->refresh();
     }

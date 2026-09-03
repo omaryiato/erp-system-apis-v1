@@ -8,16 +8,12 @@ class CategoryRepository
 {
     public function getAll()
     {
-        return Category::query()
-            ->withCount('items')
-            ->latest('id');
+        return Category::with('items')->get();
     }
 
-    public function getDetails(int $id): ?Category
+    public function getDetails(Category $category): ?Category
     {
-        return Category::query()
-            ->withCount('items')
-            ->find($id);
+        return $category->load('items');
     }
 
     public function create(array $category_request): Category

@@ -17,9 +17,9 @@ class ProjectService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Project
+    public function getDetails(Project $project): ?Project
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($project);
     }
 
     public function create(array $project_request): Project
@@ -39,22 +39,23 @@ class ProjectService
 
     public function delete(Project $project): bool
     {
-        return DB::transaction(
-            fn () => $this->repository->delete($project)
-        );
+        return   $this->repository->delete($project);
     }
 
     public function prepareProjectInfo(array $project_request)
     {
+
         $project_data =  [
-            'name' => $project_request['name'] ?? null,
-            'code' => $project_request['code'] ?? null,
+            'project_code' => $project_request['project_code'] ?? null,
+            'project_name' => $project_request['project_name'] ?? null,
+            'customer_name' => $project_request['customer_name'] ?? null,
             'phone' => $project_request['phone'] ?? null,
             'email' => $project_request['email'] ?? null,
             'address' => $project_request['address'] ?? null,
-            'notes' => $project_request['notes'] ?? null,
+            'description' => $project_request['description'] ?? null,
+            'start_date' => $project_request['start_date'] ?? null,
+            'end_date' => $project_request['end_date'] ?? null,
             'status' => $project_request['status'] ?? null,
-            'customer_name' => $project_request['customer_name'] ?? null,
         ];
 
         return $project_data;

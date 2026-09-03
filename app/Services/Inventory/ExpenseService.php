@@ -17,16 +17,14 @@ class ExpenseService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Expense
+    public function getDetails(Expense $expense): ?Expense
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($expense);
     }
 
     public function create(array $expense_request): Expense
     {
-        return DB::transaction(
-            fn () => $this->repository->create($this->prepareExpenseInfo($expense_request))
-        );
+        return   $this->repository->create($this->prepareExpenseInfo($expense_request));
     }
 
     public function update(

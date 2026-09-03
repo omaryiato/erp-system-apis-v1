@@ -59,7 +59,7 @@ class PurchaseController extends Controller
     public function show(Purchase $purchase)
     {
         return ResponseHelper::success(
-                new PurchaseResource($this->service->getDetails($purchase->id)),
+                new PurchaseResource($this->service->getDetails($purchase)),
                 [
                     'en' => trans('validation.get_purchase_details', [], 'en'),
                     'ar' => trans('validation.get_purchase_details', [], 'ar'),

@@ -62,7 +62,7 @@ class RevenueController extends Controller
     {
 
         return ResponseHelper::success(
-                new RevenueResource($this->service->getDetails($revenue->id)),
+                new RevenueResource($this->service->getDetails($revenue)),
                 [
                     'en' => trans('validation.get_revenue_details', [], 'en'),
                     'ar' => trans('validation.get_revenue_details', [], 'ar'),

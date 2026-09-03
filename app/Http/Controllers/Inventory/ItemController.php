@@ -63,7 +63,7 @@ class ItemController extends Controller
     public function show(Item $item)
     {
         return ResponseHelper::success(
-                new ItemResource($this->service->getDetails($item->id)),
+                new ItemResource($this->service->getDetails($item)),
                 [
                     'en' => trans('validation.get_item_details', [], 'en'),
                     'ar' => trans('validation.get_item_details', [], 'ar'),
@@ -107,7 +107,7 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         return ResponseHelper::success(
-                $this->service->delete($item->id),
+                $this->service->delete($item),
                 [
                     'en' => trans('validation.delete_item', [], 'en'),
                     'ar' => trans('validation.delete_item', [], 'ar'),

@@ -3,28 +3,24 @@
 namespace App\Repositories\Inventory;
 
 use App\Models\Inventory\Expense;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ExpenseRepository
 {
     public function getAll() {
-        return Expense::query()
-            ->with([
+        return Expense::with([
                 'project',
                 'supplier',
             ])
-            ->latest('id');
+            ->get();
     }
 
-    public function getDetails(int $id): ?Expense
+    public function getDetails(Expense $expense): ?Expense
     {
-        return Expense::query()
-            ->with([
+        return $expense->load([
                 'project',
                 'supplier',
                 'cashTransactions',
-            ])
-            ->find($id);
+            ]);
     }
 
     public function create(array $expense_request): Expense

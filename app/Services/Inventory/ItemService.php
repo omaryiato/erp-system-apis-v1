@@ -18,9 +18,9 @@ class ItemService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Item
+    public function getDetails(Item $item): ?Item
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($item);
     }
 
     public function create(array $item_request): Item
@@ -49,9 +49,7 @@ class ItemService
 
     public function delete(Item $item): bool
     {
-        return DB::transaction(
-            fn () => $this->repository->delete($item)
-        );
+        return   $this->repository->delete($item);
     }
 
     public function prepareItemInfo(array $item_request)
@@ -62,9 +60,8 @@ class ItemService
             'name' => $item_request['name'] ?? null,
             'code' => $item_request['code'] ?? null,
             'unit' => $item_request['unit'] ?? null,
-            'quantity' => $item_request['quantity'] ?? 0,
-            'cost_price' => $item_request['cost_price'] ?? null,
-            'sale_price' => $item_request['sale_price'] ?? null,
+            'description' => $item_request['description'] ?? null,
+            'current_unit_price' => $item_request['current_unit_price'] ?? null,
             'minimum_stock' => $item_request['minimum_stock'] ?? null,
             'status' => $item_request['status'] ?? 'active',
         ];

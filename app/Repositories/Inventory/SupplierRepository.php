@@ -8,14 +8,12 @@ class SupplierRepository
 {
     public function getAll()
     {
-        return Supplier::query()
-            ->latest('id');
+        return Supplier::all();
     }
 
-    public function getDetails(int $id): ?Supplier
+    public function getDetails(Supplier $supplier): ?Supplier
     {
-        return Supplier::query()
-            ->find($id);
+        return $supplier;
     }
 
     public function create(array $supplier_request): Supplier

@@ -60,7 +60,7 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         return ResponseHelper::success(
-                new ProjectResource($this->service->getDetails($project->id)),
+                new ProjectResource($this->service->getDetails($project)),
                 [
                     'en' => trans('validation.get_project_details', [], 'en'),
                     'ar' => trans('validation.get_project_details', [], 'ar'),
@@ -79,7 +79,7 @@ class ProjectController extends Controller
                 return ResponseHelper::success(
                     new ProjectResource(
                         $this->service->update(
-                            $project->id,
+                            $project,
                             $request->validated()
                         )),
                     [
@@ -103,7 +103,7 @@ class ProjectController extends Controller
     {
 
         return ResponseHelper::success(
-                $this->service->delete($project->id),
+                $this->service->delete($project),
                 [
                     'en' => trans('validation.delete_project', [], 'en'),
                     'ar' => trans('validation.delete_project', [], 'ar'),

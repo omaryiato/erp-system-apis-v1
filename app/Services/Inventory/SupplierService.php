@@ -17,9 +17,9 @@ class SupplierService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Supplier
+    public function getDetails(Supplier $supplier): ?Supplier
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($supplier);
     }
 
     public function create(array $supplier_request): Supplier
@@ -39,20 +39,19 @@ class SupplierService
 
     public function delete(Supplier $supplier): bool
     {
-        return DB::transaction(
-            fn () => $this->repository->delete($supplier)
-        );
+        return  $this->repository->delete($supplier);
     }
 
     public function prepareSupplierInfo(array $supplier_request)
     {
 
         $supplier_data =  [
+            'supplier_code' => $supplier_request['supplier_code'] ?? null,
             'name' => $supplier_request['name'] ?? null,
-            'code' => $supplier_request['code'] ?? null,
             'phone' => $supplier_request['phone'] ?? null,
             'email' => $supplier_request['email'] ?? null,
             'address' => $supplier_request['address'] ?? null,
+            'tax_number' => $supplier_request['tax_number'] ?? null,
             'notes' => $supplier_request['notes'] ?? null,
             'status' => $supplier_request['status'] ?? null,
         ];

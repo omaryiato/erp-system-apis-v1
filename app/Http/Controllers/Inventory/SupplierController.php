@@ -60,7 +60,7 @@ class SupplierController extends Controller
     public function show(Supplier $supplier)
     {
         return ResponseHelper::success(
-                new SupplierResource($this->service->getDetails($supplier->id)),
+                new SupplierResource($this->service->getDetails($supplier)),
                 [
                     'en' => trans('validation.get_supplier_details', [], 'en'),
                     'ar' => trans('validation.get_supplier_details', [], 'ar'),
@@ -80,7 +80,7 @@ class SupplierController extends Controller
                 return ResponseHelper::success(
                     new SupplierResource(
                         $this->service->update(
-                            $supplier->id,
+                            $supplier,
                             $request->validated()
                         )),
                     [
@@ -105,7 +105,7 @@ class SupplierController extends Controller
     {
 
         return ResponseHelper::success(
-                $this->service->delete($supplier->id),
+                $this->service->delete($supplier),
                 [
                     'en' => trans('validation.delete_supplier', [], 'en'),
                     'ar' => trans('validation.delete_supplier', [], 'ar'),

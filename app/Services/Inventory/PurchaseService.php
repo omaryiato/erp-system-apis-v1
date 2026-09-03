@@ -18,9 +18,9 @@ class PurchaseService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Purchase
+    public function getDetails(Purchase $purchase): ?Purchase
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($purchase);
     }
 
     public function create(array $purchase_request): Purchase
@@ -41,6 +41,7 @@ class PurchaseService
                     $purchase_items_data['allocations'] ?? []
                     as $allocation
                 ) {
+                    // $allocation['purchase_item_id'] = $purchase_item->id;
                     $this->createAllocation( $purchase_item, $this->preparePurchaseAllocationInfo($allocation) );
                 }
             }
@@ -93,7 +94,6 @@ class PurchaseService
 
     public function preparePurchaseItemInfo(array $purchase_item_request)
     {
-
         $purchase_item_data =  [
             'item_id' => $purchase_item_request['item_id'] ?? null,
             'quantity' => $purchase_item_request['quantity'] ?? null,
@@ -107,10 +107,12 @@ class PurchaseService
 
     public function preparePurchaseAllocationInfo(array $purchase_allocation_request)
     {
+
         $purchase_allocation_data =  [
             'purchase_item_id' => $purchase_allocation_request['purchase_item_id'] ?? null,
             'project_id' => $purchase_allocation_request['project_id'] ?? null,
             'quantity' => $purchase_allocation_request['quantity'] ?? null,
+            'notes' => $purchase_allocation_request['notes'] ?? null,
         ];
 
         return $purchase_allocation_data;

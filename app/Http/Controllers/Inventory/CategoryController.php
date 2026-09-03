@@ -59,7 +59,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         return ResponseHelper::success(
-                new CategoryResource($this->service->getDetails($category->id)),
+                new CategoryResource($this->service->getDetails($category)),
                 [
                     'en' => trans('validation.get_category_details', [], 'en'),
                     'ar' => trans('validation.get_category_details', [], 'ar'),
@@ -101,7 +101,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         return ResponseHelper::success(
-                $this->service->delete($category->id),
+                $this->service->delete($category),
                 [
                     'en' => trans('validation.delete_category', [], 'en'),
                     'ar' => trans('validation.delete_category', [], 'ar'),

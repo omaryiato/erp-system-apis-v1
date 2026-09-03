@@ -17,9 +17,9 @@ class RevenueService
         return $this->repository->getAll();
     }
 
-    public function getDetails(int $id): ?Revenue
+    public function getDetails(Revenue $revenue): ?Revenue
     {
-        return $this->repository->getDetails($id);
+        return $this->repository->getDetails($revenue);
     }
 
     public function create(array $revenue_request): Revenue

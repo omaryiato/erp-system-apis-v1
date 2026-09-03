@@ -8,14 +8,12 @@ class ProjectRepository
 {
     public function getAll()
     {
-        return Project::query()
-            ->latest('id');
+        return Project::all();
     }
 
-    public function getDetails(int $id): ?Project
+    public function getDetails(Project $project): ?Project
     {
-        return Project::query()
-            ->find($id);
+        return $project;
     }
 
     public function create(array $project_request): Project

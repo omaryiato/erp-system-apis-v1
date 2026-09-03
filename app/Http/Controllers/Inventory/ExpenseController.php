@@ -60,7 +60,7 @@ class ExpenseController extends Controller
     {
 
         return ResponseHelper::success(
-                new ExpenseResource($this->service->getDetails($expense->id)),
+                new ExpenseResource($this->service->getDetails($expense)),
                 [
                     'en' => trans('validation.get_expense_details', [], 'en'),
                     'ar' => trans('validation.get_expense_details', [], 'ar'),

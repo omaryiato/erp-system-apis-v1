@@ -18,18 +18,22 @@ class ItemResource extends JsonResource
             ],
 
 
-            'name' => $this->name,
-            'code' => $this->code,
-            'unit' => $this->unit,
-            'description' => $this->description,
+            'name' => $this->name ?? null,
+            'code' => $this->code ?? null,
+            'unit' => $this->unit ?? null,
+            'description' => $this->description ?? null,
 
-            'current_unit_price' => $this->current_unit_price,
-            'minimum_stock' => $this->minimum_stock,
+            'current_unit_price' => $this->current_unit_price ?? null,
+            'minimum_stock' => $this->minimum_stock ?? null,
 
-            'status' => $this->status,
+            'status' => $this->status ?? null,
 
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->format(
+                'Y-m-d H:i:s'
+            ),
+            'updated_at' => $this->updated_at?->format(
+                'Y-m-d H:i:s'
+            ),
         ];
     }
 }

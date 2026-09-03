@@ -409,11 +409,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
             Route::apiResource(
                 'purchases',
                 PurchaseController::class
-            )->only([
-                'index',
-                'store',
-                'show',
-            ]);
+            );
 
             /*
             |--------------------------------------------------------------------------
@@ -424,11 +420,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
             Route::apiResource(
                 'expenses',
                 ExpenseController::class
-            )->only([
-                'index',
-                'store',
-                'show',
-            ]);
+            );
 
             /*
             |--------------------------------------------------------------------------
@@ -439,11 +431,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
             Route::apiResource(
                 'revenues',
                 RevenueController::class
-            )->only([
-                'index',
-                'store',
-                'show',
-            ]);
+            );
 
             /*
             |--------------------------------------------------------------------------
