@@ -25,6 +25,7 @@ class EmployeeRepository
         Employee $employee,
         array $data
     ): Employee {
+
         $employee->update($data);
 
         return $employee->refresh();

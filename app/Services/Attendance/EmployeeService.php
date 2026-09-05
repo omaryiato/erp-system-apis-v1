@@ -53,7 +53,7 @@ class EmployeeService
             'salary_type' => $employee_request['salary_type'] ?? 'active',
             'base_salary' => $employee_request['base_salary'] ?? 0,
             'overtime_rate' => $employee_request['overtime_rate'] ?? null,
-            'daily_worked_hours' => $attendance_request['daily_worked_hours'] ?? 9,
+            'daily_worked_hours' => $employee_request['daily_worked_hours'] ?? 9,
             'status' => $employee_request['status'] ?? 'daily',
         ];
     }
