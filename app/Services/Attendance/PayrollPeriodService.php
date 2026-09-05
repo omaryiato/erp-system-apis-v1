@@ -111,11 +111,19 @@ class PayrollPeriodService
             //     ->sum('amount');
 
             $advances = $payments
-                ->where('type', 'advance')
+                ->where('payment_type', 'advance')
                 ->sum('amount');
 
             $deductions = $payments
-                ->where('type', 'deduction')
+                ->where('payment_type', 'deduction')
+                ->sum('amount');
+
+            $salary = $payments
+                ->where('payment_type', 'salary')
+                ->sum('amount');
+
+            $other = $payments
+                ->where('payment_type', 'other')
                 ->sum('amount');
 
             $totalEarned =
@@ -125,6 +133,8 @@ class PayrollPeriodService
             $netDue =
                 $totalEarned -
                 $advances -
+                $salary -
+                $other -
                 $deductions;
 
             $totalPaid = $payments->sum('amount');
@@ -169,36 +179,30 @@ class PayrollPeriodService
                     ),
                 ],
 
-                // 'deductions' => [
-                //     'advances' => round(
-                //         $advances,
-                //         2
-                //     ),
-                //     'deductions' => round(
-                //         $deductions,
-                //         2
-                //     ),
-                //     'net_due' => round(
-                //         $netDue,
-                //         2
-                //     ),
-                // ],
-
-                'payments' => [
+                'deductions' => [
+                    'salary' => round(
+                        $salary,
+                        2
+                    ),
+                    'other' => round(
+                        $other,
+                        2
+                    ),
                     'advances' => round(
                         $advances,
                         2
                     ),
-
                     'deductions' => round(
                         $deductions,
                         2
                     ),
-
                     'net_due' => round(
                         $netDue,
                         2
                     ),
+                ],
+
+                'payments' => [
 
                     'total_paid' => round(
                         $totalPaid,
