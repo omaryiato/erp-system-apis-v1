@@ -78,24 +78,117 @@ class AttendanceService
             $data['overtime_hours'] ?? 0
         );
 
+        /*
+        * عدد ساعات الدوام العادية في اليوم
+        */
+        $normalWorkingHours = $employee->daily_worked_hours;
+
+        /*
+        * حساب الأجر اليومي
+        */
         if ($employee->salary_type === 'daily') {
-            $dailyAmount = $employee->base_salary;
+            $fullDailyAmount = (float) $employee->base_salary;
         } else {
-            // بالنسبة للموظف الشهري
-            // يمكن لاحقًا تقسيم الراتب على عدد أيام العمل.
-            $dailyAmount = $employee->base_salary / 30;
+            // الموظف الشهري
+            $fullDailyAmount = (float) $employee->base_salary / 30;
         }
 
+        /*
+        * قيمة ساعة العمل العادية
+        */
+        $hourlyRate = $fullDailyAmount / $normalWorkingHours;
+
+        /*
+        * حساب الساعات العادية فقط.
+        *
+        * إذا عمل 4 ساعات:
+        * 4 ساعات عادية
+        *
+        * إذا عمل 12 ساعة:
+        * 9 ساعات عادية + 3 ساعات overtime
+        */
+        $regularHours = min(
+            $workedHours,
+            $normalWorkingHours
+        );
+
+        /*
+        * إذا لم يتم إرسال overtime_hours،
+        * نحسبه تلقائيًا من worked_hours.
+        */
+        if ($overtimeHours <= 0 && $workedHours > $normalWorkingHours) {
+            $overtimeHours = $workedHours - $normalWorkingHours;
+        }
+
+        /*
+        * المبلغ المستحق عن الساعات العادية
+        */
+        $regularAmount =
+            $regularHours * $hourlyRate;
+
+        /*
+        * overtime_rate هو معامل الساعات:
+        *
+        * 1   = ساعة OT = ساعة
+        * 1.5 = ساعة OT = ساعة ونصف
+        * 2   = ساعة OT = ساعتين
+        */
+        $overtimeRate = (float) (
+            $employee->overtime_rate ?? 1
+        );
+
+        /*
+        * قيمة ساعة overtime
+        */
+        $overtimeHourlyRate =
+            $hourlyRate * $overtimeRate;
+
+        /*
+        * مبلغ overtime
+        */
         $overtimeAmount =
-            $overtimeHours * $employee->overtime_rate;
+            $overtimeHours * $overtimeHourlyRate;
+
+        /*
+        * إجمالي المبلغ
+        */
+        $totalAmount =
+            $regularAmount + $overtimeAmount;
 
         $data['worked_hours'] = $workedHours;
+        $data['regular_hours'] = $regularHours;
         $data['overtime_hours'] = $overtimeHours;
-        $data['daily_amount'] = $dailyAmount;
-        $data['overtime_amount'] = $overtimeAmount;
+
+        $data['daily_amount'] = round(
+            $regularAmount,
+            2
+        );
+
+        $data['hourly_rate'] = round(
+            $hourlyRate,
+            2
+        );
+
+        $data['overtime_rate'] = $overtimeRate;
+
+        $data['overtime_hourly_rate'] = round(
+            $overtimeHourlyRate,
+            2
+        );
+
+        $data['overtime_amount'] = round(
+            $overtimeAmount,
+            2
+        );
+
+        $data['total_amount'] = round(
+            $totalAmount,
+            2
+        );
 
         return $data;
     }
+
 
     public function prepareAttendanceInfo(array $attendance_request)
     {

@@ -55,6 +55,12 @@ class EmployeeRequest extends BaseRequest
                 'min:0',
             ],
 
+            'daily_worked_hours' => [
+                'nullable',
+                'numeric',
+                'min:1',
+            ],
+
             'status' => [
                 'nullable',
                 Rule::in(['active', 'inactive']),

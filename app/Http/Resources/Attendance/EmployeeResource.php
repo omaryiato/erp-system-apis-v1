@@ -17,6 +17,7 @@ class EmployeeResource extends JsonResource
             'salary_type' => $this->salary_type,
             'base_salary' => $this->base_salary,
             'overtime_rate' => $this->overtime_rate,
+            'daily_worked_hours' => $this->daily_worked_hours,
             'status' => $this->status,
             'created_at' => $this->created_at,
         ];

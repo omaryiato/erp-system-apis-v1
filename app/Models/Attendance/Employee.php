@@ -16,6 +16,7 @@ class Employee extends Model
         'salary_type',
         'base_salary',
         'overtime_rate',
+        'daily_worked_hours',
         'status',
         'hire_date',
         'termination_date',
