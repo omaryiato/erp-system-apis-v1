@@ -25,6 +25,7 @@ class Employee extends Model
     protected $casts = [
         'base_salary' => 'decimal:2',
         'overtime_rate' => 'decimal:2',
+        'daily_worked_hours' => 'decimal:2',
         'hire_date' => 'date',
         'termination_date' => 'date',
         'created_at' => 'datetime',

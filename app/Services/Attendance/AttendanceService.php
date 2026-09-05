@@ -70,6 +70,7 @@ class AttendanceService
         Employee $employee,
         array $data
     ): array {
+
         $workedHours = (float) (
             $data['worked_hours'] ?? 0
         );
@@ -107,10 +108,10 @@ class AttendanceService
         * إذا عمل 12 ساعة:
         * 9 ساعات عادية + 3 ساعات overtime
         */
-        $regularHours = min(
-            $workedHours,
-            $normalWorkingHours
-        );
+        // $regularHours = min(
+        //     $workedHours,
+        //     $normalWorkingHours
+        // );
 
         /*
         * إذا لم يتم إرسال overtime_hours،
@@ -124,7 +125,7 @@ class AttendanceService
         * المبلغ المستحق عن الساعات العادية
         */
         $regularAmount =
-            $regularHours * $hourlyRate;
+            $workedHours * $hourlyRate;
 
         /*
         * overtime_rate هو معامل الساعات:
@@ -156,7 +157,7 @@ class AttendanceService
         //     $regularAmount + $overtimeAmount;
 
         $data['worked_hours'] = $workedHours;
-        $data['regular_hours'] = $regularHours;
+        // $data['regular_hours'] = $regularHours;
         $data['overtime_hours'] = $overtimeHours;
 
         $data['daily_amount'] = round(
@@ -164,17 +165,17 @@ class AttendanceService
             2
         );
 
-        $data['hourly_rate'] = round(
-            $hourlyRate,
-            2
-        );
+        // $data['hourly_rate'] = round(
+        //     $hourlyRate,
+        //     2
+        // );
 
-        $data['overtime_rate'] = $overtimeRate;
+        // $data['overtime_rate'] = $overtimeRate;
 
-        $data['overtime_hourly_rate'] = round(
-            $overtimeHourlyRate,
-            2
-        );
+        // $data['overtime_hourly_rate'] = round(
+        //     $overtimeHourlyRate,
+        //     2
+        // );
 
         $data['overtime_amount'] = round(
             $overtimeAmount,
