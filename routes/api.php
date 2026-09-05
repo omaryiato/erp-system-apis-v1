@@ -184,6 +184,21 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         */
 
         Route::get(
+            'attendance/history',
+            [AttendanceController::class, 'attendanceHistory']
+        );
+
+        Route::get(
+            'attendance/history/{attendance}',
+            [AttendanceController::class, 'attendanceHistoryDetails']
+        );
+
+        Route::get(
+            'employees/{employee}/history/attendance',
+            [AttendanceController::class, 'employeeHistoryAttendance']
+        );
+
+        Route::get(
             'attendance',
             [AttendanceController::class, 'index']
         );
@@ -214,20 +229,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
             [AttendanceController::class, 'destroy']
         );
 
-        Route::get(
-            'attendance/history',
-            [AttendanceController::class, 'attendanceHistory']
-        );
 
-        Route::get(
-            'attendance/history/{attendance}',
-            [AttendanceController::class, 'attendanceHistoryDetails']
-        );
-
-        Route::get(
-            'employees/{employee}/history/attendance',
-            [AttendanceController::class, 'employeeHistoryAttendance']
-        );
 
 
         /*

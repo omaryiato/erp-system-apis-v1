@@ -40,11 +40,10 @@ class AttendanceController extends Controller
 
         try {
 
-            $attendance = $this->service->create(
-            $request->validated());
+            $attendances = $this->service->createMany( $request->validated()['attendances'] );
 
             return ResponseHelper::success(
-                    new AttendanceResource($attendance),
+                    AttendanceResource::collection($attendances),
                     [
                         'en' => trans('validation.add_new_attendacne', [], 'en'),
                         'ar' => trans('validation.add_new_attendance', [], 'ar'),
@@ -63,6 +62,37 @@ class AttendanceController extends Controller
 
 
     }
+
+
+    // public function store(
+    //     AttendanceRequest $request
+    // ) {
+
+    //     try {
+
+    //         $attendance = $this->service->create(
+    //         $request->validated());
+
+    //         return ResponseHelper::success(
+    //                 new AttendanceResource($attendance),
+    //                 [
+    //                     'en' => trans('validation.add_new_attendacne', [], 'en'),
+    //                     'ar' => trans('validation.add_new_attendance', [], 'ar'),
+    //                 ],
+    //                 Response::HTTP_CREATED
+    //             );
+    //     } catch (Exception $exception) {
+    //         return ResponseHelper::error(
+    //             [
+    //                 'en' => trans('validation.exception_error', [], 'en'),
+    //                 'ar' => trans('validation.exception_error', [], 'ar'),
+    //             ],
+    //             $exception->getMessage(),
+    //             500);
+    //     }
+
+
+    // }
 
     public function show(Attendance $attendance)
     {

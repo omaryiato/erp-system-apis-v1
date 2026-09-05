@@ -19,7 +19,10 @@ class EmployeeResource extends JsonResource
             'overtime_rate' => $this->overtime_rate,
             'daily_worked_hours' => $this->daily_worked_hours,
             'status' => $this->status,
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at?->format(
+                'Y-m-d H:i:s'
+            ),
+
         ];
     }
 }

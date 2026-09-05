@@ -43,7 +43,10 @@ class EmployeePayrollTransactionResource extends JsonResource
             'status' => $this->status,
 
             'created_at' =>
-                $this->created_at?->toISOString(),
+                $this->created_at?->format(
+                'Y-m-d H:i:s'
+            ),
+
         ];
     }
 }

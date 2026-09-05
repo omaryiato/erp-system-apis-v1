@@ -36,6 +36,7 @@ class EmployeePaymentRequest extends BaseRequest
                 Rule::in([
                     'salary',
                     'advance',
+                    'deduction',
                     'other',
                 ]),
             ],

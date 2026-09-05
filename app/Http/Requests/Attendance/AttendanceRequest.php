@@ -12,46 +12,59 @@ class AttendanceRequest extends BaseRequest
         return true;
     }
 
-    public function rules(): array
-    {
-        return [
-            'employee_id' => [
-                'required',
-                'exists:employees_v1,id',
-            ],
 
-            'work_date' => [
-                'required',
-                'date',
-            ],
+public function rules(): array
+{
+    return [
+        'attendances' => [
+            'required',
+            'array',
+            'min:1',
+        ],
 
-            'check_in' => [
-                'nullable',
-                'date',
-            ],
+        'attendances.*.employee_id' => [
+            'required',
+            'integer',
+            'exists:employees_v1,id',
+        ],
 
-            'check_out' => [
-                'nullable',
-                'date',
-                'after_or_equal:check_in',
-            ],
+        'attendances.*.work_date' => [
+            'required',
+            'date',
+        ],
 
-            'worked_hours' => [
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
+        'attendances.*.check_in' => [
+            'nullable',
+            'date',
+        ],
 
-            'overtime_hours' => [
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
+        'attendances.*.check_out' => [
+            'nullable',
+            'date',
+            'after_or_equal:attendances.*.check_in',
+        ],
 
-            'notes' => [
-                'nullable',
-                'string',
-            ],
-        ];
-    }
+        'attendances.*.worked_hours' => [
+            'nullable',
+            'numeric',
+            'min:0',
+            'max:24',
+        ],
+
+        'attendances.*.overtime_hours' => [
+            'nullable',
+            'numeric',
+            'min:0',
+            'max:24',
+        ],
+
+        'attendances.*.notes' => [
+            'nullable',
+            'string',
+        ],
+    ];
+}
+
+
+
 }

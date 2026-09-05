@@ -5,6 +5,8 @@ namespace App\Services\Attendance;
 use App\Models\Attendance\Attendance;
 use App\Repositories\Attendance\AttendanceRepository;
 use App\Models\Attendance\Employee;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
@@ -29,6 +31,21 @@ class AttendanceService
         );
 
         return $this->repository->create($this->prepareAttendanceInfo($data));
+    }
+
+    public function createMany(array $attendances): Collection
+    {
+        return DB::transaction(function () use ($attendances)
+                                {
+                                    $createdAttendances = collect();
+                                    foreach ($attendances as $data)
+                                        {
+                                            $employee = Employee::findOrFail( $data['employee_id'] );
+                                            $data = $this->calculateAmounts( $employee, $data );
+                                            $attendance = $this->repository->create( $this->prepareAttendanceInfo($data) );
+                                            $createdAttendances->push($attendance);
+                                        } return $createdAttendances;
+                                });
     }
 
     public function update(

@@ -8,12 +8,12 @@ class EmployeeRepository
 {
     public function all()
     {
-        return Employee::latest()->get();
+        return Employee::where('status', 'active')->latest()->get();
     }
 
     public function find(int $id): Employee
     {
-        return Employee::findOrFail($id);
+        return Employee::where('status', 'active')->findOrFail($id);
     }
 
     public function create(array $data): Employee
@@ -31,8 +31,9 @@ class EmployeeRepository
         return $employee->refresh();
     }
 
-    public function delete(Employee $employee): void
+    public function delete(Employee $employee, $data): Employee
     {
-        $employee->delete();
+        $employee->update($data);
+        return  $employee;
     }
 }

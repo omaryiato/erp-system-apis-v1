@@ -36,9 +36,14 @@ class EmployeeService
         );
     }
 
-    public function delete(Employee $employee): void
+    public function delete(Employee $employee): Employee
     {
-        $this->repository->delete($employee);
+        $data = [
+            'termination_date' => now(),
+            'status' => 'inactive',
+        ];
+
+        return $this->repository->delete($employee, $data);
     }
 
     public function prepareEmployeeInfo(array $employee_request)

@@ -58,7 +58,7 @@ class PayrollPeriodService
 
         return $employees->map(function ($employee) use ($period) {
 
-            $attendance = $employee->attendance()
+            $attendance = $employee->attendanceHistory()
                 ->whereBetween(
                     'work_date',
                     [
@@ -68,15 +68,15 @@ class PayrollPeriodService
                 )
                 ->get();
 
-            $transactions = $employee->transactions()
-                ->whereBetween(
-                    'transaction_date',
-                    [
-                        $period->period_start,
-                        $period->period_end,
-                    ]
-                )
-                ->get();
+            // $transactions = $employee->transactions()
+            //     ->whereBetween(
+            //         'transaction_date',
+            //         [
+            //             $period->period_start,
+            //             $period->period_end,
+            //         ]
+            //     )
+            //     ->get();
 
             $payments = $employee->payments()
                 ->whereBetween(
@@ -102,11 +102,19 @@ class PayrollPeriodService
             $overtimeAmount = $attendance
                 ->sum('overtime_amount');
 
-            $advances = $transactions
+            // $advances = $transactions
+            //     ->where('type', 'advance')
+            //     ->sum('amount');
+
+            // $deductions = $transactions
+            //     ->where('type', 'deduction')
+            //     ->sum('amount');
+
+            $advances = $payments
                 ->where('type', 'advance')
                 ->sum('amount');
 
-            $deductions = $transactions
+            $deductions = $payments
                 ->where('type', 'deduction')
                 ->sum('amount');
 
@@ -161,26 +169,42 @@ class PayrollPeriodService
                     ),
                 ],
 
-                'deductions' => [
+                // 'deductions' => [
+                //     'advances' => round(
+                //         $advances,
+                //         2
+                //     ),
+                //     'deductions' => round(
+                //         $deductions,
+                //         2
+                //     ),
+                //     'net_due' => round(
+                //         $netDue,
+                //         2
+                //     ),
+                // ],
+
+                'payments' => [
                     'advances' => round(
                         $advances,
                         2
                     ),
+
                     'deductions' => round(
                         $deductions,
                         2
                     ),
+
                     'net_due' => round(
                         $netDue,
                         2
                     ),
-                ],
 
-                'payments' => [
                     'total_paid' => round(
                         $totalPaid,
                         2
                     ),
+
                     'remaining' => round(
                         $remaining,
                         2
