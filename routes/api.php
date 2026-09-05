@@ -132,6 +132,9 @@ use App\Http\Controllers\Attendance\EmployeePaymentController;
 use App\Http\Controllers\Attendance\PayrollPeriodController;
 use App\Http\Controllers\UserController;
 
+use Illuminate\Support\Facades\DB;
+
+
 
 use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\Inventory\ItemController;
@@ -342,6 +345,28 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
             'payroll-periods/{period}',
             [PayrollPeriodController::class, 'destroy']
         );
+
+
+
+        Route::get('truncate', function () {
+
+            DB::statement('TRUNCATE TABLE
+                payroll_periods_v1,
+                employee_payments_v1,
+                employee_transactions_v1,
+                attendance_history_v1,
+                attendance_v1,
+                employees_v1,
+                users_v1
+                RESTART IDENTITY CASCADE
+            ');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payroll tables truncated successfully.',
+            ]);
+        });
+
     });
 
 
@@ -505,40 +530,40 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
                     );
                 });
 
+            Route::get('truncate', function () {
+
+                DB::statement('TRUNCATE TABLE
+                    categories_v1,
+                    items_v1,
+                    item_snapshots_v1,
+                    projects_v1,
+                    suppliers_v1,
+                    purchases_v1,
+                    purchase_items_v1,
+                    purchase_allocations_v1,
+                    expenses_v1,
+                    revenues_v1,
+                    cash_transactions_v1
+                    RESTART IDENTITY CASCADE
+                ');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Inventory tables truncated successfully.',
+                ]);
+            });
     });
 
-     /***************************************** Users *******************************************/
+    /***************************************** Users *******************************************/
 
-        Route::apiResource('user', UserController::class);
+    Route::apiResource('user', UserController::class);
 
-        // Route::GET('user', [UserController::class, 'index']);
-        // Route::GET('user/{user}', [UserController::class, 'show']);
-        // Route::POST('user', [UserController::class, 'store']);
-        // Route::POST('user/{user}', [UserController::class, 'update']);
-        // Route::DELETE('user/{user}', [UserController::class, 'destroy']);
+    // Route::GET('user', [UserController::class, 'index']);
+    // Route::GET('user/{user}', [UserController::class, 'show']);
+    // Route::POST('user', [UserController::class, 'store']);
+    // Route::POST('user/{user}', [UserController::class, 'update']);
+    // Route::DELETE('user/{user}', [UserController::class, 'destroy']);
 
 
 
 // });
-
-
-use Illuminate\Support\Facades\DB;
-
-Route::get('truncate', function () {
-
-    DB::statement('TRUNCATE TABLE
-        payroll_periods_v1,
-        employee_payments_v1,
-        employee_transactions_v1,
-        attendance_history_v1,
-        attendance_v1,
-        employees_v1,
-        users_v1
-        RESTART IDENTITY CASCADE
-    ');
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Payroll tables truncated successfully.',
-    ]);
-});

@@ -107,6 +107,8 @@ class AttendanceService
             'check_out' => $attendance_request['check_out'] ?? null,
             'worked_hours' => $attendance_request['worked_hours'] ?? 8,
             'overtime_hours' => $attendance_request['overtime_hours'] ?? 0,
+            'daily_amount' => $attendance_request['daily_amount'] ?? 0,
+            'overtime_amount' => $attendance_request['overtime_amount'] ?? 0,
             'notes' => $attendance_request['notes'] ?? 'active',
         ];
 
