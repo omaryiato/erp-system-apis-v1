@@ -152,8 +152,8 @@ class AttendanceService
         /*
         * إجمالي المبلغ
         */
-        $totalAmount =
-            $regularAmount + $overtimeAmount;
+        // $totalAmount =
+        //     $regularAmount + $overtimeAmount;
 
         $data['worked_hours'] = $workedHours;
         $data['regular_hours'] = $regularHours;
@@ -181,10 +181,10 @@ class AttendanceService
             2
         );
 
-        $data['total_amount'] = round(
-            $totalAmount,
-            2
-        );
+        // $data['total_amount'] = round(
+        //     $totalAmount,
+        //     2
+        // );
 
         return $data;
     }
@@ -202,7 +202,6 @@ class AttendanceService
             'overtime_hours' => $attendance_request['overtime_hours'] ?? 0,
             'daily_amount' => $attendance_request['daily_amount'] ?? 0,
             'overtime_amount' => $attendance_request['overtime_amount'] ?? 0,
-            'daily_worked_hours' => $attendance_request['daily_worked_hours'] ?? 9,
             'notes' => $attendance_request['notes'] ?? 'active',
         ];
 
