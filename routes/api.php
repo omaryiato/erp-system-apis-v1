@@ -153,11 +153,11 @@ use App\Http\Controllers\Inventory\ReportsController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-// Route::middleware([
-//     'auth:sanctum',
-//     'admin.access',
-//     'audit'
-// ])->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    'admin.access',
+    'audit'
+])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -560,12 +560,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     Route::apiResource('user', UserController::class);
 
-    // Route::GET('user', [UserController::class, 'index']);
-    // Route::GET('user/{user}', [UserController::class, 'show']);
-    // Route::POST('user', [UserController::class, 'store']);
-    // Route::POST('user/{user}', [UserController::class, 'update']);
-    // Route::DELETE('user/{user}', [UserController::class, 'destroy']);
 
 
-
-// });
+});
