@@ -43,12 +43,12 @@ class AddUser extends BaseRequest
                 'max:20',
             ],
 
-            'email_address' => [
-                'required',
-                'email',
-                'max:255',
-                'unique:users_v1,email_address',
-            ],
+            // 'email_address' => [
+            //     'required',
+            //     'email',
+            //     'max:255',
+            //     'unique:users_v1,email_address',
+            // ],
 
             'password' => [
                 'required',

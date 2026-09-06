@@ -48,14 +48,14 @@ class UpdateUser extends BaseRequest
                 'max:20',
             ],
 
-            'email_address' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users_v1', 'email_address')
-                        ->ignore($id)
-                        ->where('id', $this->input('id')),
-            ],
+            // 'email_address' => [
+            //     'required',
+            //     'email',
+            //     'max:255',
+            //     Rule::unique('users_v1', 'email_address')
+            //             ->ignore($id)
+            //             ->where('id', $this->input('id')),
+            // ],
 
             'password' => [
                 'required',
@@ -72,8 +72,8 @@ class UpdateUser extends BaseRequest
 
             'user_type' => [
                 'nullable',
-                'integer',
-                'in:0,1,2',
+                'string',
+                'in:employee,admin,manager,owner',
             ],
 
             'updated_by' => [
