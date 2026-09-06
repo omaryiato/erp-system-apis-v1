@@ -65,8 +65,8 @@ class AddUser extends BaseRequest
 
             'user_type' => [
                 'nullable',
-                'integer',
-                'in:0,1,2',
+                'string',
+                'in:employee,admin,manager,owner',
             ],
 
             'created_by' => [

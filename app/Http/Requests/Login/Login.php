@@ -24,9 +24,18 @@ class Login extends BaseRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            // 'user_id' => 'required|integer|exists:users,id',
-            'password' => 'required',
+            // 'email' => 'required|email|exists:users_v1,email',
+            // 'user_name' => 'required|email|exists:users_v1,email',
+            // 'phone_number' => 'required|email|exists:users_v1,email',
+            'password' => [
+                'required',
+                'string',
+            ],
+            
+            'login' => [
+                'required',
+                'string',
+            ],
         ];
     }
 }
