@@ -37,7 +37,7 @@ class UpdateUser extends BaseRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('users', 'user_name')
+                Rule::unique('users_v1', 'user_name')
                         ->ignore($id)
                         ->where('id', $this->input('id')),
             ],
@@ -52,7 +52,7 @@ class UpdateUser extends BaseRequest
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email_address')
+                Rule::unique('users_v1', 'email_address')
                         ->ignore($id)
                         ->where('id', $this->input('id')),
             ],
@@ -79,7 +79,7 @@ class UpdateUser extends BaseRequest
             'updated_by' => [
                 'required',
                 'integer',
-                'exists:users,id'
+                'exists:users_v1,id'
             ],
         ];
     }

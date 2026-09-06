@@ -34,7 +34,7 @@ class AddUser extends BaseRequest
                 'required',
                 'string',
                 'max:255',
-                'unique:users,user_name',
+                'unique:users_v1,user_name',
             ],
 
             'phone_number' => [
@@ -47,7 +47,7 @@ class AddUser extends BaseRequest
                 'required',
                 'email',
                 'max:255',
-                'unique:users,email_address',
+                'unique:users_v1,email_address',
             ],
 
             'password' => [
@@ -72,13 +72,13 @@ class AddUser extends BaseRequest
             'created_by' => [
                 'required',
                 'integer',
-                'exists:users,id'
+                'exists:users_v1,id'
             ],
 
             'updated_by' => [
                 'required',
                 'integer',
-                'exists:users,id'
+                'exists:users_v1,id'
             ],
         ];
     }
