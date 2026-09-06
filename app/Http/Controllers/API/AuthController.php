@@ -20,11 +20,11 @@ class AuthController extends Controller
                 $query->where('user_name', $login)
                     ->orWhere('phone_number', $login);
             })
-            ->where('is_active', 1)
+            ->where('status', 1)
             ->first();
 
         // $user_details = User::where('email', $request->email)
-        //     ->where('is_active', 1)
+        //     ->where('status', 1)
         //     ->first();
 
         if (!$user_details) {
