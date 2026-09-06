@@ -66,14 +66,14 @@ class AuthController extends Controller
         // $tokenResult->accessToken->save();
 
         // $token = $tokenResult->plainTextToken;
+        $user_details['token'] = $token;
+        $user_details['expires_at'] = $tokenResult->accessToken->expires_at;
 
         return ResponseHelper::success(
             $user_details,
             [
                 'en' => trans('validation.logged_in'),
                 'ar' => trans('validation.logged_in'),
-                'token' => $token,
-                'expires_at' => $tokenResult->accessToken->expires_at,
             ],
             200
         );
