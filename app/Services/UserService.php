@@ -32,7 +32,7 @@ class UserService
     // addNewUser Funtion To Add new User
     public function addNewUser(array $user_request)
     {
-        return $this->userRepository->addNewUser($user_request);
+        return $this->userRepository->addNewUser($this->prepareRequestInfo($user_request));
     }
 
     // updateUser Funtion To Update User info
@@ -42,7 +42,7 @@ class UserService
         // if(!$user_details){
         //     return null;
         // }
-        return $this->userRepository->updateUser($user, $user_request);
+        return $this->userRepository->updateUser($user, $this->prepareRequestInfo($user_request));
     }
 
     // deleteUser Funtion To Delete User
@@ -57,7 +57,6 @@ class UserService
 
     public function prepareRequestInfo(array $request_info)
     {
-
         $request_data = [
             'full_name' => $request_info['full_name'] ?? null,
             'user_name' => $request_info['user_name'] ?? null,
