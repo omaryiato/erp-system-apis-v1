@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Inventory;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Purchase\AddNewPurchase;
+use App\Http\Requests\Inventory\Purchase\ReportPurchases;
 use App\Http\Resources\Inventory\PurchaseResource;
+use App\Http\Resources\Inventory\Reports\PurchaseReportResource;
 use App\Models\Inventory\Purchase;
 use App\Services\Inventory\PurchaseService;
 use Exception;
@@ -67,4 +69,23 @@ class PurchaseController extends Controller
                 Response::HTTP_OK
             );
     }
+
+    public function purchasesReport(
+        ReportPurchases $request
+    ) {
+        return ResponseHelper::success(
+            new PurchaseReportResource(
+                $this->service->purchasesReport(
+                    $request->filters()
+                )
+            ),
+            [
+                'en' => trans('validation.get_purchase_details', [], 'en'),
+                'ar' => trans('validation.get_purchase_details', [], 'ar'),
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+
 }

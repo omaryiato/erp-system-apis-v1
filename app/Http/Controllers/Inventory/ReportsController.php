@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\Inventory;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Inventory\Reports\OperationReport;
 use App\Http\Requests\Inventory\Reports\ReportFilterRequest;
 use App\Http\Resources\Inventory\CashTransactionResource;
 use App\Http\Resources\Inventory\Reports\CashFlowResource;
-use App\Http\Resources\Inventory\Reports\CashTransactionReportResource;
-use App\Http\Resources\Inventory\Reports\ExpenseReportResource;
 use App\Http\Resources\Inventory\Reports\FinancialSummaryResource;
 use App\Http\Resources\Inventory\Reports\MonthlyFinancialResource;
+use App\Http\Resources\Inventory\Reports\OperationReportResource;
 use App\Http\Resources\Inventory\Reports\OutstandingExpenseResource;
 use App\Http\Resources\Inventory\Reports\OutstandingRevenueResource;
-use App\Http\Resources\Inventory\Reports\ProjectFinancialResource;
-use App\Http\Resources\Inventory\Reports\RevenueReportResource;
-use App\Http\Resources\Inventory\Reports\SupplierFinancialResource;
 use App\Services\Inventory\ReportService;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ReportsController extends Controller
 {
@@ -24,21 +23,39 @@ class ReportsController extends Controller
         private ReportService $service
     ) {}
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Operation Report
+    |--------------------------------------------------------------------------
+    */
+
+    public function operationReport(
+        OperationReport $request
+    ) {
+        return ResponseHelper::success(
+                new OperationReportResource(
+                    $this->service->operationReport(
+                        $request->filters()
+                    )
+                ),
+                [
+                    'en' => trans('validation.get_revenue_details', [], 'en'),
+                    'ar' => trans('validation.get_revenue_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
+    }
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Financial Summary
     |--------------------------------------------------------------------------
     */
 
-    public function financialSummary(
-        ReportFilterRequest $request
-    ) {
-        return new FinancialSummaryResource(
-            $this->service->financialSummary(
-                $request->filters()
-            )
-        );
-    }
+
 
     /*
     |--------------------------------------------------------------------------
@@ -56,73 +73,11 @@ class ReportsController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Expenses
-    |--------------------------------------------------------------------------
-    */
 
-    public function expenses(
-        ReportFilterRequest $request
-    ) {
-        return new ExpenseReportResource(
-            $this->service->expenseReport(
-                $request->filters()
-            )
-        );
-    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Revenues
-    |--------------------------------------------------------------------------
-    */
 
-    public function revenues(
-        ReportFilterRequest $request
-    ) {
-        return new RevenueReportResource(
-            $this->service->revenueReport(
-                $request->filters()
-            )
-        );
-    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Project Financial
-    |--------------------------------------------------------------------------
-    */
 
-    public function projectFinancial(
-        int $projectId,
-        ReportFilterRequest $request
-    ) {
-        return new ProjectFinancialResource(
-            $this->service->projectFinancial(
-                $projectId,
-                $request->filters()
-            )
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Supplier Financial
-    |--------------------------------------------------------------------------
-    */
-
-    public function supplierFinancial(
-        int $supplierId,
-        ReportFilterRequest $request
-    ) {
-        return new SupplierFinancialResource(
-            $this->service->supplierFinancial(
-                $supplierId,
-                $request->filters()
-            )
-        );
-    }
 
     /*
     |--------------------------------------------------------------------------

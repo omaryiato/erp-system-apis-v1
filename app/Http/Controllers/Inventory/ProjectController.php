@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Inventory;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Project\AddNewProject;
+use App\Http\Requests\Inventory\Project\ReportProjects;
 use App\Http\Requests\Inventory\Project\UpdateProject;
 use App\Http\Resources\Inventory\ProjectResource;
+use App\Http\Resources\Inventory\Reports\ProjectReportResource;
 use App\Models\Inventory\Project;
 use App\Services\Inventory\ProjectService;
 use Exception;
@@ -109,6 +111,23 @@ class ProjectController extends Controller
                     'ar' => trans('validation.delete_project', [], 'ar'),
                 ],
                 Response::HTTP_CREATED
+            );
+    }
+
+    public function projectsReport(
+        ReportProjects $request
+    ) {
+        return ResponseHelper::success(
+                new ProjectReportResource(
+                    $this->service->projectsReport(
+                        $request->filters()
+                    )
+                ),
+                [
+                    'en' => trans('validation.get_revenue_details', [], 'en'),
+                    'ar' => trans('validation.get_revenue_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
             );
     }
 }

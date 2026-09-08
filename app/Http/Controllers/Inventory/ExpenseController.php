@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Inventory;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Expense\AddNewExpense;
+use App\Http\Requests\Inventory\Expense\ReportExpenses;
 use App\Http\Resources\Inventory\ExpenseResource;
+use App\Http\Resources\Inventory\Reports\ExpenseReportResource;
 use App\Models\Inventory\Expense;
 use App\Services\Inventory\ExpenseService;
 use Exception;
@@ -64,6 +66,23 @@ class ExpenseController extends Controller
                 [
                     'en' => trans('validation.get_expense_details', [], 'en'),
                     'ar' => trans('validation.get_expense_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
+    }
+
+    public function expensesReport(
+        ReportExpenses $request
+    ) {
+        return ResponseHelper::success(
+                new ExpenseReportResource(
+                    $this->service->expensesReport(
+                        $request->filters()
+                    )
+                ),
+                [
+                    'en' => trans('validation.get_revenue_details', [], 'en'),
+                    'ar' => trans('validation.get_revenue_details', [], 'ar'),
                 ],
                 Response::HTTP_OK
             );

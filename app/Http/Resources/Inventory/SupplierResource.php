@@ -9,6 +9,11 @@ class SupplierResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+
+        $totalPurchase = (float) $this->purchase?->items->sum('total_amount');
+
+        $paidAmount = (float) $this->cashTransactions->sum('amount');
+
         return [
             'id' => $this->id,
 
@@ -31,6 +36,16 @@ class SupplierResource extends JsonResource
             'created_at' => $this->created_at,
 
             'updated_at' => $this->updated_at,
+
+            'total_amount' => $totalPurchase,
+
+            'paid_amount' => $paidAmount,
+
+            'remaining_amount' => max( $totalPurchase - $paidAmount, 0 ),
+
+            'purchase' => PurchaseResource::collection($this->whenLoaded('purchases')),
+
+            'cash_transactions' => CashTransactionResource::collection($this->whenLoaded('cashTransactions'))
         ];
     }
 }

@@ -52,10 +52,8 @@ class ExpenseService
 
         $expense_data =  [
             'expense_number' => $expense_request['expense_number'] ?? null,
-            'project_id' => $expense_request['project_id'] ?? null,
-            'supplier_id' => $expense_request['supplier_id'] ?? null,
             'expense_date' => $expense_request['expense_date'] ?? now(),
-            'category' => $expense_request['category'] ?? 0,
+            'category_id' => $expense_request['category_id'] ?? null,
             'cost_price' => $expense_request['cost_price'] ?? null,
             'description' => $expense_request['description'] ?? null,
             'amount' => $expense_request['amount'] ?? null,
@@ -63,5 +61,16 @@ class ExpenseService
         ];
 
         return $expense_data;
+    }
+
+    public function expensesReport(
+        array $filters
+    ): array {
+
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+
+        return $this->repository
+            ->expensesReport($from, $to);
     }
 }

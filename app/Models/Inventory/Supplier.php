@@ -26,14 +26,6 @@ class Supplier extends Model
     ];
 
 
-    public function expenses(): HasMany
-    {
-        return $this->hasMany(
-            Expense::class,
-            'supplier_id'
-        );
-    }
-
     public function cashTransactions(): HasMany
     {
         return $this->hasMany(

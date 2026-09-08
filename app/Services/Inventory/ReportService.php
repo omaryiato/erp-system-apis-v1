@@ -10,6 +10,23 @@ class ReportService
         private ReportRepository $repository
     ) {}
 
+    /*
+    |--------------------------------------------------------------------------
+    | Operation Report
+    |--------------------------------------------------------------------------
+    */
+    
+    public function operationReport(
+        array $filters
+    ): array {
+
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+
+        return $this->repository
+            ->operationReport($from, $to);
+    }
+
     public function financialSummary(
         array $filters
     ): array {
@@ -24,41 +41,7 @@ class ReportService
             ->cashFlow($filters);
     }
 
-    public function expenseReport(
-        array $filters
-    ): array {
-        return $this->repository
-            ->expenseReport($filters);
-    }
 
-    public function revenueReport(
-        array $filters
-    ): array {
-        return $this->repository
-            ->revenueReport($filters);
-    }
-
-    public function projectFinancial(
-        int $projectId,
-        array $filters
-    ): array {
-        return $this->repository
-            ->projectFinancial(
-                $projectId,
-                $filters
-            );
-    }
-
-    public function supplierFinancial(
-        int $supplierId,
-        array $filters
-    ): array {
-        return $this->repository
-            ->supplierFinancial(
-                $supplierId,
-                $filters
-            );
-    }
 
     public function outstandingExpenses(
         array $filters

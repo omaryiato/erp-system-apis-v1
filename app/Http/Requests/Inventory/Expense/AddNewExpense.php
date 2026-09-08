@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Inventory\Expense;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Base\BaseRequest;
 
-class AddNewExpense extends FormRequest
+class AddNewExpense extends BaseRequest
 {
     public function authorize(): bool
     {
@@ -22,31 +22,17 @@ class AddNewExpense extends FormRequest
                 'unique:expenses_v1,expense_number',
             ],
 
-            'project_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:projects_v1,id',
-            ],
-
-            'supplier_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:suppliers_v1,id',
-            ],
-
             'expense_date' => [
                 'bail',
                 'required',
                 'date',
             ],
 
-            'category' => [
+            'category_id' => [
                 'bail',
                 'required',
-                'string',
-                'max:100',
+                'integer',
+                'exists:expenses_categories_v1,id',
             ],
 
             'description' => [

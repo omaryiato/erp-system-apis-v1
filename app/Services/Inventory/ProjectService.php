@@ -60,4 +60,15 @@ class ProjectService
 
         return $project_data;
     }
+
+    public function projectsReport(
+        array $filters
+    ): array {
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+
+        return $this->repository
+            ->projectsReport($from, $to);
+    }
+
 }

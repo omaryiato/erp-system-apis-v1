@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Inventory\Purchase;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Base\BaseRequest;
 
-class AddNewPurchase extends FormRequest
+
+class AddNewPurchase extends BaseRequest
 {
     public function authorize(): bool
     {

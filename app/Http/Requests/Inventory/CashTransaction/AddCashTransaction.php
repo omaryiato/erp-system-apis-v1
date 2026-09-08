@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Inventory\CashTransaction;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Base\BaseRequest;
 use Illuminate\Validation\Rule;
 
-class AddCashTransaction extends FormRequest
+class AddCashTransaction extends BaseRequest
 {
     public function authorize(): bool
     {

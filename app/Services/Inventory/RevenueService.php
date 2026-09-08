@@ -64,4 +64,16 @@ class RevenueService
 
         return $revenue_data;
     }
+
+    public function revenuesReport(
+        array $filters
+    ): array {
+
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+
+        return $this->repository
+            ->revenuesReport($from, $to);
+    }
+
 }

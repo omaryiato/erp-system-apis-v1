@@ -5,7 +5,7 @@ namespace App\Http\Resources\Inventory\Reports;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SupplierFinancialResource extends JsonResource
+class SupplierReportResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -17,8 +17,8 @@ class SupplierFinancialResource extends JsonResource
                 'name' => $supplier->name,
             ],
 
-            'total_expenses' =>
-                $this->resource['total_expenses'],
+            'total_purchases' =>
+                $this->resource['total_purchases'],
 
             'total_paid' =>
                 $this->resource['total_paid'],

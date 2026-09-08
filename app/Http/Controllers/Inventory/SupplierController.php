@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Inventory;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Supplier\AddNewSupplier;
+use App\Http\Requests\Inventory\Supplier\ReportSuppliers;
 use App\Http\Requests\Inventory\Supplier\UpdateSupplier;
 use App\Http\Resources\Inventory\SupplierResource;
+use App\Http\Resources\Inventory\Reports\SupplierReportResource;
 use App\Models\Inventory\Supplier;
 use App\Services\Inventory\SupplierService;
 use Exception;
@@ -111,6 +113,23 @@ class SupplierController extends Controller
                     'ar' => trans('validation.delete_supplier', [], 'ar'),
                 ],
                 Response::HTTP_CREATED
+            );
+    }
+
+    public function suppliersReport(
+        ReportSuppliers $request
+    ) {
+        return ResponseHelper::success(
+                new SupplierReportResource(
+                    $this->service->suppliersReport(
+                        $request->filters()
+                    )
+                ),
+                [
+                    'en' => trans('validation.get_revenue_details', [], 'en'),
+                    'ar' => trans('validation.get_revenue_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
             );
     }
 }

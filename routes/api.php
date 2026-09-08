@@ -146,6 +146,7 @@ use App\Http\Controllers\Inventory\PurchaseController;
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\Inventory\CashTransactionController;
+use App\Http\Controllers\Inventory\ExpensesCategoryController;
 use App\Http\Controllers\Inventory\ExpenseController;
 use App\Http\Controllers\Inventory\RevenueController;
 use App\Http\Controllers\Inventory\ReportsController;
@@ -414,6 +415,11 @@ Route::middleware([
                 ProjectController::class
             );
 
+            Route::get(
+                'projects-report',
+                [ProjectController::class, 'projectsReport']
+            );
+
 
             /*
             |--------------------------------------------------------------------------
@@ -424,6 +430,11 @@ Route::middleware([
             Route::apiResource(
                 'suppliers',
                 SupplierController::class
+            );
+
+            Route::get(
+                'suppliers-report',
+                [SupplierController::class, 'suppliersReport']
             );
 
             /*
@@ -438,6 +449,22 @@ Route::middleware([
                 PurchaseController::class
             );
 
+            Route::get(
+                'purchases-report',
+                [PurchaseController::class, 'purchasesReport']
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Expenses Category
+            |--------------------------------------------------------------------------
+            */
+
+            Route::apiResource(
+                'expenses-category',
+                ExpensesCategoryController::class
+            );
+
             /*
             |--------------------------------------------------------------------------
             | Expenses
@@ -449,6 +476,11 @@ Route::middleware([
                 ExpenseController::class
             );
 
+            Route::get(
+                'expenses-report',
+                [ExpenseController::class, 'expensesReport']
+            );
+
             /*
             |--------------------------------------------------------------------------
             | Revenues
@@ -458,6 +490,11 @@ Route::middleware([
             Route::apiResource(
                 'revenues',
                 RevenueController::class
+            );
+
+            Route::get(
+                'revenues-report',
+                [RevenueController::class, 'revenuesReport']
             );
 
             /*
@@ -482,6 +519,11 @@ Route::middleware([
                 ->group(function () {
 
                     Route::get(
+                        'operation-report',
+                        'operationReport'
+                    );
+
+                    Route::get(
                         'financial-summary',
                         'financialSummary'
                     );
@@ -491,25 +533,6 @@ Route::middleware([
                         'cashFlow'
                     );
 
-                    Route::get(
-                        'expenses',
-                        'expenses'
-                    );
-
-                    Route::get(
-                        'revenues',
-                        'revenues'
-                    );
-
-                    Route::get(
-                        'projects/{projectId}/financial',
-                        'projectFinancial'
-                    );
-
-                    Route::get(
-                        'suppliers/{supplierId}/financial',
-                        'supplierFinancial'
-                    );
 
                     Route::get(
                         'outstanding-expenses',

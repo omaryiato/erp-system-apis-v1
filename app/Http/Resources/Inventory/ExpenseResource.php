@@ -21,21 +21,14 @@ class ExpenseResource extends JsonResource
             'expense_number' =>
                 $this->expense_number,
 
-            'project' => [
-                'id' => $this->project?->id,
-                'name' => $this->project?->project_name,
-            ],
-
-            'supplier' => [
-                'id' => $this->supplier?->id,
-                'name' => $this->supplier?->name,
-            ],
-
             'expense_date' =>
                 $this->expense_date,
 
-            'category' =>
-                $this->category,
+            'category_id' =>
+                $this->category_id,
+
+            'category_name' =>
+                $this->expensesCategory?->name,
 
             'description' =>
                 $this->description,

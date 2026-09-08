@@ -5,12 +5,99 @@ namespace App\Repositories\Inventory;
 use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Expense;
 use App\Models\Inventory\Project;
+use App\Models\Inventory\Purchase;
 use App\Models\Inventory\Revenue;
 use App\Models\Inventory\Supplier;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Carbon\Carbon;
 
 class ReportRepository
 {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Operation Report
+    |--------------------------------------------------------------------------
+    */
+
+    public function operationReport(
+        ?string $from = null,
+        ?string $to = null ): array
+    {
+        $revenue = Revenue::query();
+        $expense = Expense::query();
+        $purchase = Purchase::query();
+
+        if ($from) {
+            $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+
+            $revenue->whereDate('revenue_date', '>=', $fromDate);
+            $purchase->whereDate('purchase_date', '>=', $fromDate);
+            $expense->whereDate('expense_date', '>=', $fromDate);
+        }
+
+        if ($to) {
+            $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+
+            $revenue->whereDate('revenue_date', '<=', $toDate);
+            $purchase->whereDate('purchase_date', '<=', $toDate);
+            $expense->whereDate('expense_date', '<=', $toDate);
+        }
+
+        $revenues = $revenue
+            ->with([
+                'project',
+                'cashTransactions',
+            ])
+            ->get();
+
+        $total_revenues = (float) $revenues->sum('amount');
+
+        $received_revenues = (float) $revenues->sum(
+            fn (Revenue $revenue) =>
+                $revenue->cashTransactions->sum('amount')
+        );
+
+        $expenses = $expense
+            ->with([
+                'expensesCategory',
+                'cashTransactions',
+            ])
+            ->get();
+
+        $total_expenses = (float) $expenses->sum('amount');
+
+        $paid_expenses = (float) $expenses->sum(
+            fn (Expense $expense) =>
+                $expense->cashTransactions->sum('amount')
+        );
+
+        $purchases = $purchase
+            ->with([
+                'supplier',
+                'items.item',
+                'items.allocations.project',
+            ])
+            ->get();
+
+        $total_purchases = (float) $purchases->sum(
+            fn (Purchase $purchase) =>
+                $purchase->items->sum('total_amount')
+        );
+
+        return [
+            'total_revenues' => $total_revenues,
+            'received_revenues' => $received_revenues,
+            'remaining_revenues' => max($total_revenues - $received_revenues, 0),
+
+            'total_expenses' => $total_expenses,
+            'paid_expenses' => $paid_expenses,
+            'remaining_expenses' => max($total_expenses - $paid_expenses, 0),
+
+            'total_purchases' => $total_purchases ,
+        ];
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Financial Summary
@@ -136,197 +223,11 @@ class ReportRepository
 
     /*
     |--------------------------------------------------------------------------
-    | Expense Report
-    |--------------------------------------------------------------------------
-    */
-
-    public function expenseReport(array $filters): array
-    {
-        $query = Expense::query();
-
-        $this->applyDateFilter(
-            $query,
-            'expense_date',
-            $filters
-        );
-
-        $this->applyProjectFilter(
-            $query,
-            $filters
-        );
-
-        $this->applySupplierFilter(
-            $query,
-            $filters
-        );
-
-        $this->applyCategoryFilter(
-            $query,
-            $filters
-        );
-
-        $expenses = $query
-            ->with([
-                'project',
-                'supplier',
-                'cashTransactions',
-            ])
-            ->get();
-
-        $total = (float) $expenses->sum('amount');
-
-        $paid = (float) $expenses->sum(
-            fn (Expense $expense) =>
-                $expense->cashTransactions->sum('amount')
-        );
-
-        return [
-            'total' => $total,
-            'paid' => $paid,
-            'outstanding' => max($total - $paid, 0),
-            'count' => $expenses->count(),
-            'expenses' => $expenses,
-        ];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Revenue Report
-    |--------------------------------------------------------------------------
-    */
-
-    public function revenueReport(array $filters): array
-    {
-        $query = Revenue::query();
-
-        $this->applyDateFilter(
-            $query,
-            'revenue_date',
-            $filters
-        );
-
-        $this->applyProjectFilter(
-            $query,
-            $filters
-        );
-
-        $this->applyCategoryFilter(
-            $query,
-            $filters
-        );
-
-        $revenues = $query
-            ->with([
-                'project',
-                'cashTransactions',
-            ])
-            ->get();
-
-        $total = (float) $revenues->sum('amount');
-
-        $received = (float) $revenues->sum(
-            fn (Revenue $revenue) =>
-                $revenue->cashTransactions->sum('amount')
-        );
-
-        return [
-            'total' => $total,
-            'received' => $received,
-            'outstanding' => max($total - $received, 0),
-            'count' => $revenues->count(),
-            'revenues' => $revenues,
-        ];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
     | Project Financial
     |--------------------------------------------------------------------------
     */
 
-    public function projectFinancial(
-        int $projectId,
-        array $filters = []
-    ): array {
-        $project = Project::query()
-            ->findOrFail($projectId);
 
-        $expenseQuery = $project
-            ->expenses();
-
-        $revenueQuery = $project
-            ->revenues();
-
-        $cashQuery = $project
-            ->cashTransactions();
-
-        $this->applyDateFilter(
-            $expenseQuery,
-            'expense_date',
-            $filters
-        );
-
-        $this->applyDateFilter(
-            $revenueQuery,
-            'revenue_date',
-            $filters
-        );
-
-        $this->applyDateFilter(
-            $cashQuery,
-            'transaction_date',
-            $filters
-        );
-
-        $totalExpenses = (float)
-            $expenseQuery->sum('amount');
-
-        $totalRevenues = (float)
-            $revenueQuery->sum('amount');
-
-        $paid = (float) $cashQuery
-            ->clone()
-            ->whereIn('transaction_type', [
-                'expense',
-                'supplier_payment',
-                'employee_payment',
-                'other_expense',
-            ])
-            ->sum('amount');
-
-        $received = (float) $cashQuery
-            ->clone()
-            ->whereIn('transaction_type', [
-                'income',
-                'other_income',
-            ])
-            ->sum('amount');
-
-        return [
-            'project' => $project,
-
-            'total_revenue' =>
-                $totalRevenues,
-
-            'total_expenses' =>
-                $totalExpenses,
-
-            'received' =>
-                $received,
-
-            'paid' =>
-                $paid,
-
-            'profit' =>
-                $totalRevenues - $totalExpenses,
-
-            'receivable' =>
-                max($totalRevenues - $received, 0),
-
-            'payable' =>
-                max($totalExpenses - $paid, 0),
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -334,52 +235,7 @@ class ReportRepository
     |--------------------------------------------------------------------------
     */
 
-    public function supplierFinancial(
-        int $supplierId,
-        array $filters = []
-    ): array {
-        $supplier = Supplier::query()
-            ->findOrFail($supplierId);
 
-        $expenseQuery = $supplier->expenses();
-
-        $cashQuery = $supplier->cashTransactions();
-
-        $this->applyDateFilter(
-            $expenseQuery,
-            'expense_date',
-            $filters
-        );
-
-        $this->applyDateFilter(
-            $cashQuery,
-            'transaction_date',
-            $filters
-        );
-
-        $totalExpenses = (float)
-            $expenseQuery->sum('amount');
-
-        $totalPaid = (float) $cashQuery
-            ->whereIn('transaction_type', [
-                'supplier_payment',
-                'expense',
-            ])
-            ->sum('amount');
-
-        return [
-            'supplier' => $supplier,
-
-            'total_expenses' =>
-                $totalExpenses,
-
-            'total_paid' =>
-                $totalPaid,
-
-            'outstanding' =>
-                max($totalExpenses - $totalPaid, 0),
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -694,15 +550,5 @@ class ReportRepository
         }
     }
 
-    private function applyCategoryFilter(
-        $query,
-        array $filters
-    ): void {
-        if (!empty($filters['category'])) {
-            $query->where(
-                'category',
-                $filters['category']
-            );
-        }
-    }
+
 }

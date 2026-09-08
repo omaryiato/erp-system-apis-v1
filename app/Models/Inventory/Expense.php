@@ -12,10 +12,8 @@ class Expense extends Model
 
     protected $fillable = [
         'expense_number',
-        'project_id',
-        'supplier_id',
         'expense_date',
-        'category',
+        'category_id',
         'description',
         'amount',
         'notes',
@@ -28,27 +26,20 @@ class Expense extends Model
         'amount' => 'decimal:2',
     ];
 
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(
-            Project::class,
-            'project_id'
-        );
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(
-            Supplier::class,
-            'supplier_id'
-        );
-    }
-
     public function cashTransactions(): HasMany
     {
         return $this->hasMany(
             CashTransaction::class,
             'expense_id'
+        );
+    }
+
+    public function expensesCategory(): BelongsTo
+    {
+        return $this->belongsTo(
+            ExpensesCategory::class,
+            'category_id',
+            'id'
         );
     }
 }

@@ -9,6 +9,11 @@ class ProjectResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+
+        $totalRevenue = (float) $this->revenues->sum('amount');
+
+        $paidAmount = (float) $this->cashTransactions->sum('amount');
+
         return [
             'id' => $this->id,
 
@@ -35,6 +40,16 @@ class ProjectResource extends JsonResource
             'created_at' => $this->created_at,
 
             'updated_at' => $this->updated_at,
+
+            'total_amount' => $totalRevenue,
+
+            'paid_amount' => $paidAmount,
+
+            'remaining_amount' => max( $totalRevenue - $paidAmount, 0 ),
+
+            'revenues' => RevenueResource::collection($this->whenLoaded('revenues')),
+
+            'cash_transactions' => CashTransactionResource::collection($this->whenLoaded('cashTransactions'))
         ];
     }
 }

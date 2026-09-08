@@ -58,4 +58,14 @@ class SupplierService
 
         return $supplier_data;
     }
+
+    public function suppliersReport(
+        array $filters
+    ): array {
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+
+        return $this->repository
+            ->suppliersReport($from, $to);
+    }
 }

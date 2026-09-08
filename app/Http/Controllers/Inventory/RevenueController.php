@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Inventory;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Revenue\AddNewRevenue;
+use App\Http\Requests\Inventory\Revenue\ReportRevenues;
+use App\Http\Resources\Inventory\Reports\RevenueReportResource;
 use App\Http\Resources\Inventory\RevenueResource;
 use App\Models\Inventory\Revenue;
 use App\Services\Inventory\RevenueService;
@@ -70,4 +72,23 @@ class RevenueController extends Controller
                 Response::HTTP_OK
             );
     }
+
+
+    public function revenuesReport(
+        ReportRevenues $request
+    ) {
+        return ResponseHelper::success(
+                new RevenueReportResource(
+                    $this->service->revenuesReport(
+                        $request->filters()
+                    )
+                ),
+                [
+                    'en' => trans('validation.get_revenue_details', [], 'en'),
+                    'ar' => trans('validation.get_revenue_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
+    }
+
 }

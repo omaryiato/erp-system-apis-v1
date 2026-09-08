@@ -3,6 +3,7 @@
 namespace App\Repositories\Inventory;
 
 use App\Models\Inventory\Revenue;
+use Carbon\Carbon;
 
 class RevenueRepository
 {
@@ -40,4 +41,52 @@ class RevenueRepository
     ): bool {
         return (bool) $revenue->delete();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Revenue Report
+    |--------------------------------------------------------------------------
+    */
+
+    public function revenuesReport(
+        ?string $from = null,
+        ?string $to = null ): array
+    {
+        $query = Revenue::query();
+
+        if ($from) {
+            $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+
+            $query->whereDate('revenue_date', '>=', $fromDate);
+        }
+
+        if ($to) {
+            $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+
+            $query->whereDate('revenue_date', '<=', $toDate);
+        }
+
+        $revenues = $query
+            ->with([
+                'project',
+                'cashTransactions',
+            ])
+            ->get();
+
+        $total = (float) $revenues->sum('amount');
+
+        $received = (float) $revenues->sum(
+            fn (Revenue $revenue) =>
+                $revenue->cashTransactions->sum('amount')
+        );
+
+        return [
+            'total' => $total,
+            'received' => $received,
+            'outstanding' => max($total - $received, 0),
+            'count' => $revenues->count(),
+            'revenues' => $revenues,
+        ];
+    }
+
 }

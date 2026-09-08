@@ -118,4 +118,16 @@ class PurchaseService
         return $purchase_allocation_data;
     }
 
+    public function purchasesReport(
+        array $filters
+    ): array {
+
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+
+        return $this->repository
+            ->purchasesReport($from, $to);
+    }
+
+
 }

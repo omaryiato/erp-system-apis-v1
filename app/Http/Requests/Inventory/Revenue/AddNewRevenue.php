@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Inventory\Revenue;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Base\BaseRequest;
 
-class AddNewRevenue extends FormRequest
+
+class AddNewRevenue extends BaseRequest
 {
     public function authorize(): bool
     {

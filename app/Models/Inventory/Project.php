@@ -38,14 +38,6 @@ class Project extends Model
         );
     }
 
-    public function expenses(): HasMany
-    {
-        return $this->hasMany(
-            Expense::class,
-            'project_id'
-        );
-    }
-
     public function revenues(): HasMany
     {
         return $this->hasMany(

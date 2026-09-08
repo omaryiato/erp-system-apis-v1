@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Inventory\Reports;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Base\BaseRequest;
 
-class ReportFilterRequest extends FormRequest
+
+class ReportFilterRequest extends BaseRequest
 {
     public function authorize(): bool
     {
