@@ -46,56 +46,88 @@ class ProjectRepository
         ?string $from = null,
         ?string $to = null ): array
     {
-        $project = Project::query();
-
-        $revenueQuery = $project
-            ->revenues();
-
-        $cashQuery = $project
-            ->cashTransactions();
-
-        // if ($from) {
-        //     $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
-
-        //     $project->whereDate('revenue_date', '>=', $fromDate);
-        // }
-
-        // if ($to) {
-        //     $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
-
-        //     $project->whereDate('revenue_date', '<=', $toDate);
-        // }
-
-
-        $totalRevenues = (float)
-            $revenueQuery->sum('amount');
-
-        // $paid = (float) $cashQuery
-        //     ->clone()
-        //     ->sum('amount');
-
-        $received = (float) $cashQuery
-            ->clone()
-            ->whereIn('transaction_type', [
-                'income',
-                'other_income',
-                'revenue_payment',
+        $projects = Project::query() ->with([
+                'revenues',
+                'cashTransactions',
             ])
-            ->sum('amount');
+            ->get();
 
-        return [
-            'project' => $project,
+            $projectsReport = $projects->map(function
+                (Project $project) {
+                    $totalRevenues = (float) $project->revenues
+                                    ->sum('amount');
 
-            'total_revenue' =>
-                $totalRevenues,
+                    $received = (float) $project->cashTransactions
+                                ->whereIn('transaction_type',
+                                [ 'income', 'other_income', 'revenue_payment', ])
+                                ->sum('amount');
 
-            'received' =>
-                $received,
+                    return [
+                        'id' => $project->id,
+                        'project_code' => $project->project_code,
+                        'project_name' => $project->project_name,
+                        'total_revenue' => $totalRevenues,
+                        'received' => $received,
+                        'receivable' => max( $totalRevenues - $received, 0 ),
+                        ];
+            });
 
-
-            'receivable' =>
-                max($totalRevenues - $received, 0),
-
-        ];
+            return [ 'projects' => $projectsReport, ];
     }
+    // public function projectsReport(
+    //     ?string $from = null,
+    //     ?string $to = null ): array
+    // {
+    //     $project = Project::query();
+
+    //     $revenueQuery = $project
+    //         ->revenues();
+
+    //     $cashQuery = $project
+    //         ->cashTransactions();
+
+    //     // if ($from) {
+    //     //     $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+
+    //     //     $project->whereDate('revenue_date', '>=', $fromDate);
+    //     // }
+
+    //     // if ($to) {
+    //     //     $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+
+    //     //     $project->whereDate('revenue_date', '<=', $toDate);
+    //     // }
+
+
+    //     $totalRevenues = (float)
+    //         $revenueQuery->sum('amount');
+
+    //     // $paid = (float) $cashQuery
+    //     //     ->clone()
+    //     //     ->sum('amount');
+
+    //     $received = (float) $cashQuery
+    //         ->clone()
+    //         ->whereIn('transaction_type', [
+    //             'income',
+    //             'other_income',
+    //             'revenue_payment',
+    //         ])
+    //         ->sum('amount');
+
+    //     return [
+    //         'project' => $project,
+
+    //         'total_revenue' =>
+    //             $totalRevenues,
+
+    //         'received' =>
+    //             $received,
+
+
+    //         'receivable' =>
+    //             max($totalRevenues - $received, 0),
+
+    //     ];
+    // }
 }
