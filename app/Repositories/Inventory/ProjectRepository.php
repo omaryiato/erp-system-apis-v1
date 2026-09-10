@@ -43,37 +43,85 @@ class ProjectRepository
     }
 
     public function projectsReport(
-        ?string $from = null,
-        ?string $to = null ): array
-    {
-        $projects = Project::query() ->with([
-                'revenues',
-                'cashTransactions',
+    ?string $from = null,
+    ?string $to = null
+): array {
+    $projects = Project::with([
+        'revenues',
+        'cashTransactions',
+    ])->get();
+
+    return $projects->map(function ($project) use ($from, $to) {
+
+        $revenues = $project->revenues;
+
+        if ($from) {
+            $fromDate = Carbon::createFromFormat('m/Y', $from)
+                ->startOfMonth();
+
+            $revenues = $revenues->filter(
+                fn ($revenue) =>
+                    $revenue->revenue_date >= $fromDate
+            );
+        }
+
+        if ($to) {
+            $toDate = Carbon::createFromFormat('m/Y', $to)
+                ->endOfMonth();
+
+            $revenues = $revenues->filter(
+                fn ($revenue) =>
+                    $revenue->revenue_date <= $toDate
+            );
+        }
+
+        $totalRevenue = $revenues->sum('amount');
+
+        $cashTransactions = $project->cashTransactions;
+
+        if ($from) {
+            $fromDate = Carbon::createFromFormat('m/Y', $from)
+                ->startOfMonth();
+
+            $cashTransactions = $cashTransactions->filter(
+                fn ($transaction) =>
+                    $transaction->transaction_date >= $fromDate
+            );
+        }
+
+        if ($to) {
+            $toDate = Carbon::createFromFormat('m/Y', $to)
+                ->endOfMonth();
+
+            $cashTransactions = $cashTransactions->filter(
+                fn ($transaction) =>
+                    $transaction->transaction_date <= $toDate
+            );
+        }
+
+        $received = $cashTransactions
+            ->whereIn('transaction_type', [
+                'income',
+                'other_income',
+                'revenue_payment',
             ])
-            ->get();
+            ->sum('amount');
 
-            $projectsReport = $projects->map(function
-                (Project $project) {
-                    $totalRevenues = (float) $project->revenues
-                                    ->sum('amount');
+        return [
+            'project' => $project,
 
-                    $received = (float) $project->cashTransactions
-                                ->whereIn('transaction_type',
-                                [ 'income', 'other_income', 'revenue_payment', ])
-                                ->sum('amount');
+            'total_revenue' => (float) $totalRevenue,
 
-                    return [
-                        'id' => $project->id,
-                        'project_code' => $project->project_code,
-                        'project_name' => $project->project_name,
-                        'total_revenue' => $totalRevenues,
-                        'received' => $received,
-                        'receivable' => max( $totalRevenues - $received, 0 ),
-                        ];
-            });
+            'received' => (float) $received,
 
-            return [ 'projects' => $projectsReport, ];
-    }
+            'receivable' => max(
+                (float) $totalRevenue - (float) $received,
+                0
+            ),
+        ];
+    })->values()->all();
+}
+
     // public function projectsReport(
     //     ?string $from = null,
     //     ?string $to = null ): array

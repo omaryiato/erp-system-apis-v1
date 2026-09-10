@@ -9,24 +9,10 @@ class SupplierResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $totalPurchase = 0;
-        $paidAmount = 0;
 
-        if ($this->relationLoaded('purchases')) {
-            $totalPurchase = (float) $this->purchases->sum(
-                fn ($purchase) =>
-                    $purchase->items->sum('total_amount')
-            );
-        }
+        $totalPurchase = (float) $this->purchase?->items->sum('total_amount');
 
-        if ($this->relationLoaded('cashTransactions')) {
-            $paidAmount = (float) $this->cashTransactions
-                ->whereIn('transaction_type', [
-                    'supplier_payment',
-                    'expense',
-                ])
-                ->sum('amount');
-        }
+        $paidAmount = (float) $this->cashTransactions->sum('amount');
 
         return [
             'id' => $this->id,
@@ -55,59 +41,11 @@ class SupplierResource extends JsonResource
 
             'paid_amount' => $paidAmount,
 
-            'remaining_amount' => max(
-                $totalPurchase - $paidAmount,
-                0
-            ),
+            'remaining_amount' => max( $totalPurchase - $paidAmount, 0 ),
 
-            'purchases' => PurchaseResource::collection(
-                $this->whenLoaded('purchases')
-            ),
+            'purchase' => PurchaseResource::collection($this->whenLoaded('purchases')),
 
-            'cash_transactions' => CashTransactionResource::collection(
-                $this->whenLoaded('cashTransactions')
-            ),
+            'cash_transactions' => CashTransactionResource::collection($this->whenLoaded('cashTransactions'))
         ];
     }
-    // public function toArray(Request $request): array
-    // {
-
-    //     $totalPurchase = (float) $this->purchase?->items->sum('total_amount');
-
-    //     $paidAmount = (float) $this->cashTransactions->sum('amount');
-
-    //     return [
-    //         'id' => $this->id,
-
-    //         'supplier_code' => $this->supplier_code,
-
-    //         'name' => $this->name,
-
-    //         'phone' => $this->phone,
-
-    //         'email' => $this->email,
-
-    //         'address' => $this->address,
-
-    //         'tax_number' => $this->tax_number,
-
-    //         'notes' => $this->notes,
-
-    //         'status' => $this->status,
-
-    //         'created_at' => $this->created_at,
-
-    //         'updated_at' => $this->updated_at,
-
-    //         'total_amount' => $totalPurchase,
-
-    //         'paid_amount' => $paidAmount,
-
-    //         'remaining_amount' => max( $totalPurchase - $paidAmount, 0 ),
-
-    //         'purchase' => PurchaseResource::collection($this->whenLoaded('purchases')),
-
-    //         'cash_transactions' => CashTransactionResource::collection($this->whenLoaded('cashTransactions'))
-    //     ];
-    // }
 }
