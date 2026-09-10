@@ -154,11 +154,11 @@ use App\Http\Controllers\Inventory\ReportsController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware([
-    'auth:sanctum',
-    'admin.access',
-    'audit'
-])->group(function () {
+// Route::middleware([
+//     'auth:sanctum',
+//     'admin.access',
+//     'audit'
+// ])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -585,4 +585,4 @@ Route::middleware([
 
 
 
-});
+// });
