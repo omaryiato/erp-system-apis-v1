@@ -4,6 +4,7 @@ namespace App\Repositories\Inventory;
 
 use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Purchase;
+use App\Models\Inventory\PurchaseItem;
 use App\Models\Inventory\Supplier;
 use Carbon\Carbon;
 
@@ -51,7 +52,8 @@ class SupplierRepository
         ?string $from = null,
         ?string $to = null
     ): array {
-        $purchaseQuery = Purchase::query();
+        // $purchaseQuery = Purchase::query();
+        $purchaseQuery = PurchaseItem::query();
 
         $cashQuery = CashTransaction::query();
 
