@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Inventory;
 
+use App\Models\Inventory\CashTransaction;
+use App\Models\Inventory\Purchase;
 use App\Models\Inventory\Supplier;
 use Carbon\Carbon;
 
@@ -46,26 +48,27 @@ class SupplierRepository
 
 
     public function suppliersReport(
-    ?string $from = null,
-    ?string $to = null
-): array {
-    $suppliers = Supplier::with([
-        'purchases.items',
-        'cashTransactions',
-    ])->get();
+        ?string $from = null,
+        ?string $to = null
+    ): array {
+        $purchaseQuery = Purchase::query();
 
-    return $suppliers->map(function ($supplier) use ($from, $to) {
+        $cashQuery = CashTransaction::query();
 
-        $purchases = $supplier->purchases;
-
-        // إذا كان تاريخ الشراء موجوداً في purchases
         if ($from) {
             $fromDate = Carbon::createFromFormat('m/Y', $from)
                 ->startOfMonth();
 
-            $purchases = $purchases->filter(
-                fn ($purchase) =>
-                    $purchase->purchase_date >= $fromDate
+            $purchaseQuery->whereDate(
+                'purchase_date',
+                '>=',
+                $fromDate
+            );
+
+            $cashQuery->whereDate(
+                'transaction_date',
+                '>=',
+                $fromDate
             );
         }
 
@@ -73,39 +76,23 @@ class SupplierRepository
             $toDate = Carbon::createFromFormat('m/Y', $to)
                 ->endOfMonth();
 
-            $purchases = $purchases->filter(
-                fn ($purchase) =>
-                    $purchase->purchase_date <= $toDate
+            $purchaseQuery->whereDate(
+                'purchase_date',
+                '<=',
+                $toDate
+            );
+
+            $cashQuery->whereDate(
+                'transaction_date',
+                '<=',
+                $toDate
             );
         }
 
-        $totalPurchases = $purchases->sum(function ($purchase) {
-            return $purchase->items->sum('total_amount');
-        });
+        $totalPurchases = (float) $purchaseQuery
+            ->sum('total_amount');
 
-        $cashTransactions = $supplier->cashTransactions;
-
-        if ($from) {
-            $fromDate = Carbon::createFromFormat('m/Y', $from)
-                ->startOfMonth();
-
-            $cashTransactions = $cashTransactions->filter(
-                fn ($transaction) =>
-                    $transaction->transaction_date >= $fromDate
-            );
-        }
-
-        if ($to) {
-            $toDate = Carbon::createFromFormat('m/Y', $to)
-                ->endOfMonth();
-
-            $cashTransactions = $cashTransactions->filter(
-                fn ($transaction) =>
-                    $transaction->transaction_date <= $toDate
-            );
-        }
-
-        $totalPaid = $cashTransactions
+        $totalPaid = (float) $cashQuery
             ->whereIn('transaction_type', [
                 'supplier_payment',
                 'expense',
@@ -113,19 +100,16 @@ class SupplierRepository
             ->sum('amount');
 
         return [
-            'supplier' => $supplier,
+            'total_purchases' => $totalPurchases,
 
-            'total_purchases' => (float) $totalPurchases,
-
-            'total_paid' => (float) $totalPaid,
+            'total_paid' => $totalPaid,
 
             'outstanding' => max(
-                (float) $totalPurchases - (float) $totalPaid,
+                $totalPurchases - $totalPaid,
                 0
             ),
         ];
-    })->values()->all();
-}
+    }
 
     // public function suppliersReport(
     //     ?string $from = null,

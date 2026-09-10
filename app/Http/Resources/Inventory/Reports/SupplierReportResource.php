@@ -39,19 +39,15 @@ class SupplierReportResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $supplier = $this->resource['supplier'];
-
         return [
-            'supplier' => [
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-            ],
+            'total_purchases' =>
+                (float) $this->resource['total_purchases'],
 
-            'total_purchases' => (float) $this->resource['total_purchases'],
+            'total_paid' =>
+                (float) $this->resource['total_paid'],
 
-            'total_paid' => (float) $this->resource['total_paid'],
-
-            'outstanding' => (float) $this->resource['outstanding'],
+            'outstanding' =>
+                (float) $this->resource['outstanding'],
         ];
     }
 }

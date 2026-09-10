@@ -41,14 +41,7 @@ class ProjectReportResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $project = $this->resource['project'];
-
         return [
-            'project' => [
-                'id' => $project->id,
-                'name' => $project->project_name,
-            ],
-
             'total_revenue' => (float) $this->resource['total_revenue'],
 
             'received' => (float) $this->resource['received'],

@@ -2,7 +2,9 @@
 
 namespace App\Repositories\Inventory;
 
+use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Project;
+use App\Models\Inventory\Revenue;
 use Carbon\Carbon;
 
 class ProjectRepository
@@ -43,63 +45,34 @@ class ProjectRepository
     }
 
     public function projectsReport(
-    ?string $from = null,
-    ?string $to = null
-): array {
-    $projects = Project::with([
-        'revenues',
-        'cashTransactions',
-    ])->get();
+        ?string $from = null,
+        ?string $to = null
+    ): array {
+        $revenueQuery = Revenue::query();
 
-    return $projects->map(function ($project) use ($from, $to) {
-
-        $revenues = $project->revenues;
+        $cashQuery = CashTransaction::query();
 
         if ($from) {
             $fromDate = Carbon::createFromFormat('m/Y', $from)
                 ->startOfMonth();
 
-            $revenues = $revenues->filter(
-                fn ($revenue) =>
-                    $revenue->revenue_date >= $fromDate
-            );
+            $revenueQuery->whereDate('revenue_date', '>=', $fromDate);
+
+            $cashQuery->whereDate('transaction_date', '>=', $fromDate);
         }
 
         if ($to) {
             $toDate = Carbon::createFromFormat('m/Y', $to)
                 ->endOfMonth();
 
-            $revenues = $revenues->filter(
-                fn ($revenue) =>
-                    $revenue->revenue_date <= $toDate
-            );
+            $revenueQuery->whereDate('revenue_date', '<=', $toDate);
+
+            $cashQuery->whereDate('transaction_date', '<=', $toDate);
         }
 
-        $totalRevenue = $revenues->sum('amount');
+        $totalRevenue = (float) $revenueQuery->sum('amount');
 
-        $cashTransactions = $project->cashTransactions;
-
-        if ($from) {
-            $fromDate = Carbon::createFromFormat('m/Y', $from)
-                ->startOfMonth();
-
-            $cashTransactions = $cashTransactions->filter(
-                fn ($transaction) =>
-                    $transaction->transaction_date >= $fromDate
-            );
-        }
-
-        if ($to) {
-            $toDate = Carbon::createFromFormat('m/Y', $to)
-                ->endOfMonth();
-
-            $cashTransactions = $cashTransactions->filter(
-                fn ($transaction) =>
-                    $transaction->transaction_date <= $toDate
-            );
-        }
-
-        $received = $cashTransactions
+        $received = (float) $cashQuery
             ->whereIn('transaction_type', [
                 'income',
                 'other_income',
@@ -108,19 +81,16 @@ class ProjectRepository
             ->sum('amount');
 
         return [
-            'project' => $project,
+            'total_revenue' => $totalRevenue,
 
-            'total_revenue' => (float) $totalRevenue,
-
-            'received' => (float) $received,
+            'received' => $received,
 
             'receivable' => max(
-                (float) $totalRevenue - (float) $received,
+                $totalRevenue - $received,
                 0
             ),
         ];
-    })->values()->all();
-}
+    }
 
     // public function projectsReport(
     //     ?string $from = null,
