@@ -11,19 +11,19 @@ class OperationReportResource extends JsonResource
     {
         return [
             'revenues' => [
-                'total' => $this->total_revenues,
-                'received' => $this->received_revenues,
-                'remaining' => $this->remaining_revenues,
+                'total' => $this['total_revenues'],
+                'received' => $this['received_revenues'],
+                'remaining' => $this['remaining_revenues'],
             ],
 
             'expenses' => [
-                'total' => $this->total_expenses,
-                'paid' => $this->paid_expenses,
-                'remaining' => $this->remaining_expenses,
+                'total' => $this['total_expenses'],
+                'paid' => $this['paid_expenses'],
+                'remaining' => $this['remaining_expenses'],
             ],
 
             'purchases' => [
-                'total' => $this->total_purchases ,
+                'total' => $this['total_purchases'],
             ],
         ];
     }
