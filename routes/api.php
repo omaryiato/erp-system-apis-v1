@@ -499,7 +499,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         |--------------------------------------------------------------------------
         */
 
-            Route::apiResource('expenses', AssetExpenseController::class);
+            Route::apiResource('asset-expenses', AssetExpenseController::class);
 
 
             Route::get('truncate', function () {
