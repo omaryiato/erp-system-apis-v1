@@ -2,137 +2,17 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\HR\EmployeeController;
-// use App\Http\Controllers\HR\AttendanceController;
-// use App\Http\Controllers\HR\PayrollItemTypeController;
-// use App\Http\Controllers\HR\EmployeePayrollItemController;
-
-// use App\Http\Controllers\HR\PayrollPeriodController;
-// use App\Http\Controllers\HR\PayslipController;
-// use App\Http\Controllers\HR\EmployeePayrollTransactionController;
-// use App\Http\Controllers\HR\PayrollProcessingController;
-
-// Route::prefix('payroll')->group(function () {
-
-//     Route::apiResource(
-//         'periods',
-//         PayrollPeriodController::class
-//     );
-
-//     Route::post(
-//         'periods/{payrollPeriod}/process',
-//         [PayrollProcessingController::class, 'process']
-//     );
-
-//     Route::get(
-//         'payslips',
-//         [PayslipController::class, 'index']
-//     );
-
-//     Route::get(
-//         'payslips/{payslip}',
-//         [PayslipController::class, 'show']
-//     );
-
-//     Route::post(
-//         'payslips/{payslip}/approve',
-//         [PayslipController::class, 'approve']
-//     );
-
-//     Route::post(
-//         'payslips/{payslip}/pay',
-//         [PayslipController::class, 'pay']
-//     );
-
-//     Route::apiResource(
-//         'transactions',
-//         EmployeePayrollTransactionController::class
-//     )->only([
-//         'index',
-//         'store',
-//         'show',
-//     ]);
-
-//     Route::post(
-//         'transactions/{transaction}/cancel',
-//         [EmployeePayrollTransactionController::class, 'cancel']
-//     );
-// });
+use Illuminate\Support\Facades\DB;
 
 
-
-// Route::group(['prefix' => 'hr'], function () {
-
-//     /*************************************** Employee APIs  ******************************************/
-
-//         Route::apiResource(
-//             'employees',
-//             EmployeeController::class
-//         );
-
-//     /*************************************** Attendance APIs  ******************************************/
-
-//         Route::apiResource(
-//             'attendance',
-//             AttendanceController::class
-//         );
-
-
-
-//         Route::get(
-//             'employee/attendance/{employee}',
-//             [
-//                 AttendanceController::class,
-//                 'employeeAttendance'
-//             ]
-//         );
-
-
-//     /*************************************** Payroll Item Types APIs  ******************************************/
-
-
-//         Route::apiResource(
-//             'payroll-item-types',
-//             PayrollItemTypeController::class
-//         );
-
-//     /*************************************** Employee Payroll Item APIs  ******************************************/
-
-
-//         Route::apiResource(
-//             'employee-payroll',
-//             EmployeePayrollItemController::class
-//         );
-
-
-//         Route::get(
-//         'employee/payroll/{employee}',
-//         [
-//         EmployeePayrollItemController::class,
-//         'employeePayroll'
-//         ]
-//         );
-
-
-//         // Route::get(
-//         // 'employees/{employee}/active-payroll-items',
-//         // [
-//         // EmployeePayrollItemController::class,
-//         // 'activeItems'
-//         // ]
-//         // );
-
-// });
-
+use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Attendance\EmployeeController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Attendance\EmployeeTransactionController;
 use App\Http\Controllers\Attendance\EmployeePaymentController;
 use App\Http\Controllers\Attendance\PayrollPeriodController;
-use App\Http\Controllers\UserController;
 
-use Illuminate\Support\Facades\DB;
 
 
 
@@ -150,6 +30,11 @@ use App\Http\Controllers\Inventory\ExpensesCategoryController;
 use App\Http\Controllers\Inventory\ExpenseController;
 use App\Http\Controllers\Inventory\RevenueController;
 use App\Http\Controllers\Inventory\ReportsController;
+
+use App\Http\Controllers\Asset\AssetCategoryController;
+use App\Http\Controllers\Asset\AssetController;
+use App\Http\Controllers\Asset\AssetMaintenanceController;
+use App\Http\Controllers\Asset\AssetExpenseController;
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -578,6 +463,64 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
                 ]);
             });
     });
+
+
+    Route::prefix('asset')->group(function () {
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Asset Categories
+        |--------------------------------------------------------------------------
+        */
+
+            Route::apiResource('category', AssetCategoryController::class);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assets
+        |--------------------------------------------------------------------------
+        */
+
+            Route::apiResource('asset', AssetController::class);
+            Route::get('assets-report', [AssetController::class, 'assetsReport']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Asset Maintenance
+        |--------------------------------------------------------------------------
+        */
+
+            Route::apiResource('maintenance', AssetMaintenanceController::class);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Asset Expenses
+        |--------------------------------------------------------------------------
+        */
+
+            Route::apiResource('expenses', AssetExpenseController::class);
+
+
+            Route::get('truncate', function () {
+
+                DB::statement('TRUNCATE TABLE
+                    asset_categories_v1,
+                    assets_v1,
+                    asset_maintenance_v1,
+                    asset_expenses_v1
+                    RESTART IDENTITY CASCADE
+                ');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Asset tables truncated successfully.',
+                ]);
+            });
+
+
+    });
+
 
     /***************************************** Users *******************************************/
 
