@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repositories\Asset;
+namespace App\Repositories\Asset;
 
 use App\Models\Asset\AssetExpense;
 use Illuminate\Database\Eloquent\Collection;

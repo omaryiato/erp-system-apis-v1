@@ -2,8 +2,9 @@
 
 namespace App\Services\Asset;
 
-use App\Http\Repositories\Asset\AssetMaintenanceRepository;
-use App\Http\Repositories\Asset\AssetRepository;
+use App\Models\Asset\Asset;
+use App\Repositories\Asset\AssetMaintenanceRepository;
+use App\Repositories\Asset\AssetRepository;
 use App\Models\Asset\AssetMaintenance;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -40,12 +41,13 @@ class AssetMaintenanceService
                 $maintenance_request
             );
 
+            $asset = Asset::findorfail($maintenance_request['asset_id']);
             /*
              * Automatically mark the asset
              * as being under maintenance.
              */
             $this->assetRepository->update(
-                $maintenance_request['asset_id'],
+                $asset,
                 [
                     'status' => 'IN_MAINTENANCE',
                 ]
@@ -71,7 +73,7 @@ class AssetMaintenanceService
         });
     }
 
-    public function delete(AssetMaintenance $assetMaintenance): bool
+    public function delete(AssetMaintenance $assetMaintenance)
     {
         return DB::transaction(function () use ($assetMaintenance) {
 

@@ -2,8 +2,8 @@
 
 namespace App\Services\Asset;
 
-use App\Http\Repositories\Asset\AssetExpenseRepository;
-use App\Http\Repositories\Asset\AssetRepository;
+use App\Repositories\Asset\AssetExpenseRepository;
+use App\Repositories\Asset\AssetRepository;
 use App\Models\Asset\AssetExpense;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;

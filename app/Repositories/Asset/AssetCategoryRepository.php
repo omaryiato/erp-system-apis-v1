@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repositories\Asset;
+namespace App\Repositories\Asset;
 
 use App\Models\Asset\AssetCategory;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,7 +33,7 @@ class AssetCategoryRepository
         return $assetCategory->refresh();
     }
 
-    public function delete(AssetCategory $assetCategory): bool
+    public function delete(AssetCategory $assetCategory)
     {
         return $assetCategory->delete();
     }

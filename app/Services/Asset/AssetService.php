@@ -2,7 +2,7 @@
 
 namespace App\Services\Asset;
 
-use App\Http\Repositories\Asset\AssetRepository;
+use App\Repositories\Asset\AssetRepository;
 use App\Models\Asset\Asset;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -60,7 +60,7 @@ class AssetService
         });
     }
 
-    public function delete(Asset $asset): bool
+    public function delete(Asset $asset)
     {
         return DB::transaction(function () use ($asset) {
 

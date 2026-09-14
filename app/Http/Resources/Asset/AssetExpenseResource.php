@@ -11,8 +11,7 @@ class AssetExpenseResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $total_expense_by_asset = (float)  $this->asset_id->sum('amount');
-        
+
         return [
             'id' => $this->id,
 
@@ -35,7 +34,7 @@ class AssetExpenseResource extends JsonResource
 
             'notes' => $this->notes,
 
-            'total_expense_by_asset' => $total_expense_by_asset,
+            'total_expense_by_asset' => (float) $this->asset?->expenses?->sum('amount') ?? null,
 
             'asset' => new AssetResource(
                 $this->whenLoaded('asset')

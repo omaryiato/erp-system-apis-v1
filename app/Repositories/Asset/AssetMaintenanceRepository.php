@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repositories\Asset;
+namespace App\Repositories\Asset;
 
 use App\Models\Asset\AssetMaintenance;
 use Illuminate\Database\Eloquent\Collection;
@@ -42,7 +42,7 @@ class AssetMaintenanceRepository
         return $assetMaintenance->refresh();
     }
 
-    public function delete(AssetMaintenance $assetMaintenance): bool
+    public function delete(AssetMaintenance $assetMaintenance)
     {
         return $assetMaintenance->delete();
     }

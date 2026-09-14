@@ -16,17 +16,17 @@ class AssetSummaryResource extends JsonResource
             |--------------------------------------------------------------------------
             */
 
-            'total_assets' => $this->total_assets,
+            'total_assets' => $this['total_assets'],
 
-            'active_assets' => $this->active_assets,
+            'active_assets' => $this['active_assets'],
 
-            'maintenance_assets' => $this->maintenance_assets,
+            'maintenance_assets' => $this['maintenance_assets'],
 
-            'damaged_assets' => $this->damaged_assets,
+            'damaged_assets' => $this['damaged_assets'],
 
-            'disposed_assets' => $this->disposed_assets,
+            'disposed_assets' => $this['disposed_assets'],
 
-            'lost_assets' => $this->lost_assets,
+            'lost_assets' => $this['lost_assets'],
 
 
             /*
@@ -35,10 +35,7 @@ class AssetSummaryResource extends JsonResource
             |--------------------------------------------------------------------------
             */
 
-            'total_purchase_cost' => $this->total_purchase_cost,
-
-            'total_current_value' => $this->total_current_value,
-
+            'total_purchase_cost' => $this['total_purchase_cost'],
 
             /*
             |--------------------------------------------------------------------------
@@ -46,9 +43,9 @@ class AssetSummaryResource extends JsonResource
             |--------------------------------------------------------------------------
             */
 
-            'total_maintenance_count' => $this->total_maintenance_count,
+            'total_maintenance_count' => $this['total_maintenance_count'],
 
-            'total_maintenance_cost' => $this->total_maintenance_cost,
+            'total_maintenance_cost' => $this['total_maintenance_cost'],
 
 
             /*
@@ -57,9 +54,9 @@ class AssetSummaryResource extends JsonResource
             |--------------------------------------------------------------------------
             */
 
-            'total_expense_count' => $this->total_expense_count,
+            'total_expense_count' => $this['total_expense_count'],
 
-            'total_expenses' => $this->total_expenses,
+            'total_expenses' => $this['total_expenses'],
 
 
             /*
@@ -68,7 +65,7 @@ class AssetSummaryResource extends JsonResource
             |--------------------------------------------------------------------------
             */
 
-            'total_asset_cost' => $this->total_asset_cost,
+            'total_asset_cost' => $this['total_asset_cost'],
         ];
     }
 }

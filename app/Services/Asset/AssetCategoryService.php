@@ -2,7 +2,7 @@
 
 namespace App\Services\Asset;
 
-use App\Http\Repositories\Asset\AssetCategoryRepository;
+use App\Repositories\Asset\AssetCategoryRepository;
 use App\Models\Asset\AssetCategory;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -38,7 +38,7 @@ class AssetCategoryService
         return $this->repository->update($assetCategory, $this->prepareCategoryInfo($category_request));
     }
 
-    public function delete(AssetCategory $assetCategory): bool
+    public function delete(AssetCategory $assetCategory)
     {
 
         /*
