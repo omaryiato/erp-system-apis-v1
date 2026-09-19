@@ -48,38 +48,39 @@ class AttendanceService
                                 });
     }
 
-    public function update(
-        Attendance $attendance,
-        array $attendances
-    ): Attendance {
-        return DB::transaction(function () use ($attendances, $attendance)
-                                {
-                                    $updateAttendances = collect();
-                                    foreach ($attendances as $data)
-                                        {
-                                            $employee = Employee::findOrFail( $data['employee_id'] );
-                                            $data = $this->calculateAmounts( $employee, $data );
-                                            $updated_attendance = $this->repository->update($attendance, $this->prepareAttendanceInfo($data) );
-                                            $updateAttendances->push($updated_attendance);
-                                        } return $updateAttendances;
-                                });
-    }
     // public function update(
     //     Attendance $attendance,
-    //     array $data
+    //     array $attendances
     // ): Attendance {
-    //     $employee = $attendance->employee;
-
-    //     $data = $this->calculateAmounts(
-    //         $employee,
-    //         $data
-    //     );
-
-    //     return $this->repository->update(
-    //         $attendance,
-    //         $this->prepareAttendanceInfo($data)
-    //     );
+    //     return DB::transaction(function () use ($attendances, $attendance)
+    //                             {
+    //                                 $updateAttendances = collect();
+    //                                 foreach ($attendances as $data)
+    //                                     {
+    //                                         $employee = Employee::findOrFail( $data['employee_id'] );
+    //                                         $data = $this->calculateAmounts( $employee, $data );
+    //                                         $updated_attendance = $this->repository->update($attendance, $this->prepareAttendanceInfo($data) );
+    //                                         $updateAttendances->push($updated_attendance);
+    //                                     } return $updateAttendances;
+    //                             });
     // }
+
+    public function update(
+        Attendance $attendance,
+        array $data
+    ): Attendance {
+        $employee = $attendance->employee;
+
+        $data = $this->calculateAmounts(
+            $employee,
+            $data
+        );
+
+        return $this->repository->update(
+            $attendance,
+            $this->prepareAttendanceInfo($data)
+        );
+    }
 
     public function delete(
         Attendance $attendance

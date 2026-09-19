@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Attendance;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Attendance\AttendanceRequest;
+use App\Http\Requests\Attendance\UpdateAttendance;
 use App\Http\Resources\Attendance\AttendanceResource;
 use App\Models\Attendance\Attendance;
 use App\Models\Attendance\AttendanceHistory;
@@ -107,7 +108,7 @@ class AttendanceController extends Controller
     }
 
     public function update(
-        AttendanceRequest $request,
+        UpdateAttendance $request,
         Attendance $attendance
     ) {
 
