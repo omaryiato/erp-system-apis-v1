@@ -139,9 +139,11 @@ class PayrollPeriodService
 
             $totalPaid = $payments->sum('amount');
 
-            $remaining =
-                $netDue -
-                $totalPaid;
+            $remaining = $netDue ;
+
+            // $remaining =
+            //     $netDue -
+            //     $totalPaid;
 
             return [
                 'employee' => [
