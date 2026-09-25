@@ -10,6 +10,7 @@ class RevenueRepository
     public function getAll() {
         return Revenue::with([
                 'project',
+                'cheques',
             ])
             ->get();
     }
@@ -19,6 +20,7 @@ class RevenueRepository
         return $revenue->load([
                 'project',
                 'cashTransactions',
+                'cheques',
             ]);
     }
 
@@ -70,6 +72,7 @@ class RevenueRepository
             ->with([
                 'project',
                 'cashTransactions',
+                'cheques',
             ])
             ->get();
 

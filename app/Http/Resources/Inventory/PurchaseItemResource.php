@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Inventory;
 
+use App\Http\Resources\ChequeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +27,8 @@ class PurchaseItemResource extends JsonResource
 
             'unit_price' => $this->unit_price,
 
+            'purchase_type' => $this->purchase_type,
+
             'total_amount' => $this->total_amount,
 
             'allocated_quantity' => $allocated,
@@ -36,6 +39,10 @@ class PurchaseItemResource extends JsonResource
 
             'allocations' => PurchaseAllocationResource::collection(
                 $this->whenLoaded('allocations')
+            ),
+
+            'cheques' => ChequeResource::collection(
+                $this->whenLoaded('cheques')
             ),
 
             'notes' => $this->notes,

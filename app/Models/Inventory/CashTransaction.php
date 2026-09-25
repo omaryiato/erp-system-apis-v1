@@ -3,8 +3,11 @@
 namespace App\Models\Inventory;
 
 use App\Models\Attendance\EmployeePayment;
+use App\Models\Cheque;
+use App\Models\FinancialAccount;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CashTransaction extends Model
 {
@@ -25,6 +28,9 @@ class CashTransaction extends Model
         'notes',
         'created_by',
         'updated_by',
+        'payment_method',
+        'cheques_id',
+        'financial_account_id',
     ];
 
     protected $casts = [
@@ -77,6 +83,24 @@ class CashTransaction extends Model
         return $this->belongsTo(
             Purchase::class,
             'purchase_id'
+        );
+    }
+
+    public function financialAccount(): BelongsTo
+    {
+        return $this->belongsTo(
+            FinancialAccount::class,
+            'financial_account_id',
+            'id'
+        );
+    }
+
+    public function cheque(): BelongsTo
+    {
+        return $this->belongsTo(
+            Cheque::class,
+            'cheque_id',
+            'id'
         );
     }
 }

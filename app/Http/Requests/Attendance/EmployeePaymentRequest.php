@@ -56,6 +56,20 @@ class EmployeePaymentRequest extends BaseRequest
                 'nullable',
                 'string',
             ],
+
+            'payment_method' => [
+                'bail',
+                'required',
+                'string',
+                'in:cash,cheques,debts,bank_transfer',
+            ],
+
+            'financial_account_id' => [
+                'bail',
+                'required',
+                'integer',
+                'exists:financial_accounts_v1,id',
+            ],
         ];
     }
 }

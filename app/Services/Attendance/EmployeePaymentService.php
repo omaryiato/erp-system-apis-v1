@@ -4,11 +4,13 @@ namespace App\Services\Attendance;
 
 use App\Models\Attendance\EmployeePayment;
 use App\Repositories\Attendance\EmployeePaymentRepository;
+use App\Services\ChequeService;
 
 class EmployeePaymentService
 {
     public function __construct(
-        protected EmployeePaymentRepository $repository
+        protected EmployeePaymentRepository $repository,
+        protected ChequeService $chequeService
     ) {}
 
     public function getAll()
@@ -18,6 +20,15 @@ class EmployeePaymentService
 
     public function create(array $data): EmployeePayment
     {
+        if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+
+
+            $chequeInfo = $this->chequeService->create(
+                $data['cheque']
+            );
+
+            $data['cheques_id'] = $chequeInfo->id;
+        }
         return $this->repository->create($this->preparePaymentInfo($data));
     }
 
@@ -25,6 +36,7 @@ class EmployeePaymentService
         EmployeePayment $payment,
         array $data
     ): EmployeePayment {
+
         return $this->repository->update(
             $payment,
             $this->preparePaymentInfo($data)
@@ -61,6 +73,9 @@ class EmployeePaymentService
             'period_start' => $attendance_request['period_start'] ?? 8,
             'period_end' => $attendance_request['period_end'] ?? 0,
             'notes' => $attendance_request['notes'] ?? 'active',
+            'payment_method' => $attendance_request['payment_method'] ?? 'cash',
+            'cheques_id' => $attendance_request['cheques_id'] ?? null,
+            'financial_account_id' => $attendance_request['financial_account_id'] ?? 'active',
         ];
 
         return $attendance_data;

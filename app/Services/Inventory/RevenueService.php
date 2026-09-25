@@ -24,21 +24,25 @@ class RevenueService
 
     public function create(array $revenue_request): Revenue
     {
-        return DB::transaction(
-            fn () => $this->repository->create($this->prepareRevenueInfo($revenue_request))
-        );
+        return DB::transaction(function () use ($revenue_request) {
+
+            return $this->repository->create(
+                $this->prepareRevenueInfo($revenue_request)
+            );
+        });
     }
 
     public function update(
         Revenue $revenue,
         array $revenue_request
     ): Revenue {
-        return DB::transaction(
-            fn () => $this->repository->update(
+        return DB::transaction(function () use ($revenue_request, $revenue) {
+
+            return $this->repository->update(
                 $revenue,
                 $this->prepareRevenueInfo($revenue_request)
-            )
-        );
+            );
+        });
     }
 
     public function delete(

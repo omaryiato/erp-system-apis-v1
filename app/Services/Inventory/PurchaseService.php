@@ -6,11 +6,13 @@ use App\Models\Inventory\Purchase;
 use App\Repositories\Inventory\PurchaseRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Services\ChequeService;
 
 class PurchaseService
 {
     public function __construct(
-        private PurchaseRepository $repository
+        private PurchaseRepository $repository,
+        protected ChequeService $chequeService
     ) {}
 
     public function getAll()
@@ -27,6 +29,8 @@ class PurchaseService
     {
         return DB::transaction(function () use ($purchase_request) {
 
+
+
             $purchase_items = $purchase_request['items'] ?? [];
 
             unset($purchase_request['items']);
@@ -34,6 +38,15 @@ class PurchaseService
             $purchase = $this->repository->create($this->preparePurchaseInfo($purchase_request));
 
             foreach ($purchase_items as $purchase_items_data) {
+
+                if (isset($purchase_items_data['payment_method']) && $purchase_items_data['payment_method'] == 'cheques' ) {
+
+                    $chequeInfo = $this->chequeService->create(
+                        $purchase_items_data['cheque']
+                    );
+
+                    $purchase_items_data['cheques_id'] = $chequeInfo->id;
+                }
 
                 $purchase_item = $purchase->items()->create( $this->preparePurchaseItemInfo($purchase_items_data) );
 
@@ -98,8 +111,11 @@ class PurchaseService
             'item_id' => $purchase_item_request['item_id'] ?? null,
             'quantity' => $purchase_item_request['quantity'] ?? null,
             'unit_price' => $purchase_item_request['unit_price'] ?? null,
+            'purchase_type' => $purchase_item_request['purchase_type'] ?? 'cash',
             'total_amount' => $purchase_item_request['total_amount'] ?? null,
             'notes' => $purchase_item_request['notes'] ?? null,
+            'cheques_id' => $purchase_item_request['cheques_id'] ?? null,
+            'financial_account_id' => $purchase_item_request['financial_account_id'] ?? null,
         ];
 
         return $purchase_item_data;

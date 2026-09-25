@@ -2,9 +2,11 @@
 
 namespace App\Models\Inventory;
 
+use App\Models\Cheque;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Revenue extends Model
 {
@@ -42,4 +44,5 @@ class Revenue extends Model
             'revenue_id'
         );
     }
+
 }

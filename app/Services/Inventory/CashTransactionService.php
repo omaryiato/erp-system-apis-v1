@@ -10,16 +10,28 @@ use App\Repositories\Inventory\CashTransactionRepository;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use RuntimeException;
+use App\Services\ChequeService;
+
 
 class CashTransactionService
 {
     public function __construct(
-        private CashTransactionRepository $repository
+        private CashTransactionRepository $repository,
+        protected ChequeService $chequeService
     ) {}
 
     public function create(array $data): CashTransaction
     {
         return DB::transaction(function () use ($data) {
+
+            if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+
+                $chequeInfo = $this->chequeService->create(
+                    $data['cheque']
+                );
+
+                $data['cheques_id'] = $chequeInfo->id;
+            }
 
             $type = $data['transaction_type'];
 

@@ -75,6 +75,20 @@ class AddNewPurchase extends BaseRequest
                 'gte:0',
             ],
 
+            'items.*.purchase_type' => [
+                'bail',
+                'required',
+                'string',
+                'in:cash,cheques,debts,bank_transfer',
+            ],
+
+            'items.*.financial_account_id' => [
+                'bail',
+                'required',
+                'integer',
+                'exists:financial_accounts_v1,id',
+            ],
+
             'items.*.notes' => [
                 'bail',
                 'nullable',

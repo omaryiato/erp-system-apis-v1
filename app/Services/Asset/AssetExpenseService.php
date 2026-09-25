@@ -7,6 +7,7 @@ use App\Repositories\Asset\AssetRepository;
 use App\Models\Asset\AssetExpense;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Services\ChequeService;
 
 class AssetExpenseService
 {
@@ -15,7 +16,8 @@ class AssetExpenseService
 
     public function __construct(
         AssetExpenseRepository $repository,
-        AssetRepository $assetRepository
+        AssetRepository $assetRepository,
+        protected ChequeService $chequeService
     ) {
         $this->repository = $repository;
         $this->assetRepository = $assetRepository;
@@ -36,6 +38,15 @@ class AssetExpenseService
     public function create(array $expense_request): AssetExpense
     {
         return DB::transaction(function () use ($expense_request) {
+
+            if (isset($expense_request['payment_method']) && $expense_request['payment_method'] == 'cheques' ) {
+
+                $chequeInfo = $this->chequeService->create(
+                    $expense_request['cheque']
+                );
+
+                $expense_request['cheques_id'] = $chequeInfo->id;
+            }
 
             return $this->repository->create(
                 $this->prepareExpenseInfo($expense_request)

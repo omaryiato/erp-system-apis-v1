@@ -36,6 +36,9 @@ use App\Http\Controllers\Asset\AssetController;
 use App\Http\Controllers\Asset\AssetMaintenanceController;
 use App\Http\Controllers\Asset\AssetExpenseController;
 
+use App\Http\Controllers\ChequeController;
+use App\Http\Controllers\FinancialAccountController;
+
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -518,6 +521,34 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
                 ]);
             });
 
+
+    });
+
+
+    Route::prefix('financial')->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Financial Accounts
+        |--------------------------------------------------------------------------
+        */
+
+        Route::apiResource(
+            'accounts',
+            FinancialAccountController::class
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cheques
+        |--------------------------------------------------------------------------
+        */
+
+        Route::apiResource(
+            'cheques',
+            ChequeController::class
+        );
 
     });
 

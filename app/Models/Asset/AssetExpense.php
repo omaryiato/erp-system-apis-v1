@@ -2,6 +2,8 @@
 
 namespace App\Models\Asset;
 
+use App\Models\Cheque;
+use App\Models\FinancialAccount;
 use App\Models\Inventory\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,9 +19,11 @@ class AssetExpense extends Model
         'description',
         'amount',
         'supplier_id',
-        'payment_method',
         'reference_number',
         'notes',
+        'payment_method',
+        'cheques_id',
+        'financial_account_id',
     ];
 
     protected $casts = [
@@ -46,6 +50,24 @@ class AssetExpense extends Model
         return $this->belongsTo(
             Supplier::class,
             'supplier_id'
+        );
+    }
+
+    public function financialAccount(): BelongsTo
+    {
+        return $this->belongsTo(
+            FinancialAccount::class,
+            'financial_account_id',
+            'id'
+        );
+    }
+
+    public function cheque(): BelongsTo
+    {
+        return $this->belongsTo(
+            Cheque::class,
+            'cheque_id',
+            'id'
         );
     }
 }

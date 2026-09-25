@@ -49,9 +49,17 @@ class AddNewExpense extends BaseRequest
             ],
 
             'payment_method' => [
-                'nullable',
+                'bail',
+                'required',
                 'string',
-                'max:30',
+                'in:cash,cheques,debts,bank_transfer',
+            ],
+
+            'financial_account_id' => [
+                'bail',
+                'required',
+                'integer',
+                'exists:financial_accounts_v1,id',
             ],
 
             'reference_number' => [

@@ -36,6 +36,8 @@ class CashTransactionRepository
                 'revenue',
                 'employeePayment',
                 'purchaseOrder',
+                'financialAccount',
+                'cheque',
             ])
             ->latest('transaction_date')
             ->latest('id')

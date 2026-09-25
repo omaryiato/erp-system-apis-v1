@@ -10,6 +10,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\User\AddUser;
 use App\Http\Requests\User\UpdateUser;
 use App\Models\User;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
@@ -31,7 +32,7 @@ class UserController extends Controller
                     'en' => trans('validation.data_retrieved', [], 'en'),
                     'ar' => trans('validation.data_retrieved', [], 'ar'),
                 ],
-                200);
+                Response::HTTP_OK);
     }
 
     //  Funtion to Get User Details
@@ -47,7 +48,7 @@ class UserController extends Controller
                     'en' => trans('validation.data_not_found', [], 'en'),
                     'ar' => trans('validation.data_not_found', [], 'ar'),
                 ],
-                404);
+                Response::HTTP_NOT_FOUND);
         }
 
         return ResponseHelper::success(
@@ -56,7 +57,7 @@ class UserController extends Controller
                     'en' => trans('validation.data_retrieved', [], 'en'),
                     'ar' => trans('validation.data_retrieved', [], 'ar'),
                 ],
-                200);
+                Response::HTTP_OK);
 
     }
 
@@ -72,7 +73,7 @@ class UserController extends Controller
                     'en' => trans('validation.data_added', [], 'en'),
                     'ar' => trans('validation.data_added', [], 'ar'),
                 ],
-                201);
+                Response::HTTP_CREATED);
 
         } catch(\Exception $exception){
             return ResponseHelper::error(
@@ -100,7 +101,7 @@ class UserController extends Controller
                         'en' => trans('validation.data_not_found', [], 'en'),
                         'ar' => trans('validation.data_not_found', [], 'ar'),
                     ],
-                    404);
+                    Response::HTTP_NOT_FOUND);
             }
 
             return ResponseHelper::success(
@@ -109,7 +110,7 @@ class UserController extends Controller
                     'en' => trans('validation.data_updated', [], 'en'),
                     'ar' => trans('validation.data_updated', [], 'ar'),
                 ],
-                201);
+                Response::HTTP_CREATED);
 
         } catch (\Exception $exception) {
             return ResponseHelper::error(
@@ -136,7 +137,7 @@ class UserController extends Controller
                         'en' => trans('validation.data_not_found', [], 'en'),
                         'ar' => trans('validation.data_not_found', [], 'ar'),
                     ],
-                    404);
+                    Response::HTTP_NOT_FOUND);
             }
 
             return ResponseHelper::success(
@@ -145,7 +146,7 @@ class UserController extends Controller
                         'en' => trans('validation.data_deleted', [], 'en'),
                         'ar' => trans('validation.data_deleted', [], 'ar'),
                     ],
-                    200);
+                    Response::HTTP_OK);
         } catch (\Exception $exception) {
             return ResponseHelper::error(
                 [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Inventory;
 
+use App\Http\Resources\ChequeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -55,6 +56,10 @@ class RevenueResource extends JsonResource
 
             'updated_at' =>
                 $this->updated_at,
+
+            'cheques' => ChequeResource::collection(
+                $this->whenLoaded('cheques')
+            ),
         ];
     }
 }
