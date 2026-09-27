@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Revenue\AddNewRevenue;
 use App\Http\Requests\Inventory\Revenue\ReportRevenues;
+use App\Http\Requests\Inventory\Revenue\UpdateRevenue;
 use App\Http\Resources\Inventory\Reports\RevenueReportResource;
 use App\Http\Resources\Inventory\RevenueResource;
 use App\Models\Inventory\Revenue;
@@ -70,6 +71,50 @@ class RevenueController extends Controller
                     'ar' => trans('validation.get_revenue_details', [], 'ar'),
                 ],
                 Response::HTTP_OK
+            );
+    }
+
+    public function update(
+        UpdateRevenue $request,
+        Revenue $revenue
+    ) {
+
+        try {
+
+                return ResponseHelper::success(
+                    new RevenueResource(
+                        $this->service->update(
+                            $revenue,
+                            $request->validated()
+                        )),
+                    [
+                        'en' => trans('validation.update_supplier', [], 'en'),
+                        'ar' => trans('validation.update_supplier', [], 'ar'),
+                    ],
+                    Response::HTTP_CREATED
+                );
+        } catch (Exception $exception) {
+            return ResponseHelper::error(
+                [
+                    'en' => trans('validation.exception_error', [], 'en'),
+                    'ar' => trans('validation.exception_error', [], 'ar'),
+                ],
+                $exception->getMessage(),
+                500);
+        }
+
+    }
+
+    public function destroy(Revenue $revenue)
+    {
+
+        return ResponseHelper::success(
+                $this->service->delete($revenue),
+                [
+                    'en' => trans('validation.delete_supplier', [], 'en'),
+                    'ar' => trans('validation.delete_supplier', [], 'ar'),
+                ],
+                Response::HTTP_CREATED
             );
     }
 

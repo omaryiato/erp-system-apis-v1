@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Asset\Expense\UpdateExpense;
 use App\Http\Requests\Inventory\Expense\AddNewExpense;
 use App\Http\Requests\Inventory\Expense\ReportExpenses;
 use App\Http\Resources\Inventory\ExpenseResource;
@@ -68,6 +69,50 @@ class ExpenseController extends Controller
                     'ar' => trans('validation.get_expense_details', [], 'ar'),
                 ],
                 Response::HTTP_OK
+            );
+    }
+
+    public function update(
+        UpdateExpense $request,
+        Expense $expense
+    ) {
+
+        try {
+
+                return ResponseHelper::success(
+                    new ExpenseResource(
+                        $this->service->update(
+                            $expense,
+                            $request->validated()
+                        )),
+                    [
+                        'en' => trans('validation.update_supplier', [], 'en'),
+                        'ar' => trans('validation.update_supplier', [], 'ar'),
+                    ],
+                    Response::HTTP_CREATED
+                );
+        } catch (Exception $exception) {
+            return ResponseHelper::error(
+                [
+                    'en' => trans('validation.exception_error', [], 'en'),
+                    'ar' => trans('validation.exception_error', [], 'ar'),
+                ],
+                $exception->getMessage(),
+                500);
+        }
+
+    }
+
+    public function destroy(Expense $expense)
+    {
+
+        return ResponseHelper::success(
+                $this->service->delete($expense),
+                [
+                    'en' => trans('validation.delete_supplier', [], 'en'),
+                    'ar' => trans('validation.delete_supplier', [], 'ar'),
+                ],
+                Response::HTTP_CREATED
             );
     }
 

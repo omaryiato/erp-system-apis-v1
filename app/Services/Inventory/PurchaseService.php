@@ -98,6 +98,157 @@ class PurchaseService
         return $purchaseItem->allocations()->create($allocation);
     }
 
+
+    public function update(Purchase $purchase, array $purchase_request): Purchase
+    {
+        return DB::transaction(function () use ($purchase, $purchase_request) {
+
+            if (!$purchase) {
+                throw new \Exception('Purchase not found.');
+            }
+
+            $purchase_items = $purchase_request['items'] ?? [];
+
+            unset($purchase_request['items']);
+
+            /*
+            * 1. Reverse old financial transactions
+            */
+            foreach ($purchase->items as $oldItem) {
+
+                // $this->financialAccountService->reverseAccountBalance(
+                //     $oldItem,
+                //     'purchase'
+                // );
+
+                /*
+                * Delete old allocations
+                */
+                $oldItem->allocations()->delete();
+
+                /*
+                * Delete old cheque
+                */
+                if ($oldItem->cheques_id) {
+                    $this->chequeService->delete($oldItem->cheques_id);
+                }
+            }
+
+            /*
+            * 2. Delete old purchase items
+            */
+            $purchase->items()->delete();
+
+            /*
+            * 3. Update purchase
+            */
+            $purchase->update(
+                $this->preparePurchaseInfo($purchase_request)
+            );
+
+            /*
+            * 4. Create new items
+            */
+            foreach ($purchase_items as $purchase_items_data) {
+
+                $cheque_info = null;
+
+                if (
+                    isset($purchase_items_data['payment_method']) &&
+                    $purchase_items_data['payment_method'] === 'cheques'
+                ) {
+
+                    $cheque_info = $this->chequeService->create(
+                        $purchase_items_data['cheque']
+                    );
+
+                    $purchase_items_data['cheques_id'] = $cheque_info->id;
+                    $purchase_items_data['amount'] = $cheque_info->amount;
+                }
+
+                $purchase_items_info = $this->preparePurchaseItemInfo(
+                    $purchase_items_data
+                );
+
+                $purchase_item = $purchase->items()->create(
+                    $purchase_items_info
+                );
+
+                /*
+                * Apply new financial transaction
+                */
+                $this->financialAccountService->updateAccountBalance(
+                    $purchase_items_info,
+                    'purchase'
+                );
+
+                /*
+                * Create allocations
+                */
+                foreach (
+                    $purchase_items_data['allocations'] ?? []
+                    as $allocation
+                ) {
+                    $this->createAllocation(
+                        $purchase_item,
+                        $this->preparePurchaseAllocationInfo($allocation)
+                    );
+                }
+            }
+
+            return $purchase->load([
+                'supplier',
+                'items.item',
+                'items.allocations.project',
+            ]);
+        });
+    }
+
+
+    public function delete(Purchase $purchase): bool
+    {
+        return DB::transaction(function () use ($purchase) {
+
+            if (!$purchase) {
+                throw new \Exception('Purchase not found.');
+            }
+
+            /*
+            * 1. Reverse financial transactions
+            */
+            foreach ($purchase->items as $item) {
+
+                // $this->financialAccountService->reverseAccountBalance(
+                //     $item,
+                //     'purchase'
+                // );
+
+                /*
+                * 2. Delete allocations
+                */
+                $item->allocations()->delete();
+
+                /*
+                * 3. Delete cheque
+                */
+                if ($item->cheques_id) {
+                    $this->chequeService->delete($item->cheques_id);
+                }
+            }
+
+            /*
+            * 4. Delete purchase items
+            */
+            $purchase->items()->delete();
+
+            /*
+            * 5. Delete purchase
+            */
+            return $purchase->delete();
+        });
+    }
+
+
     public function preparePurchaseInfo(array $purchase_request)
     {
 

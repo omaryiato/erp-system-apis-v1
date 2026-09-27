@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\Purchase\AddNewPurchase;
 use App\Http\Requests\Inventory\Purchase\ReportPurchases;
+use App\Http\Requests\Inventory\Purchase\UpdatePurchase;
 use App\Http\Resources\Inventory\PurchaseResource;
 use App\Http\Resources\Inventory\Reports\PurchaseReportResource;
 use App\Models\Inventory\Purchase;
@@ -67,6 +68,50 @@ class PurchaseController extends Controller
                     'ar' => trans('validation.get_purchase_details', [], 'ar'),
                 ],
                 Response::HTTP_OK
+            );
+    }
+
+    public function update(
+        UpdatePurchase $request,
+        Purchase $purchase
+    ) {
+
+        try {
+
+                return ResponseHelper::success(
+                    new PurchaseResource(
+                        $this->service->update(
+                            $purchase,
+                            $request->validated()
+                        )),
+                    [
+                        'en' => trans('validation.update_supplier', [], 'en'),
+                        'ar' => trans('validation.update_supplier', [], 'ar'),
+                    ],
+                    Response::HTTP_CREATED
+                );
+        } catch (Exception $exception) {
+            return ResponseHelper::error(
+                [
+                    'en' => trans('validation.exception_error', [], 'en'),
+                    'ar' => trans('validation.exception_error', [], 'ar'),
+                ],
+                $exception->getMessage(),
+                500);
+        }
+
+    }
+
+    public function destroy(Purchase  $purchase)
+    {
+
+        return ResponseHelper::success(
+                $this->service->delete($purchase),
+                [
+                    'en' => trans('validation.delete_supplier', [], 'en'),
+                    'ar' => trans('validation.delete_supplier', [], 'ar'),
+                ],
+                Response::HTTP_CREATED
             );
     }
 
