@@ -8,6 +8,7 @@ use App\Models\Asset\AssetExpense;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\ChequeService;
+use App\Services\FinancialAccountService;
 
 class AssetExpenseService
 {
@@ -17,7 +18,8 @@ class AssetExpenseService
     public function __construct(
         AssetExpenseRepository $repository,
         AssetRepository $assetRepository,
-        protected ChequeService $chequeService
+        protected ChequeService $chequeService,
+        protected FinancialAccountService $financialAccountService,
     ) {
         $this->repository = $repository;
         $this->assetRepository = $assetRepository;
@@ -39,18 +41,25 @@ class AssetExpenseService
     {
         return DB::transaction(function () use ($expense_request) {
 
+            $cheque_info = null;
+
             if (isset($expense_request['payment_method']) && $expense_request['payment_method'] == 'cheques' ) {
 
-                $chequeInfo = $this->chequeService->create(
+                $cheque_info = $this->chequeService->create(
                     $expense_request['cheque']
                 );
 
-                $expense_request['cheques_id'] = $chequeInfo->id;
+                $expense_request['cheques_id'] = $cheque_info->id;
+                $expense_request['amount'] = $cheque_info->amount;
             }
 
-            return $this->repository->create(
-                $this->prepareExpenseInfo($expense_request)
-            );
+            $expense_info = $this->prepareExpenseInfo($expense_request);
+
+            $expense_details = $this->repository->create($expense_info);
+
+            $this->financialAccountService->updateAccountBalance($expense_info, "asset_expense");
+
+            return $expense_details;
         });
     }
 
@@ -60,10 +69,25 @@ class AssetExpenseService
     ): AssetExpense {
         return DB::transaction(function () use ($assetExpense, $expense_request) {
 
-            return $this->repository->update(
-                $assetExpense,
-                $this->prepareExpenseInfo($expense_request)
-            );
+            $cheque_info = null;
+
+            if (isset($expense_request['payment_method']) && $expense_request['payment_method'] == 'cheques' ) {
+
+                $cheque_info = $this->chequeService->create(
+                    $expense_request['cheque']
+                );
+
+                $expense_request['cheques_id'] = $cheque_info->id;
+                $expense_request['amount'] = $cheque_info->amount;
+            }
+
+            $expense_info = $this->prepareExpenseInfo($expense_request);
+
+            $expense_details =  $this->repository->update($assetExpense, $expense_request);
+
+            $this->financialAccountService->updateAccountBalance($expense_info, "asset_expense");
+
+            return $expense_details;
         });
     }
 

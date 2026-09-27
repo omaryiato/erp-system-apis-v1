@@ -39,4 +39,13 @@ class FinancialAccountRepository
     {
         return $account->cheques()->exists();
     }
+
+    public function updateAccountBalance(
+        FinancialAccount $account,
+        array $account_request
+    ): FinancialAccount {
+        $account->update($account_request);
+
+        return $account->refresh();
+    }
 }

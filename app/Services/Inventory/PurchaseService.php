@@ -7,12 +7,14 @@ use App\Repositories\Inventory\PurchaseRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use App\Services\ChequeService;
+use App\Services\FinancialAccountService;
 
 class PurchaseService
 {
     public function __construct(
         private PurchaseRepository $repository,
-        protected ChequeService $chequeService
+        protected ChequeService $chequeService,
+        protected FinancialAccountService $financialAccountService,
     ) {}
 
     public function getAll()
@@ -29,8 +31,6 @@ class PurchaseService
     {
         return DB::transaction(function () use ($purchase_request) {
 
-
-
             $purchase_items = $purchase_request['items'] ?? [];
 
             unset($purchase_request['items']);
@@ -38,17 +38,23 @@ class PurchaseService
             $purchase = $this->repository->create($this->preparePurchaseInfo($purchase_request));
 
             foreach ($purchase_items as $purchase_items_data) {
+                $cheque_info = null;
 
                 if (isset($purchase_items_data['payment_method']) && $purchase_items_data['payment_method'] == 'cheques' ) {
 
-                    $chequeInfo = $this->chequeService->create(
+                    $cheque_info = $this->chequeService->create(
                         $purchase_items_data['cheque']
                     );
 
-                    $purchase_items_data['cheques_id'] = $chequeInfo->id;
+                    $purchase_items_data['cheques_id'] = $cheque_info->id;
+                    $purchase_items_data['amount'] = $cheque_info->amount;
                 }
 
-                $purchase_item = $purchase->items()->create( $this->preparePurchaseItemInfo($purchase_items_data) );
+                $purchase_items_info = $this->preparePurchaseItemInfo($purchase_items_data);
+
+                $purchase_item = $purchase->items()->create( $purchase_items_info );
+
+                $this->financialAccountService->updateAccountBalance($purchase_items_info, "purchase");
 
                 foreach (
                     $purchase_items_data['allocations'] ?? []

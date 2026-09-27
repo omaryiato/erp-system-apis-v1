@@ -11,26 +11,30 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use RuntimeException;
 use App\Services\ChequeService;
+use App\Services\FinancialAccountService;
 
 
 class CashTransactionService
 {
     public function __construct(
         private CashTransactionRepository $repository,
-        protected ChequeService $chequeService
+        protected ChequeService $chequeService,
+        protected FinancialAccountService $financialAccountService,
     ) {}
 
     public function create(array $data): CashTransaction
     {
         return DB::transaction(function () use ($data) {
+            $cheque_info = null;
 
             if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
 
-                $chequeInfo = $this->chequeService->create(
+                $cheque_info = $this->chequeService->create(
                     $data['cheque']
                 );
 
-                $data['cheques_id'] = $chequeInfo->id;
+                $data['cheques_id'] = $cheque_info->id;
+                $data['amount'] = $cheque_info->amount;
             }
 
             $type = $data['transaction_type'];
@@ -52,9 +56,18 @@ class CashTransactionService
             // $data['updated_by'] =
             //     auth()->id();
 
-            return $this->repository->create(
+            $transaction_details =  $this->repository->create(
                 $data
             );
+
+            if(isset($data['expense_id'])){
+                $this->financialAccountService->updateAccountBalance($data, "transaction_expense");
+            } elseif(isset($data['revenue_id'])){
+
+                $this->financialAccountService->updateAccountBalance($data, "transaction_revenue");
+            }
+
+            return $transaction_details;
         });
     }
 

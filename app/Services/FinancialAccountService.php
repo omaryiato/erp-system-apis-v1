@@ -74,4 +74,41 @@ class FinancialAccountService
 
         return $account_data;
     }
+
+    public function updateAccountBalance(
+        array $request_info,
+        string $request_type
+    ): FinancialAccount {
+
+        $allowedRequestTypes = [
+            'asset_expense',
+            'transaction_expense',
+            'transaction_revenue',
+            'purchase',
+            'employee_payment',
+        ];
+
+        if (!in_array($request_type, $allowedRequestTypes, true)) {
+            throw new \InvalidArgumentException(
+                "Unsupported request type: {$request_type}"
+            );
+        }
+
+        $account = $this->getDetails($request_info['financial_account_id']);
+
+        $amount = $request_info['amount'];
+
+        $newBalance = $request_type === 'transaction_revenue'
+            ? $account->current_balance + $amount
+            : $account->current_balance - $amount;
+
+        return $this->repository->updateAccountBalance(
+            $account,
+            [
+                'current_balance' => $newBalance,
+            ]
+        );
+
+    }
+
 }

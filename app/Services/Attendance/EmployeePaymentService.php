@@ -5,12 +5,14 @@ namespace App\Services\Attendance;
 use App\Models\Attendance\EmployeePayment;
 use App\Repositories\Attendance\EmployeePaymentRepository;
 use App\Services\ChequeService;
+use App\Services\FinancialAccountService;
 
 class EmployeePaymentService
 {
     public function __construct(
         protected EmployeePaymentRepository $repository,
-        protected ChequeService $chequeService
+        protected ChequeService $chequeService,
+        protected FinancialAccountService $financialAccountService,
     ) {}
 
     public function getAll()
@@ -20,16 +22,25 @@ class EmployeePaymentService
 
     public function create(array $data): EmployeePayment
     {
+        $cheque_info = null;
+
         if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
 
-
-            $chequeInfo = $this->chequeService->create(
+            $cheque_info = $this->chequeService->create(
                 $data['cheque']
             );
 
-            $data['cheques_id'] = $chequeInfo->id;
+            $data['cheques_id'] = $cheque_info->id;
+            $data['amount'] = $cheque_info->amount;
         }
-        return $this->repository->create($this->preparePaymentInfo($data));
+
+        $payment_info = $this->preparePaymentInfo($data);
+
+        $payment_details = $this->repository->create($payment_info);
+
+        $this->financialAccountService->updateAccountBalance($payment_info, "employee_payment");
+
+        return $payment_details;
     }
 
     public function update(
