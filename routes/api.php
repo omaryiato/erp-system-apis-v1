@@ -564,10 +564,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         |--------------------------------------------------------------------------
         */
 
-        Route::apiResource(
-            'categories',
-            DocumentCategoryController::class
-        );
+        // Route::apiResource(
+        //     'categories',
+        //     DocumentCategoryController::class
+        // );
 
 
         /*
@@ -576,12 +576,12 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         |--------------------------------------------------------------------------
         */
 
-        Route::apiResource(
-            '',
-            DocumentController::class
-        )->parameters([
-            '' => 'id',
-        ]);
+        // Route::apiResource(
+        //     '',
+        //     DocumentController::class
+        // )->parameters([
+        //     '' => 'id',
+        // ]);
 
 
         /*
@@ -590,20 +590,20 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         |--------------------------------------------------------------------------
         */
 
-        Route::post(
-            '{id}/versions',
-            [DocumentController::class, 'uploadVersion']
-        );
+        // Route::post(
+        //     '{id}/versions',
+        //     [DocumentController::class, 'uploadVersion']
+        // );
 
-        Route::get(
-            '{id}/versions',
-            [DocumentController::class, 'versions']
-        );
+        // Route::get(
+        //     '{id}/versions',
+        //     [DocumentController::class, 'versions']
+        // );
 
-        Route::get(
-            '{id}/versions/{versionId}/download',
-            [DocumentController::class, 'downloadVersion']
-        );
+        // Route::get(
+        //     '{id}/versions/{versionId}/download',
+        //     [DocumentController::class, 'downloadVersion']
+        // );
     });
 
     /***************************************** Users *******************************************/
