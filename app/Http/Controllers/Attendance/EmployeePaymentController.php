@@ -63,7 +63,6 @@ class EmployeePaymentController extends Controller
                 500);
         }
 
-        return new EmployeePaymentResource($payment);
     }
 
     public function show(

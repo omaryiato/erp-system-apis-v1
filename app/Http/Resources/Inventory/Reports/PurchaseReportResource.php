@@ -9,7 +9,7 @@ class PurchaseReportResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        
+
         return [
             'total' => (float) $this['total'],
 
@@ -87,6 +87,13 @@ class PurchaseReportResource extends JsonResource
 
                                         'total_amount' =>
                                             (float) $item->total_amount,
+
+                                        'payment_method' => $item->payment_method,
+                                        'financial_account_id' => $item->financial_account_id ?? null,
+                                        'financial_account_name' => $item->financialAccount?->name ?? null,
+
+                                        'cheque_id' =>  $item->cheque_id ?? null,
+                                        'cheque_number' =>  $item->cheque?->cheque_number ?? null,
 
                                         'allocated_quantity' =>
                                             (float) $allocated,

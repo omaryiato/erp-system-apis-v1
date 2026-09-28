@@ -34,7 +34,7 @@ class CashTransactionService
                 );
 
                 $data['cheques_id'] = $cheque_info->id;
-                $data['amount'] = $cheque_info->amount;
+                $data['cheque_amount'] = $cheque_info->amount;
             }
 
             $type = $data['transaction_type'];
@@ -60,12 +60,12 @@ class CashTransactionService
                 $data
             );
 
-            if(isset($data['expense_id'])){
-                $this->financialAccountService->updateAccountBalance($data, "transaction_expense");
-            } elseif(isset($data['revenue_id'])){
+            // if(isset($data['expense_id'])){
+            //     $this->financialAccountService->updateAccountBalance($data, "transaction_expense");
+            // } elseif(isset($data['revenue_id'])){
 
-                $this->financialAccountService->updateAccountBalance($data, "transaction_revenue");
-            }
+            //     $this->financialAccountService->updateAccountBalance($data, "transaction_revenue");
+            // }
 
             return $transaction_details;
         });

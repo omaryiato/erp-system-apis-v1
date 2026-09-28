@@ -34,6 +34,12 @@ class AssetExpenseResource extends JsonResource
 
             'notes' => $this->notes,
 
+            'financial_account_id' => $this->financial_account_id ?? null,
+            'financial_account_name' => $this->financialAccount?->name ?? null,
+
+            'cheque_id' =>  $this->cheque_id ?? null,
+            'cheque_number' =>  $this->cheque?->cheque_number ?? null,
+
             'total_expense_by_asset' => (float) $this->asset?->expenses?->sum('amount') ?? null,
 
             'asset' => new AssetResource(

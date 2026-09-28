@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Asset\AssetExpense;
 use App\Models\Attendance\EmployeePayment;
 use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\PurchaseItem;
@@ -65,6 +66,15 @@ class FinancialAccount extends Model
     {
         return $this->hasMany(
             EmployeePayment::class,
+            'financial_account_id',
+            'id'
+        );
+    }
+
+    public function assetExpenses(): HasMany
+    {
+        return $this->hasMany(
+            AssetExpense::class,
             'financial_account_id',
             'id'
         );

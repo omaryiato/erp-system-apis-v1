@@ -9,6 +9,62 @@ class FinancialAccountResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Revenues
+        |--------------------------------------------------------------------------
+        | Cash transactions that have revenue_id
+        */
+        $revenues = $this->cashTransactions
+            ->whereNotNull('revenue_id')
+            ->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cash Expenses
+        |--------------------------------------------------------------------------
+        | Cash transactions that have expense_id
+        */
+        $cashExpenses = $this->cashTransactions
+            ->whereNotNull('expense_id')
+            ->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Other Expenses
+        |--------------------------------------------------------------------------
+        */
+        // $chequeExpenses = $this->cheques->sum('amount');
+
+        $purchaseExpenses = $this->purchaseItems->sum('total_amount');
+
+        $employeePaymentExpenses = $this->employeePayments->sum('amount');
+
+        $assetExpenses = $this->assetExpenses->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Total Expenses
+        |--------------------------------------------------------------------------
+        */
+        $totalExpenses =
+            $cashExpenses
+            // + $chequeExpenses
+            + $purchaseExpenses
+            + $employeePaymentExpenses
+            + $assetExpenses;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Current Balance
+        |--------------------------------------------------------------------------
+        */
+        $currentBalance =
+            $this->opening_balance
+            + $revenues
+            - $totalExpenses;
+
+
         return [
             'id' => $this->id,
 
@@ -24,6 +80,8 @@ class FinancialAccountResource extends JsonResource
             'currency' => $this->currency,
 
             'opening_balance' => $this->opening_balance,
+            
+            'current_balance' => $currentBalance,
 
             'is_active' => $this->is_active,
 

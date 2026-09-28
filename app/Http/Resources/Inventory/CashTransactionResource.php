@@ -58,6 +58,13 @@ class CashTransactionResource extends JsonResource
 
             'updated_at' =>
                 $this->updated_at,
+
+            'payment_method' => $this->payment_method,
+            'financial_account_id' => $this->financial_account_id ?? null,
+            'financial_account_name' => $this->financialAccount?->name ?? null,
+
+            'cheque_id' =>  $this->cheque_id ?? null,
+            'cheque_number' =>  $this->cheque?->cheque_number ?? null,
         ];
     }
 }

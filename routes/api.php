@@ -39,6 +39,9 @@ use App\Http\Controllers\Asset\AssetExpenseController;
 use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\FinancialAccountController;
 
+use App\Http\Controllers\Document\DocumentCategoryController;
+use App\Http\Controllers\Document\DocumentController;
+
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -552,6 +555,56 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     });
 
+
+    Route::prefix('documents')->group(function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Document Categories
+        |--------------------------------------------------------------------------
+        */
+
+        Route::apiResource(
+            'categories',
+            DocumentCategoryController::class
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Documents
+        |--------------------------------------------------------------------------
+        */
+
+        Route::apiResource(
+            '',
+            DocumentController::class
+        )->parameters([
+            '' => 'id',
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Document Versions
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post(
+            '{id}/versions',
+            [DocumentController::class, 'uploadVersion']
+        );
+
+        Route::get(
+            '{id}/versions',
+            [DocumentController::class, 'versions']
+        );
+
+        Route::get(
+            '{id}/versions/{versionId}/download',
+            [DocumentController::class, 'downloadVersion']
+        );
+    });
 
     /***************************************** Users *******************************************/
 

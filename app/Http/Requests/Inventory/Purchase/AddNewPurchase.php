@@ -75,7 +75,7 @@ class AddNewPurchase extends BaseRequest
                 'gte:0',
             ],
 
-            'items.*.purchase_type' => [
+            'items.*.payment_method' => [
                 'bail',
                 'required',
                 'string',

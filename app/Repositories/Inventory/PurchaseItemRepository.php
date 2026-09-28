@@ -20,7 +20,7 @@ class PurchaseItemRepository
                 'purchase',
                 'item',
                 'allocations.project',
-                'cheques',
+                'cheque',
                 'financialAccount',
             ])
             ->find($id);

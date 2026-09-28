@@ -21,6 +21,13 @@ class EmployeePaymentResource extends JsonResource
             'period_end' =>
                 $this->period_end?->format('Y-m-d'),
             'notes' => $this->notes,
+
+            'payment_method' => $this->payment_method,
+            'financial_account_id' => $this->financial_account_id ?? null,
+            'financial_account_name' => $this->financialAccount?->name ?? null,
+
+            'cheque_id' =>  $this->cheque_id ?? null,
+            'cheque_number' =>  $this->cheque?->cheque_number ?? null,
         ];
     }
 }

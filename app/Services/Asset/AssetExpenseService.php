@@ -5,7 +5,6 @@ namespace App\Services\Asset;
 use App\Repositories\Asset\AssetExpenseRepository;
 use App\Repositories\Asset\AssetRepository;
 use App\Models\Asset\AssetExpense;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Services\ChequeService;
 use App\Services\FinancialAccountService;
@@ -50,14 +49,14 @@ class AssetExpenseService
                 );
 
                 $expense_request['cheques_id'] = $cheque_info->id;
-                $expense_request['amount'] = $cheque_info->amount;
+                $expense_request['cheque_amount'] = $cheque_info->amount;
             }
 
             $expense_info = $this->prepareExpenseInfo($expense_request);
 
             $expense_details = $this->repository->create($expense_info);
 
-            $this->financialAccountService->updateAccountBalance($expense_info, "asset_expense");
+            // $this->financialAccountService->updateAccountBalance($expense_info, "asset_expense");
 
             return $expense_details;
         });
@@ -69,6 +68,10 @@ class AssetExpenseService
     ): AssetExpense {
         return DB::transaction(function () use ($assetExpense, $expense_request) {
 
+            $this->chequeService->delete(
+                    $assetExpense->cheque_id
+                );
+
             $cheque_info = null;
 
             if (isset($expense_request['payment_method']) && $expense_request['payment_method'] == 'cheques' ) {
@@ -78,14 +81,14 @@ class AssetExpenseService
                 );
 
                 $expense_request['cheques_id'] = $cheque_info->id;
-                $expense_request['amount'] = $cheque_info->amount;
+                $expense_request['cheque_amount'] = $cheque_info->amount;
             }
 
             $expense_info = $this->prepareExpenseInfo($expense_request);
 
             $expense_details =  $this->repository->update($assetExpense, $expense_request);
 
-            $this->financialAccountService->updateAccountBalance($expense_info, "asset_expense");
+            // $this->financialAccountService->updateAccountBalance($expense_info, "asset_expense");
 
             return $expense_details;
         });
@@ -94,6 +97,12 @@ class AssetExpenseService
     public function delete(AssetExpense $assetExpense): bool
     {
         return DB::transaction(function () use ($assetExpense) {
+
+            if(isset($assetExpense->cheque_id)){
+                $this->chequeService->delete(
+                        $assetExpense->cheque_id
+                    );
+            }
 
             return $this->repository->delete($assetExpense);
         });

@@ -22,6 +22,8 @@ class CashTransactionRepository
                 'revenue',
                 'employeePayment',
                 'purchaseOrder',
+                'financialAccount',
+                'cheque',
             ])
             ->findOrFail($id);
     }

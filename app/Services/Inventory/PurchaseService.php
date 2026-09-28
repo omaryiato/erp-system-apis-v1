@@ -163,7 +163,7 @@ class PurchaseService
                     );
 
                     $purchase_items_data['cheques_id'] = $cheque_info->id;
-                    $purchase_items_data['amount'] = $cheque_info->amount;
+                    $purchase_items_data['cheque_amount'] = $cheque_info->amount;
                 }
 
                 $purchase_items_info = $this->preparePurchaseItemInfo(
@@ -268,7 +268,7 @@ class PurchaseService
             'item_id' => $purchase_item_request['item_id'] ?? null,
             'quantity' => $purchase_item_request['quantity'] ?? null,
             'unit_price' => $purchase_item_request['unit_price'] ?? null,
-            'purchase_type' => $purchase_item_request['purchase_type'] ?? 'cash',
+            'payment_method' => $purchase_item_request['payment_method'] ?? 'cash',
             'total_amount' => $purchase_item_request['total_amount'] ?? null,
             'notes' => $purchase_item_request['notes'] ?? null,
             'cheques_id' => $purchase_item_request['cheques_id'] ?? null,

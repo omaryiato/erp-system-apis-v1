@@ -96,7 +96,7 @@ class FinancialAccountService
 
         $account = $this->getDetails($request_info['financial_account_id']);
 
-        $amount = $request_info['amount'];
+        $amount = $request_info['cheque_amount'];
 
         $newBalance = $request_type === 'transaction_revenue'
             ? $account->current_balance + $amount

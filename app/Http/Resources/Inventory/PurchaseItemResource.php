@@ -27,7 +27,7 @@ class PurchaseItemResource extends JsonResource
 
             'unit_price' => $this->unit_price,
 
-            'purchase_type' => $this->purchase_type,
+            'payment_method' => $this->payment_method,
 
             'total_amount' => $this->total_amount,
 
@@ -41,9 +41,15 @@ class PurchaseItemResource extends JsonResource
                 $this->whenLoaded('allocations')
             ),
 
-            'cheques' => ChequeResource::collection(
-                $this->whenLoaded('cheques')
-            ),
+            // 'cheques' => ChequeResource::collection(
+            //     $this->whenLoaded('cheque')
+            // ),
+
+            'financial_account_id' => $this->financial_account_id ?? null,
+            'financial_account_name' => $this->financialAccount?->name ?? null,
+
+            'cheque_id' =>  $this->cheque_id ?? null,
+            'cheque_number' =>  $this->cheque?->cheque_number ?? null,
 
             'notes' => $this->notes,
         ];

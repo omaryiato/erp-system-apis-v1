@@ -8,12 +8,26 @@ class FinancialAccountRepository
 {
     public function getAll()
     {
-        return FinancialAccount::with('cheques')->get();
+        return FinancialAccount::with(
+            [
+                'cheques',
+                'cashTransactions',
+                'purchaseItems',
+                'employeePayments',
+                'assetExpenses',
+            ])->get();
+
     }
 
     public function getDetails(FinancialAccount $account): ?FinancialAccount
     {
-        return $account->load('cheques');
+        return $account->load([
+                'cheques',
+                'cashTransactions',
+                'purchaseItems',
+                'employeePayments',
+                'assetExpenses',
+            ]);
     }
 
     public function create(array $account_request): FinancialAccount

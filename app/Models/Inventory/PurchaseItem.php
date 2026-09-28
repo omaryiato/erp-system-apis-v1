@@ -19,7 +19,7 @@ class PurchaseItem extends Model
         'quantity',
         'unit_price',
         'notes',
-        'purchase_type',
+        'payment_method',
         'total_amount',
         'cheques_id',
         'financial_account_id',
@@ -55,13 +55,13 @@ class PurchaseItem extends Model
         );
     }
 
-    public function cheques(): HasMany
-    {
-        return $this->hasMany(
-            Cheque::class,
-            'cheques_id'
-        );
-    }
+    // public function cheques(): HasMany
+    // {
+    //     return $this->hasMany(
+    //         Cheque::class,
+    //         'cheques_id'
+    //     );
+    // }
 
     public function financialAccount(): BelongsTo
     {

@@ -10,7 +10,10 @@ class EmployeePaymentRepository
 {
     public function getAll()
     {
-        return EmployeePayment::all();
+        return EmployeePayment::with([
+            'financialAccount',
+                'cheque',
+        ])->get();
     }
 
     public function create(array $data): EmployeePayment
@@ -20,7 +23,10 @@ class EmployeePaymentRepository
 
     public function find(int $id): EmployeePayment
     {
-        return EmployeePayment::findOrFail($id);
+        return EmployeePayment::with([
+            'financialAccount',
+                'cheque',
+        ])->findOrFail($id);
     }
 
     public function update(

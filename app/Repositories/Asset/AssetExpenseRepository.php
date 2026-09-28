@@ -13,6 +13,8 @@ class AssetExpenseRepository
         return AssetExpense::with([
                 'asset',
                 'supplier',
+                'financialAccount',
+                'cheque',
             ])
             ->orderBy('expense_date', 'desc')
             ->get();
@@ -23,6 +25,8 @@ class AssetExpenseRepository
         return $assetExpense->load([
                 'asset',
                 'supplier',
+                'financialAccount',
+                'cheque',
             ]);
     }
 

@@ -14,7 +14,7 @@ class PurchaseRepository
                 'supplier',
                 'items.item',
                 'items.allocations.project',
-                'items.cheques',
+                'items.cheque',
                 'items.financialAccount',
             ])
             ->get();
@@ -26,7 +26,7 @@ class PurchaseRepository
                 'supplier',
                 'items.item',
                 'items.allocations.project',
-                'items.cheques',
+                'items.cheque',
                 'items.financialAccount',
             ]);
     }
@@ -88,7 +88,7 @@ class PurchaseRepository
                 'supplier',
                 'items.item',
                 'items.allocations.project',
-                'items.cheques',
+                'items.cheque',
                 'items.financialAccount',
             ])
             ->get();

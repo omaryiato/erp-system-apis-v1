@@ -6,6 +6,8 @@ use App\Models\Attendance\EmployeePayment;
 use App\Repositories\Attendance\EmployeePaymentRepository;
 use App\Services\ChequeService;
 use App\Services\FinancialAccountService;
+use Illuminate\Support\Facades\DB;
+
 
 class EmployeePaymentService
 {
@@ -22,25 +24,28 @@ class EmployeePaymentService
 
     public function create(array $data): EmployeePayment
     {
-        $cheque_info = null;
+        return DB::transaction(function () use ($data) {
 
-        if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+            $cheque_info = null;
 
-            $cheque_info = $this->chequeService->create(
-                $data['cheque']
-            );
+            if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
 
-            $data['cheques_id'] = $cheque_info->id;
-            $data['amount'] = $cheque_info->amount;
-        }
+                $cheque_info = $this->chequeService->create(
+                    $data['cheque']
+                );
 
-        $payment_info = $this->preparePaymentInfo($data);
+                $data['cheques_id'] = $cheque_info->id;
+                $data['cheque_amount'] = $cheque_info->amount;
+            }
 
-        $payment_details = $this->repository->create($payment_info);
+            $payment_info = $this->preparePaymentInfo($data);
 
-        $this->financialAccountService->updateAccountBalance($payment_info, "employee_payment");
+            $payment_details = $this->repository->create($payment_info);
 
-        return $payment_details;
+            // $this->financialAccountService->updateAccountBalance($payment_info, "employee_payment");
+
+            return $payment_details;
+        });
     }
 
     public function update(
@@ -48,16 +53,50 @@ class EmployeePaymentService
         array $data
     ): EmployeePayment {
 
-        return $this->repository->update(
-            $payment,
-            $this->preparePaymentInfo($data)
-        );
+        return DB::transaction(function () use ($payment, $data) {
+            $this->chequeService->delete(
+                    $payment->cheque_id
+                );
+
+            $cheque_info = null;
+
+            if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+
+                $cheque_info = $this->chequeService->create(
+                    $data['cheque']
+                );
+
+                $data['cheques_id'] = $cheque_info->id;
+                $data['cheque_amount'] = $cheque_info->amount;
+            }
+
+            $payment_info = $this->preparePaymentInfo($data);
+
+            $payment_details = $this->repository->update(
+                $payment,
+                $payment_info
+            );
+
+             // $this->financialAccountService->updateAccountBalance($payment_info, "employee_payment");
+
+            return $payment_details;
+        });
     }
 
     public function delete(
         EmployeePayment $payment
-    ): void {
-        $this->repository->delete($payment);
+    ): bool {
+        return DB::transaction(function () use ($payment) {
+
+            if(isset($payment->cheque_id)){
+                $this->chequeService->delete(
+                    $payment->cheque_id
+                );
+            }
+
+            return $this->repository->delete($payment);;
+        });
+
     }
 
     public function employeePayments(
