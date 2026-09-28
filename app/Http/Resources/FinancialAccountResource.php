@@ -80,12 +80,32 @@ class FinancialAccountResource extends JsonResource
             'currency' => $this->currency,
 
             'opening_balance' => $this->opening_balance,
-            
+
             'current_balance' => $currentBalance,
 
             'is_active' => $this->is_active,
 
             'description' => $this->description,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Financial Summary
+            |--------------------------------------------------------------------------
+            */
+            'financial_summary' => [
+                'revenues' => $revenues,
+
+                'expenses' => [
+                    'cash' => $cashExpenses,
+                    // 'cheques' => $chequeExpenses,
+                    'purchases' => $purchaseExpenses,
+                    'employee_payments' => $employeePaymentExpenses,
+                    'asset_expenses' => $assetExpenses,
+                    'total' => $totalExpenses,
+                ],
+
+                // 'current_balance' => $currentBalance,
+            ],
 
             'cheques' => ChequeResource::collection($this->whenLoaded('cheques')),
 
