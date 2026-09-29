@@ -10,23 +10,23 @@ class DocumentCategoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->id ?? null ,
 
-            'name' => $this->name,
-            'name_ar' => $this->name_ar,
+            'name' => $this->name ?? null ,
+            'name_ar' => $this->name_ar ?? null ,
 
-            'code' => $this->code,
+            'code' => $this->code ?? null ,
 
-            'description' => $this->description,
+            'description' => $this->description ?? null ,
 
-            'is_active' => $this->is_active,
+            'is_active' => $this->is_active ?? null ,
 
             'created_at' => $this->created_at?->format(
                 'Y-m-d H:i:s'
-            ),
+            ) ?? null ,
             'updated_at' => $this->updated_at?->format(
                 'Y-m-d H:i:s'
-            ),
+            ) ?? null ,
         ];
     }
 }

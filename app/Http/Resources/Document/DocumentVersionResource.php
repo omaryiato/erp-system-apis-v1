@@ -11,39 +11,39 @@ class DocumentVersionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->id ?? null,
 
-            'document_id' => $this->document_id,
+            'document_id' => $this->document_id ?? null,
 
-            'version_number' => $this->version_number,
+            'version_number' => $this->version_number ?? null,
 
-            'file_name' => $this->file_name,
+            'file_name' => $this->file_name ?? null,
 
             'original_file_name' =>
-                $this->original_file_name,
+                $this->original_file_name ?? null,
 
-            'file_path' =>   asset($this->file_path),
+            'file_path' =>   asset($this->file_path) ?? null,
 
-            // 'file_path' => $this->file_path,
+            // 'file_path' => $this->file_path ?? null,
 
-            'storage_disk' => $this->storage_disk,
+            'storage_disk' => $this->storage_disk ?? null,
 
-            'mime_type' => $this->mime_type,
+            'mime_type' => $this->mime_type ?? null,
 
             'file_extension' =>
-                $this->file_extension,
+                $this->file_extension ?? null,
 
-            'file_size' => $this->file_size,
+            'file_size' => $this->file_size ?? null,
 
-            'file_hash' => $this->file_hash,
+            'file_hash' => $this->file_hash ?? null,
 
-            'description' => $this->description,
+            'description' => $this->description ?? null,
 
-            'uploaded_by' => $this->uploaded_by,
+            'uploaded_by' => $this->uploaded_by ?? null,
 
             'created_at' => $this->created_at?->format(
                 'Y-m-d H:i:s'
-            ),
+            ) ?? null,
 
             // 'file_url' => route(
             //     'get.document.version',
