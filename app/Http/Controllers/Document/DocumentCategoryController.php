@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Document;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Document\DocumentCategoryRequest;
+use App\Http\Requests\Document\AddNewDocumentCategory;
+use App\Http\Requests\Document\UpdateDocumentCategory;
 use App\Http\Resources\Document\DocumentCategoryResource;
 use App\Models\Document\DocumentCategory;
 use App\Services\Document\DocumentCategoryService;
 use Exception;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DocumentCategoryController extends Controller
@@ -32,7 +32,7 @@ class DocumentCategoryController extends Controller
     }
 
     public function store(
-        DocumentCategoryRequest $request
+        AddNewDocumentCategory $request
     ) {
         try {
 
@@ -70,7 +70,7 @@ class DocumentCategoryController extends Controller
     }
 
     public function update(
-        DocumentCategoryRequest $request,
+        UpdateDocumentCategory $request,
         DocumentCategory $documentCategory
     ) {
 

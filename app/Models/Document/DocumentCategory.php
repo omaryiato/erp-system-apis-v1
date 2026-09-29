@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentCategory extends Model
 {
-    protected $table = 'document_categories';
+    protected $table = 'document_categories_v1';
 
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'parent_id',
         'name',
         'name_ar',
         'code',
@@ -24,24 +23,6 @@ class DocumentCategory extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(
-            DocumentCategory::class,
-            'parent_id',
-            'id'
-        );
-    }
-
-    public function children(): HasMany
-    {
-        return $this->hasMany(
-            DocumentCategory::class,
-            'parent_id',
-            'id'
-        );
-    }
 
     public function documents(): HasMany
     {

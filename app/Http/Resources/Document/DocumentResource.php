@@ -35,10 +35,10 @@ class DocumentResource extends JsonResource
             'reference_id' =>
                 $this->reference_id,
 
-            'current_version' =>
-                new DocumentVersionResource(
-                    $this->whenLoaded('currentVersion')
-                ),
+            // 'current_version' =>
+            //     new DocumentVersionResource(
+            //         $this->whenLoaded('currentVersion')
+            //     ),
 
             'versions' =>
                 DocumentVersionResource::collection(
@@ -49,9 +49,13 @@ class DocumentResource extends JsonResource
 
             'updated_by' => $this->updated_by,
 
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at?->format(
+                'Y-m-d H:i:s'
+            ),
 
-            'updated_at' => $this->updated_at,
+            'updated_at' => $this->updated_at?->format(
+                'Y-m-d H:i:s'
+            ),
         ];
     }
 }

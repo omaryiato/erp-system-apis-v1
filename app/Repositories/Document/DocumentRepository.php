@@ -3,95 +3,37 @@
 namespace App\Repositories\Document;
 
 use App\Models\Document\Document;
-use Illuminate\Database\Eloquent\Collection;
 
 class DocumentRepository
 {
-    public function getAll(array $filters = []): Collection
+    public function getAll()
     {
-        return Document::query()
-            ->with([
+        return Document::with([
                 'category',
-                'currentVersion',
-            ])
-            ->when(
-                isset($filters['category_id']),
-                fn ($query) =>
-                    $query->where(
-                        'category_id',
-                        $filters['category_id']
-                    )
-            )
-            ->when(
-                isset($filters['status']),
-                fn ($query) =>
-                    $query->where(
-                        'status',
-                        $filters['status']
-                    )
-            )
-            ->when(
-                isset($filters['reference_type']),
-                fn ($query) =>
-                    $query->where(
-                        'reference_type',
-                        $filters['reference_type']
-                    )
-            )
-            ->when(
-                isset($filters['reference_id']),
-                fn ($query) =>
-                    $query->where(
-                        'reference_id',
-                        $filters['reference_id']
-                    )
-            )
-            ->when(
-                !empty($filters['search']),
-                fn ($query) =>
-                    $query->where(function ($q) use ($filters) {
-                        $q->where(
-                            'title',
-                            'ILIKE',
-                            '%' . $filters['search'] . '%'
-                        )
-                        ->orWhere(
-                            'document_code',
-                            'ILIKE',
-                            '%' . $filters['search'] . '%'
-                        );
-                    })
-            )
-            ->latest('id')
-            ->get();
-    }
-
-    public function findById(int $id): ?Document
-    {
-        return Document::query()
-            ->with([
-                'category',
-                'currentVersion',
                 'versions',
-            ])
-            ->find($id);
+            ])->get();
     }
 
-    public function create(array $data): Document
+    public function getDetails(Document $document): ?Document
     {
-        return Document::create($data);
+        return $document->load([
+                'category',
+                'versions',
+            ]);
+    }
+
+    public function create(array $document_request): Document
+    {
+        return Document::create($document_request);
     }
 
     public function update(
         Document $document,
-        array $data
+        array $document_request
     ): Document {
-        $document->update($data);
+        $document->update($document_request);
 
-        return $document->refresh()->load([
-            'category',
-            'currentVersion',
-        ]);
+        return $document->refresh();
     }
 
     public function delete(Document $document): bool

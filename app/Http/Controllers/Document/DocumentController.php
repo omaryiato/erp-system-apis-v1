@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Document;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Document\DocumentRequest;
-use App\Http\Requests\Document\DocumentVersionRequest;
+use App\Http\Requests\Document\AddNewDocument;
+use App\Http\Requests\Document\UpdateDocument;
 use App\Http\Resources\Document\DocumentResource;
 use App\Http\Resources\Document\DocumentVersionResource;
+use App\Models\Document\Document;
+use App\Models\Document\DocumentVersion;
 use App\Services\Document\DocumentService;
-use Illuminate\Http\Request;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 class DocumentController extends Controller
 {
@@ -17,97 +21,134 @@ class DocumentController extends Controller
     ) {
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $documents = $this->service->getAll(
-            $request->only([
-                'category_id',
-                'status',
-                'reference_type',
-                'reference_id',
-                'search',
-            ])
-        );
-
-        return DocumentResource::collection(
-            $documents
-        );
+        return ResponseHelper::success(
+                    DocumentResource::collection($this->service->getAll()),
+                    [
+                        'en' => trans('validation.get_category_list', [], 'en'),
+                        'ar' => trans('validation.get_category_list', [], 'ar'),
+                    ],
+                    Response::HTTP_OK
+                );
     }
 
     public function store(
-        DocumentRequest $request
+        AddNewDocument $request
     ) {
-        $document = $this->service->create(
-            $request->validated()
-        );
 
-        return new DocumentResource(
-            $document
-        );
+        try {
+
+            return ResponseHelper::success(
+                    new DocumentResource($this->service->create(
+                                    $request->validated(),
+                                    $request
+                                )),
+                    [
+                        'en' => trans('validation.add_new_category', [], 'en'),
+                        'ar' => trans('validation.add_new_category', [], 'ar'),
+                    ],
+                    Response::HTTP_CREATED
+                );
+        } catch (Exception $exception) {
+            return ResponseHelper::error(
+                [
+                    'en' => trans('validation.exception_error', [], 'en'),
+                    'ar' => trans('validation.exception_error', [], 'ar'),
+                ],
+                $exception->getMessage(),
+                500);
+        }
     }
 
-    public function show(int $id)
+    public function show(Document $document)
     {
-        return new DocumentResource(
-            $this->service->findById($id)
-        );
+        return ResponseHelper::success(
+                new DocumentResource($this->service->getDetails($document)),
+                [
+                    'en' => trans('validation.get_category_details', [], 'en'),
+                    'ar' => trans('validation.get_category_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
     }
 
     public function update(
-        DocumentRequest $request,
-        int $id
+        UpdateDocument $request,
+        Document $document
     ) {
-        $document = $this->service->update(
-            $id,
-            $request->validated()
-        );
+        try {
 
-        return new DocumentResource(
-            $document
-        );
+                return ResponseHelper::success(
+                    new DocumentResource(
+                        $this->service->update(
+                                $document,
+                                $request->validated(),
+                                $request
+                            )),
+                    [
+                        'en' => trans('validation.update_category', [], 'en'),
+                        'ar' => trans('validation.update_category', [], 'ar'),
+                    ],
+                    Response::HTTP_CREATED
+                );
+        } catch (Exception $exception) {
+            return ResponseHelper::error(
+                [
+                    'en' => trans('validation.exception_error', [], 'en'),
+                    'ar' => trans('validation.exception_error', [], 'ar'),
+                ],
+                $exception->getMessage(),
+                500);
+        }
     }
 
-    public function destroy(int $id)
+    public function destroy(Document $document)
     {
-        $this->service->delete($id);
-
-        return response()->json([
-            'message' =>
-                'Document deleted successfully.',
-        ]);
+        return ResponseHelper::success(
+                $this->service->delete($document),
+                [
+                    'en' => trans('validation.delete_category', [], 'en'),
+                    'ar' => trans('validation.delete_category', [], 'ar'),
+                ],
+                Response::HTTP_CREATED
+            );
     }
 
-    public function uploadVersion(
-        DocumentVersionRequest $request,
-        int $id
+    public function getDocumentVersion(
+    Document $document,
+    DocumentVersion $documentVersion
     ) {
-        $version = $this->service->uploadVersion(
-            $id,
-            $request->file('file'),
-            $request->validated()['description'] ?? null
+        $file = $this->service->getDocumentVersion(
+            $document,
+            $documentVersion
         );
 
-        return new DocumentVersionResource(
-            $version
-        );
-    }
-
-    public function versions(int $id)
-    {
-        $versions = $this->service->getVersions($id);
-
-        return DocumentVersionResource::collection(
-            $versions
+        return response()->file(
+            $file['path'],
+            [
+                'Content-Type' => $file['mime_type'],
+                'Content-Disposition' =>
+                    'inline; filename="' . $file['file_name'] . '"',
+            ]
         );
     }
 
-    public function downloadVersion(
-        int $id,
-        int $versionId
-    ) {
-        return $this->service->downloadVersion(
-            $id,
-            $versionId
-        );
-    }
+    // public function uploadVersion(
+    //     DocumentVersionRequest $request,
+    //     Document $document
+    // ) {
+    //     return ResponseHelper::success(
+    //             new DocumentVersionResource( $this->service->uploadVersion(
+    //                 $document,
+    //                 $request->file('file'),
+    //                 $request->validated()['description'] ?? null
+    //             )),
+    //             [
+    //                 'en' => trans('validation.delete_category', [], 'en'),
+    //                 'ar' => trans('validation.delete_category', [], 'ar'),
+    //             ],
+    //             Response::HTTP_CREATED
+    //         );
+    // }
 }

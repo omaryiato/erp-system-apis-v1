@@ -564,10 +564,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         |--------------------------------------------------------------------------
         */
 
-        // Route::apiResource(
-        //     'categories',
-        //     DocumentCategoryController::class
-        // );
+        Route::apiResource(
+            'document-categories',
+            DocumentCategoryController::class
+        );
 
 
         /*
@@ -576,12 +576,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         |--------------------------------------------------------------------------
         */
 
-        // Route::apiResource(
-        //     '',
-        //     DocumentController::class
-        // )->parameters([
-        //     '' => 'id',
-        // ]);
+        Route::apiResource(
+            'documents',
+            DocumentController::class
+        );
 
 
         /*
@@ -600,10 +598,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         //     [DocumentController::class, 'versions']
         // );
 
-        // Route::get(
-        //     '{id}/versions/{versionId}/download',
-        //     [DocumentController::class, 'downloadVersion']
-        // );
+        Route::get(
+            'get/{document}/version/{documentVersion}',
+            [DocumentController::class, 'getVersion']
+        )->name('get.document.version');
     });
 
     /***************************************** Users *******************************************/

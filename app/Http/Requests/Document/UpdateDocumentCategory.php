@@ -3,8 +3,10 @@
 namespace App\Http\Requests\Document;
 
 use App\Http\Requests\Base\BaseRequest;
+use Illuminate\Validation\Rule;
 
-class DocumentCategoryRequest extends BaseRequest
+
+class UpdateDocumentCategory extends BaseRequest
 {
     public function authorize(): bool
     {
@@ -13,12 +15,9 @@ class DocumentCategoryRequest extends BaseRequest
 
     public function rules(): array
     {
+        $id = $this->route('id');
+
         return [
-            'parent_id' => [
-                'nullable',
-                'integer',
-                'exists:document_categories,id',
-            ],
 
             'name' => [
                 'required',
@@ -36,6 +35,10 @@ class DocumentCategoryRequest extends BaseRequest
                 'required',
                 'string',
                 'max:50',
+                Rule::unique(
+                    'document_categories_v1',
+                    'code'
+                )->ignore($id),
             ],
 
             'description' => [
@@ -46,12 +49,6 @@ class DocumentCategoryRequest extends BaseRequest
             'is_active' => [
                 'nullable',
                 'boolean',
-            ],
-
-            'sort_order' => [
-                'nullable',
-                'integer',
-                'min:0',
             ],
         ];
     }

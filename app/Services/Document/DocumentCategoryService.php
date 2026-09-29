@@ -25,14 +25,7 @@ class DocumentCategoryService
     public function create(
         array $category_request
     ): DocumentCategory {
-
-        $category_request['is_active'] =
-            $category_request['is_active'] ?? true;
-
-        $category_request['sort_order'] =
-            $category_request['sort_order'] ?? 0;
-
-        return $this->repository->create($category_request);
+        return $this->repository->create($this->prepareCategoryInfo($category_request));
     }
 
     public function update(
@@ -41,46 +34,29 @@ class DocumentCategoryService
     ): DocumentCategory {
 
 
-        if (
-            isset($category_request['parent_id']) &&
-            (int) $category_request['parent_id'] === $documentCategory->id
-        ) {
-            throw ValidationException::withMessages([
-                'parent_id' => [
-                    'Category cannot be its own parent.'
-                ],
-            ]);
-        }
-
         return $this->repository->update(
             $documentCategory,
-            $category_request
+            $this->prepareCategoryInfo($category_request)
         );
     }
 
     public function delete(DocumentCategory $documentCategory): bool
     {
 
-        if (
-            $this->repository->hasChildren($documentCategory)
-        ) {
-            throw ValidationException::withMessages([
-                'category' => [
-                    'Cannot delete a category that has child categories.'
-                ],
-            ]);
-        }
-
-        if (
-            $this->repository->hasDocuments($documentCategory)
-        ) {
-            throw ValidationException::withMessages([
-                'category' => [
-                    'Cannot delete a category that has documents.'
-                ],
-            ]);
-        }
-
         return $this->repository->delete($documentCategory);
+    }
+
+    public function prepareCategoryInfo(array $category_request)
+    {
+
+        $category_data =  [
+            'name' => $category_request['name'] ?? null,
+            'name_ar' => $category_request['name_ar'] ?? null,
+            'code' => $category_request['code'] ?? null,
+            'description' => $category_request['description'] ?? null,
+            'is_active' => $category_request['is_active'] ?? true,
+        ];
+
+        return $category_data;
     }
 }

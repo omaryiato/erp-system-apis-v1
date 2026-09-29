@@ -20,64 +20,59 @@ class DocumentService
     ) {
     }
 
-    public function getAll(
-        array $filters = []
-    ): Collection {
-        return $this->repository->getAll($filters);
+    public function getAll()
+    {
+        return $this->repository->getAll();
     }
 
-    public function findById(
-        int $id
+    public function getDetails(
+        Document $document
     ): Document {
-        $document = $this->repository->findById($id);
-
-        if (!$document) {
-            throw ValidationException::withMessages([
-                'document' => [
-                    'Document not found.'
-                ],
-            ]);
-        }
-
-        return $document;
+        return $this->repository->getDetails($document);
     }
 
     public function create(
-        array $data
+        array $document_request,
+        object $request
     ): Document {
-        $data['status'] =
-            $data['status'] ?? 'ACTIVE';
 
-        return $this->repository->create($data)
-            ->load([
-                'category',
-                'currentVersion',
-            ]);
+        return DB::transaction(function () use ($document_request, $request) {
+
+            $document = $this->repository->create($this->prepareDocumentInfo($document_request));
+
+            $this->uploadVersion($document, $request->file('file'), $document_request['description']);
+
+            return $document->load([
+                    'category',
+                    'versions',
+                ])->refresh();
+        });
     }
 
     public function update(
-        int $id,
-        array $data
+        Document $document,
+        array $document_request,
+        object $request
     ): Document {
-        $document = $this->findById($id);
 
-        if ($document->status === 'DELETED') {
-            throw ValidationException::withMessages([
-                'document' => [
-                    'Deleted document cannot be updated.'
-                ],
-            ]);
-        }
+        return DB::transaction(function () use ($document, $document_request, $request) {
 
-        return $this->repository->update(
-            $document,
-            $data
-        );
+            $document = $this->repository->update(
+                $document,
+                $this->prepareDocumentInfo($document_request)
+            );
+
+            $this->uploadVersion($document, $request->file('file'), $document_request['description']);
+
+            return $document->load([
+                        'category',
+                        'versions',
+                    ]);
+        });
     }
 
-    public function delete(int $id): bool
+    public function delete(Document $document): bool
     {
-        $document = $this->findById($id);
 
         /*
          * Logical delete.
@@ -94,16 +89,15 @@ class DocumentService
     }
 
     public function uploadVersion(
-        int $documentId,
+        Document $document,
         UploadedFile $file,
         ?string $description = null
     ): DocumentVersion {
         return DB::transaction(function () use (
-            $documentId,
+            $document,
             $file,
             $description
         ) {
-            $document = $this->findById($documentId);
 
             if ($document->status === 'DELETED') {
                 throw ValidationException::withMessages([
@@ -115,13 +109,16 @@ class DocumentService
 
             $versionNumber =
                 $this->versionRepository
-                    ->getNextVersionNumber($documentId);
+                    ->getNextVersionNumber($document->id);
 
-            $disk = 'local';
+            // $disk = 'local';
+            $disk = 'public';
 
             $directory =
-                'documents/' .
-                $documentId;
+                'storage/documents/' .
+                $document->reference_type .'/'.
+                $document->reference_id .'/'.
+                $document->id;
 
             $extension =
                 $file->getClientOriginalExtension();
@@ -144,7 +141,7 @@ class DocumentService
             $version =
                 $this->versionRepository->create([
                     'document_id' =>
-                        $documentId,
+                        $document->id,
 
                     'version_number' =>
                         $versionNumber,
@@ -179,7 +176,7 @@ class DocumentService
                     'description' =>
                         $description,
 
-                    'uploaded_by' => auth()->id(),
+                    'uploaded_by' => $document->updated_by,
 
                     'created_at' =>
                         now(),
@@ -197,24 +194,39 @@ class DocumentService
         });
     }
 
-    public function getVersions(
-        int $documentId
-    ): Collection {
-        $this->findById($documentId);
+    public function prepareDocumentInfo(array $document_request)
+    {
+        $document_data =  [
+            'category_id' => $document_request['category_id'] ?? null,
+            'title' => $document_request['title'] ?? null,
+            'description' => $document_request['description'] ?? null,
+            'invoice_date' => $document_request['invoice_date'] ?? null,
+            'invoice_amount' => $document_request['invoice_amount'] ?? 0,
+            'invoice_number' => $document_request['invoice_number'] ?? null,
+            'document_code' => $document_request['document_code'] ?? null,
+            'status' => $document_request['status'] ?? 'ACTIVE',
+            'reference_type' => $document_request['reference_type'] ?? null,
+            'reference_id' => $document_request['reference_id'] ?? null,
+        ];
 
-        return $this->versionRepository
-            ->getByDocument($documentId);
+        if (isset($document_request['created_by'])) {
+            $document_data['created_by'] = $document_request['created_by'];
+        }
+
+        if (isset($document_request['updated_by'])) {
+            $document_data['updated_by'] = $document_request['updated_by'];
+        }
+
+        return $document_data;
     }
 
-    public function downloadVersion(
-        int $documentId,
-        int $versionId
-    ) {
-        $document = $this->findById($documentId);
-
+    public function getDocumentVersion(
+    Document $document,
+    DocumentVersion $documentVersion
+    ): array {
         $version = DocumentVersion::query()
             ->where('document_id', $document->id)
-            ->where('id', $versionId)
+            ->where('id', $documentVersion->id)
             ->first();
 
         if (!$version) {
@@ -225,11 +237,9 @@ class DocumentService
             ]);
         }
 
-        if (
-            !Storage::disk(
-                $version->storage_disk
-            )->exists($version->file_path)
-        ) {
+        $disk = Storage::disk($version->storage_disk);
+
+        if (!$disk->exists($version->file_path)) {
             throw ValidationException::withMessages([
                 'file' => [
                     'Document file not found in storage.'
@@ -237,11 +247,11 @@ class DocumentService
             ]);
         }
 
-        return Storage::disk(
-            $version->storage_disk
-        )->download(
-            $version->file_path,
-            $version->original_file_name
-        );
+        return [
+            'path' => $disk->path($version->file_path),
+            'file_name' => $version->original_file_name,
+            'mime_type' => $version->mime_type,
+        ];
     }
+
 }

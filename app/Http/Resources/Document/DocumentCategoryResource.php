@@ -12,8 +12,6 @@ class DocumentCategoryResource extends JsonResource
         return [
             'id' => $this->id,
 
-            'parent_id' => $this->parent_id,
-
             'name' => $this->name,
             'name_ar' => $this->name_ar,
 
@@ -23,18 +21,12 @@ class DocumentCategoryResource extends JsonResource
 
             'is_active' => $this->is_active,
 
-            'sort_order' => $this->sort_order,
-
-            'parent' => new self(
-                $this->whenLoaded('parent')
+            'created_at' => $this->created_at?->format(
+                'Y-m-d H:i:s'
             ),
-
-            'children' => self::collection(
-                $this->whenLoaded('children')
+            'updated_at' => $this->updated_at?->format(
+                'Y-m-d H:i:s'
             ),
-
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

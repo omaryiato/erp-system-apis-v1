@@ -3,21 +3,17 @@
 namespace App\Repositories\Document;
 
 use App\Models\Document\DocumentCategory;
-use Illuminate\Database\Eloquent\Collection;
 
 class DocumentCategoryRepository
 {
     public function getAll()
     {
-        return DocumentCategory::with('parent')->get();
+        return DocumentCategory::with('documents')->get();
     }
 
     public function getDetails(DocumentCategory $documentCategory): ?DocumentCategory
     {
-        return $documentCategory->load([
-                                        'parent',
-                                        'children',
-                                    ]);
+        return $documentCategory->load('documents');
     }
 
     public function create(array $category_request): DocumentCategory
@@ -39,29 +35,4 @@ class DocumentCategoryRepository
         return $documentCategory->delete();
     }
 
-    public function codeExists(
-        string $code,
-        ?int $exceptId = null
-    ): bool {
-        return DocumentCategory::query()
-            ->where('code', $code)
-            ->when(
-                $exceptId,
-                fn ($query) =>
-                    $query->where('id', '!=', $exceptId)
-            )
-            ->exists();
-    }
-
-    public function hasDocuments(
-        DocumentCategory $documentCategory
-    ): bool {
-        return $documentCategory->documents()->exists();
-    }
-
-    public function hasChildren(
-        DocumentCategory $documentCategory
-    ): bool {
-        return $documentCategory->children()->exists();
-    }
 }
