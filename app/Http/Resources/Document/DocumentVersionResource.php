@@ -22,7 +22,7 @@ class DocumentVersionResource extends JsonResource
             'original_file_name' =>
                 $this->original_file_name ?? null,
 
-            'file_path' =>   asset($this->file_path) ?? null,
+            'file_path' =>   asset('storage/' . $this->file_path) ?? null,
 
             // 'file_path' => $this->file_path ?? null,
 

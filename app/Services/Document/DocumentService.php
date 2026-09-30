@@ -115,7 +115,7 @@ class DocumentService
             $disk = 'public';
 
             $directory =
-                'storage/documents/' .
+                'documents/' .
                 $document->reference_type .'/'.
                 $document->reference_id .'/'.
                 $document->id;
