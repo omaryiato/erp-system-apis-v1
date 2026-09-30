@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Document extends Model
 {
-    protected $table = 'documents';
+    protected $table = 'documents_v1';
 
     protected $primaryKey = 'id';
 
