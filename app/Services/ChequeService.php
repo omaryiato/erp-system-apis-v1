@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Cheque;
+use App\Models\FinancialAccount;
 use App\Repositories\ChequeRepository;
 use App\Repositories\FinancialAccountRepository;
 use Illuminate\Validation\ValidationException;
@@ -27,9 +28,17 @@ class ChequeService
 
     public function create(array $cheque_request): Cheque
     {
-        $account = $this->accountRepository->getDetails(
-            $cheque_request['financial_account_id']
-        );
+        // $account = $this->accountRepository->getDetails(
+        //     $cheque_request['financial_account_id']
+        // );
+        $account = FinancialAccount::with(
+            [
+                'cheques',
+                'cashTransactions',
+                'purchaseItems',
+                'employeePayments',
+                'assetExpenses',
+            ])->findOrFail($cheque_request['financial_account_id']);
 
         if (!$account) {
             throw ValidationException::withMessages([
