@@ -40,7 +40,9 @@ class PurchaseService
             foreach ($purchase_items as $purchase_items_data) {
                 $cheque_info = null;
 
-                if (isset($purchase_items_data['payment_method']) && $purchase_items_data['payment_method'] == 'cheques' ) {
+                if (isset($purchase_items_data['payment_method']) &&
+                    $purchase_items_data['payment_method'] == 'cheques' &&
+                    !isset($purchase_items_data['cheque_id'])  ) {
 
                     $cheque_info = $this->chequeService->create(
                         $purchase_items_data['cheque']
@@ -155,7 +157,8 @@ class PurchaseService
 
                 if (
                     isset($purchase_items_data['payment_method']) &&
-                    $purchase_items_data['payment_method'] === 'cheques'
+                    $purchase_items_data['payment_method'] === 'cheques' &&
+                    !isset($purchase_items_data['cheque_id'])
                 ) {
 
                     $cheque_info = $this->chequeService->create(
@@ -269,10 +272,11 @@ class PurchaseService
             'quantity' => $purchase_item_request['quantity'] ?? null,
             'unit_price' => $purchase_item_request['unit_price'] ?? null,
             'payment_method' => $purchase_item_request['payment_method'] ?? 'cash',
-            'total_amount' => $purchase_item_request['total_amount'] ?? null,
+            // 'total_amount' => $purchase_item_request['total_amount'] ?? null,
             'notes' => $purchase_item_request['notes'] ?? null,
             'cheques_id' => $purchase_item_request['cheques_id'] ?? null,
             'financial_account_id' => $purchase_item_request['financial_account_id'] ?? null,
+            'cheque_amount' => $purchase_item_request['cheque_amount'] ?? null,
         ];
 
         return $purchase_item_data;

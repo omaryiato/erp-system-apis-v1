@@ -42,7 +42,9 @@ class AssetExpenseService
 
             $cheque_info = null;
 
-            if (isset($expense_request['payment_method']) && $expense_request['payment_method'] == 'cheques' ) {
+            if (isset($expense_request['payment_method']) &&
+                $expense_request['payment_method'] == 'cheques' &&
+                !isset($expense_request['cheque_id'])  ) {
 
                 $cheque_info = $this->chequeService->create(
                     $expense_request['cheque']
@@ -74,7 +76,9 @@ class AssetExpenseService
 
             $cheque_info = null;
 
-            if (isset($expense_request['payment_method']) && $expense_request['payment_method'] == 'cheques' ) {
+            if (isset($expense_request['payment_method']) &&
+                $expense_request['payment_method'] == 'cheques' &&
+                !isset($expense_request['cheque_id']) ) {
 
                 $cheque_info = $this->chequeService->create(
                     $expense_request['cheque']
@@ -120,6 +124,9 @@ class AssetExpenseService
             'payment_method' => $expense_request['payment_method'] ?? null,
             'reference_number' => $expense_request['reference_number'] ?? null,
             'notes' => $expense_request['notes'] ?? null,
+            'cheques_id' => $expense_request['cheques_id'] ?? null,
+            'cheque_amount' => $expense_request['cheque_amount'] ?? null,
+            'financial_account_id' => $expense_request['financial_account_id'] ?? null,
         ];
 
         return $expense_data;

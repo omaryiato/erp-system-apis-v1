@@ -28,7 +28,9 @@ class EmployeePaymentService
 
             $cheque_info = null;
 
-            if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+            if (isset($data['payment_method']) &&
+                $data['payment_method'] == 'cheques' &&
+                !isset($data['cheque_id']) ) {
 
                 $cheque_info = $this->chequeService->create(
                     $data['cheque']
@@ -60,7 +62,9 @@ class EmployeePaymentService
 
             $cheque_info = null;
 
-            if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+            if (isset($data['payment_method']) &&
+                $data['payment_method'] == 'cheques' &&
+                !isset($data['cheque_id'])  ) {
 
                 $cheque_info = $this->chequeService->create(
                     $data['cheque']
@@ -125,7 +129,8 @@ class EmployeePaymentService
             'notes' => $attendance_request['notes'] ?? 'active',
             'payment_method' => $attendance_request['payment_method'] ?? 'cash',
             'cheques_id' => $attendance_request['cheques_id'] ?? null,
-            'financial_account_id' => $attendance_request['financial_account_id'] ?? 'active',
+            'financial_account_id' => $attendance_request['financial_account_id'] ?? null,
+            'cheque_amount' => $expense_request['cheque_amount'] ?? null,
         ];
 
         return $attendance_data;

@@ -27,7 +27,9 @@ class CashTransactionService
         return DB::transaction(function () use ($data) {
             $cheque_info = null;
 
-            if (isset($data['payment_method']) && $data['payment_method'] == 'cheques' ) {
+            if (isset($data['payment_method']) &&
+                $data['payment_method'] == 'cheques' &&
+                !isset($data['cheque_id']) ) {
 
                 $cheque_info = $this->chequeService->create(
                     $data['cheque']
