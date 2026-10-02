@@ -196,8 +196,10 @@ class ChequeService
             'party_type' => $cheque_request['party_type'] ?? 0,
             'party_id' => $cheque_request['party_id'] ?? null,
             'issue_date' => $cheque_request['issue_date'] ?? null,
+            'due_date' => $cheque_request['due_date'] ?? null,
             'status' => $cheque_request['status'] ?? 'PENDING',
             'description' => $cheque_request['description'] ?? null,
+            'amount' => $cheque_request['amount'] ?? 0,
         ];
 
         return $cheque_data;
