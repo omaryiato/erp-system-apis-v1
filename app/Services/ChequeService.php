@@ -107,9 +107,18 @@ class ChequeService
 
         if (isset($cheque_request['financial_account_id'])) {
 
-            $account = $this->accountRepository->getDetails(
-                $cheque_request['financial_account_id']
-            );
+            // $account = $this->accountRepository->getDetails(
+            //     $cheque_request['financial_account_id']
+            // );
+
+            $account = FinancialAccount::with(
+            [
+                'cheques',
+                'cashTransactions',
+                'purchaseItems',
+                'employeePayments',
+                'assetExpenses',
+            ])->findOrFail($cheque_request['financial_account_id']);
 
             if (!$account) {
                 throw ValidationException::withMessages([
