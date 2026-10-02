@@ -69,17 +69,17 @@ class AddUser extends BaseRequest
                 'in:employee,admin,manager,owner',
             ],
 
-            'created_by' => [
-                'required',
-                'integer',
-                'exists:users_v1,id'
-            ],
+            // 'created_by' => [
+            //     'nullable',
+            //     'integer',
+            //     'exists:users_v1,id'
+            // ],
 
-            'updated_by' => [
-                'required',
-                'integer',
-                'exists:users_v1,id'
-            ],
+            // 'updated_by' => [
+            //     'nullable',
+            //     'integer',
+            //     'exists:users_v1,id'
+            // ],
         ];
     }
 }
