@@ -32,7 +32,7 @@ class ChequeRequest extends BaseRequest
             'financial_account_id' => [
                 'required',
                 'integer',
-                'exists:financial_accounts,id',
+                'exists:financial_accounts_v1,id',
             ],
 
             'party_type' => [
