@@ -19,6 +19,7 @@ class ChequeRequest extends BaseRequest
                 'required',
                 'string',
                 'max:100',
+                'unique:cheques_v1,cheque_number',
             ],
 
             'cheque_type' => [

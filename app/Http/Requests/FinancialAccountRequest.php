@@ -42,12 +42,14 @@ class FinancialAccountRequest extends BaseRequest
                 'nullable',
                 'string',
                 'max:100',
+                'unique:financial_accounts_v1,account_number',
             ],
 
             'iban' => [
                 'nullable',
                 'string',
                 'max:100',
+                'unique:financial_accounts_v1,iban',
             ],
 
             'bank_name' => [
