@@ -18,13 +18,13 @@ class FullReportResource extends JsonResource
             ],
 
             'expenses' => [
-                'total' => $this['total_purchases'],
+                'total' => $this['total_expenses'],
                 'paid' => $this['paid_expenses'],
                 'remaining' => $this['remaining_expenses'],
             ],
 
             'purchases' => [
-                'total' => $this['total_expenses'],
+                'total' => $this['total_purchases'],
                 'paid' => $this['paid_purchases'],
                 'remaining' => $this['remaining_purchases'],
             ],
