@@ -40,4 +40,9 @@ class Attendance extends Model
             'employee_id'
         );
     }
+
+    public function archive()
+    {
+        return $this->hasOne(AttendanceHistory::class, 'id', 'id');
+    }
 }

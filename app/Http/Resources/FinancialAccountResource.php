@@ -36,7 +36,11 @@ class FinancialAccountResource extends JsonResource
         */
         // $chequeExpenses = $this->cheques->sum('amount');
 
-        $purchaseExpenses = $this->purchaseItems->sum('total_amount');
+        // $purchaseExpenses = $this->purchaseItems->sum('total_amount');
+
+        $purchaseExpenses = $this->cashTransactions
+            ->whereNotNull('purchase_id')
+            ->sum('amount');
 
         $employeePaymentExpenses = $this->employeePayments->sum('amount');
 

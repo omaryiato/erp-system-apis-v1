@@ -7,6 +7,7 @@ use App\Models\Attendance\PayrollPeriod;
 use App\Repositories\Attendance\PayrollPeriodRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Carbon\CarbonPeriod;
 
 class PayrollPeriodService
 {
@@ -89,6 +90,35 @@ class PayrollPeriodService
                 ->get();
 
             $workedDays = $attendance->count();
+
+            // $workedDates = $attendance
+            //             ->pluck('work_date')
+            //             ->map(fn ($date) => \Carbon\Carbon::parse($date)->toDateString())
+            //             ->unique();
+
+            // $isMonthly = $employee->salary_type === 'monthly';
+
+            // $expectedWorkDays = collect(
+            //     CarbonPeriod::create(
+            //         $period->period_start,
+            //         $period->period_end
+            //     )
+            // )
+            // ->filter(function ($date) use ($isMonthly) {
+            //     // Carbon: الجمعة = 5
+            //     return ! $isMonthly || $date->dayOfWeek !== 5;
+            // })
+            // ->count();
+
+            // $workedExpectedDays = $workedDates
+            //     ->filter(function ($date) use ($isMonthly) {
+            //         $day = \Carbon\Carbon::parse($date)->dayOfWeek;
+
+            //         return ! $isMonthly || $day !== 5;
+            //     })
+            //     ->count();
+
+            // $absentDays = max(0, $expectedWorkDays - $workedExpectedDays);
 
             $workedHours = $attendance
                 ->sum('worked_hours');

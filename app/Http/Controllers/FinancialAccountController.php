@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\FinancialAccountRequest;
+use App\Http\Requests\UpdateFinancialAccount;
 use App\Http\Resources\FinancialAccountResource;
+use App\Http\Resources\FullReportResource;
 use App\Models\FinancialAccount;
 use App\Services\FinancialAccountService;
 use Exception;
@@ -76,7 +78,7 @@ class FinancialAccountController extends Controller
     }
 
     public function update(
-        FinancialAccountRequest $request,
+        UpdateFinancialAccount $request,
         FinancialAccount $account
     ) {
 
@@ -116,4 +118,19 @@ class FinancialAccountController extends Controller
                 Response::HTTP_CREATED
             );
     }
+
+    public function fullReport() {
+        return ResponseHelper::success(
+                new FullReportResource(
+                    $this->service->fullReport()
+                ),
+                [
+                    'en' => trans('validation.get_revenue_details', [], 'en'),
+                    'ar' => trans('validation.get_revenue_details', [], 'ar'),
+                ],
+                Response::HTTP_OK
+            );
+    }
+
+
 }

@@ -5,6 +5,7 @@ namespace App\Services\Inventory;
 use App\Models\Attendance\EmployeePayment;
 use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Expense;
+use App\Models\Inventory\Purchase;
 use App\Models\Inventory\Revenue;
 use App\Repositories\Inventory\CashTransactionRepository;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +50,18 @@ class CashTransactionService
                 $data
             );
 
+            $this->validateRevenuePayment(
+                $data
+            );
+
+            $this->validateExpensePayment(
+                $data
+            );
+
+            $this->validatePurchasePayment(
+                $data
+            );
+
             $data['transaction_number'] =
                 $this->generateTransactionNumber();
 
@@ -63,10 +76,14 @@ class CashTransactionService
             );
 
             // if(isset($data['expense_id'])){
+
             //     $this->financialAccountService->updateAccountBalance($data, "transaction_expense");
             // } elseif(isset($data['revenue_id'])){
 
             //     $this->financialAccountService->updateAccountBalance($data, "transaction_revenue");
+            // } elseif(isset($data['purchase_id'])){
+
+            //     $this->financialAccountService->updateAccountBalance($data, "transaction_purchase");
             // }
 
             return $transaction_details;
@@ -81,7 +98,7 @@ class CashTransactionService
 
         switch ($type) {
 
-            case 'revenue_payment':
+            case 'revenue':
 
                 if (empty($data['revenue_id'])) {
                     throw new InvalidArgumentException(
@@ -95,7 +112,7 @@ class CashTransactionService
 
                 break;
 
-            case 'expense_payment':
+            case 'expense':
 
                 if (empty($data['expense_id'])) {
                     throw new InvalidArgumentException(
@@ -109,17 +126,7 @@ class CashTransactionService
 
                 break;
 
-            case 'supplier_payment':
-
-                if (empty($data['supplier_id'])) {
-                    throw new InvalidArgumentException(
-                        'Supplier ID is required.'
-                    );
-                }
-
-                break;
-
-            case 'employee_payment':
+            case 'employee':
 
                 if (empty($data['employee_payment_id'])) {
                     throw new InvalidArgumentException(
@@ -128,6 +135,20 @@ class CashTransactionService
                 }
 
                 $this->validateEmployeePayment(
+                    $data
+                );
+
+                break;
+
+            case 'purchase':
+
+                if (empty($data['purchase_id'])) {
+                    throw new InvalidArgumentException(
+                        'Purchase ID is required.'
+                    );
+                }
+
+                $this->validatePurchasePayment(
                     $data
                 );
 
@@ -194,13 +215,13 @@ class CashTransactionService
             );
         }
 
-        if (
-            empty($data['project_id']) &&
-            $revenue->project_id
-        ) {
-            $data['project_id'] =
-                $revenue->project_id;
-        }
+        // if (
+        //     empty($data['project_id']) &&
+        //     $revenue->project_id
+        // ) {
+        //     $data['project_id'] =
+        //         $revenue->project_id;
+        // }
     }
 
     private function validateExpensePayment(
@@ -237,13 +258,13 @@ class CashTransactionService
             );
         }
 
-        if (
-            empty($data['project_id']) &&
-            $expense->project_id
-        ) {
-            $data['project_id'] =
-                $expense->project_id;
-        }
+        // if (
+        //     empty($data['project_id']) &&
+        //     $expense->project_id
+        // ) {
+        //     $data['project_id'] =
+        //         $expense->project_id;
+        // }
     }
 
     private function validateEmployeePayment(
@@ -263,6 +284,49 @@ class CashTransactionService
                 'Cash transaction amount must match employee payment amount.'
             );
         }
+    }
+
+    private function validatePurchasePayment(
+        array $data
+    ): void {
+
+        $purchase =  Purchase::query()
+            ->with('cashTransactions')
+            ->lockForUpdate()
+            ->findOrFail(
+                $data['purchase_id']
+            );
+
+        $paid = $purchase
+            ->cashTransactions
+            ->sum('amount');
+
+        $remaining =
+            (float) $purchase->amount -
+            (float) $paid;
+
+        if (
+            (float) $data['amount'] >
+            $remaining
+        ) {
+            throw new RuntimeException(
+                'Payment amount exceeds remaining purchase amount.'
+            );
+        }
+
+        if ($remaining <= 0) {
+            throw new RuntimeException(
+                'This purchase has already been fully paid.'
+            );
+        }
+
+        // if (
+        //     empty($data['project_id']) &&
+        //     $expense->project_id
+        // ) {
+        //     $data['project_id'] =
+        //         $expense->project_id;
+        // }
     }
 
     private function generateTransactionNumber(): string

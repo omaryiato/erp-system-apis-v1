@@ -34,6 +34,7 @@ class AttendanceRepository
     public function delete(
         Attendance $attendance
     ): void {
+        $attendance->archive()->delete();
         $attendance->delete();
     }
 

@@ -16,6 +16,7 @@ class Purchase extends Model
         'reference_number',
         'notes',
         'status',
+        'amount',
     ];
 
     protected $casts = [

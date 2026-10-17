@@ -21,7 +21,7 @@ class CashTransaction extends Model
         'expense_id',
         'revenue_id',
         'employee_payment_id',
-        'purchase_order_id',
+        'purchase_id',
         'amount',
         'transaction_date',
         'description',

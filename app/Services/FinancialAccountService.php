@@ -84,7 +84,7 @@ class FinancialAccountService
             'asset_expense',
             'transaction_expense',
             'transaction_revenue',
-            'purchase',
+            'transaction_purchase',
             'employee_payment',
         ];
 
@@ -109,6 +109,12 @@ class FinancialAccountService
             ]
         );
 
+    }
+
+
+    public function fullReport(): array {
+
+        return $this->repository->fullReport();
     }
 
 }

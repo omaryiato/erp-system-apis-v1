@@ -41,6 +41,13 @@ class UpdatePurchase extends BaseRequest
                 'string',
             ],
 
+            'amount' => [
+                'bail',
+                'required',
+                'numeric',
+                'min:1',
+            ],
+
             'status' => [
                 'bail',
                 'nullable',

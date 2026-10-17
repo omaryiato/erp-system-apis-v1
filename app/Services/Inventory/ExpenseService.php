@@ -2,9 +2,12 @@
 
 namespace App\Services\Inventory;
 
+use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Expense;
 use App\Repositories\Inventory\ExpenseRepository;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
+
 
 class ExpenseService
 {
@@ -31,20 +34,43 @@ class ExpenseService
         Expense $expense,
         array $expense_request
     ): Expense {
-        return DB::transaction(
-            fn () => $this->repository->update(
+        return DB::transaction(function () use ($expense, $expense_request) {
+            $expenseExists = $this->validateExpensePayment($expense);
+
+            if ($expenseExists) {
+                throw new RuntimeException(
+                    'This expense already has a payment transaction.'
+                );
+            }
+
+            return $this->repository->update(
                 $expense,
                 $this->prepareExpenseInfo($expense_request)
-            )
-        );
+            );
+        });
+    }
+
+    private function validateExpensePayment(Expense $expense): bool
+    {
+        return CashTransaction::where('expense_id', $expense->id)
+            ->where('transaction_type', 'expense')
+            ->exists();
     }
 
     public function delete(
         Expense $expense
     ): bool {
-        return DB::transaction(
-            fn () => $this->repository->delete($expense)
-        );
+        return DB::transaction(function () use ($expense) {
+            $expenseExists = $this->validateExpensePayment($expense);
+
+            if ($expenseExists) {
+                throw new RuntimeException(
+                    'This expense already has a payment transaction.'
+                );
+            }
+
+            return $this->repository->delete($expense);
+        });
     }
 
     public function prepareExpenseInfo(array $expense_request)

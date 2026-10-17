@@ -2,9 +2,11 @@
 
 namespace App\Services\Inventory;
 
+use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Revenue;
 use App\Repositories\Inventory\RevenueRepository;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class RevenueService
 {
@@ -37,6 +39,13 @@ class RevenueService
         array $revenue_request
     ): Revenue {
         return DB::transaction(function () use ($revenue_request, $revenue) {
+            $revenueExists = $this->validateRevenuePayment($revenue);
+
+            if ($revenueExists) {
+                throw new RuntimeException(
+                    'This revenue already has a payment transaction.'
+                );
+            }
 
             return $this->repository->update(
                 $revenue,
@@ -48,9 +57,24 @@ class RevenueService
     public function delete(
         Revenue $revenue
     ): bool {
-        return DB::transaction(
-            fn () => $this->repository->delete($revenue)
-        );
+        return DB::transaction(function () use ($revenue) {
+            $revenueExists = $this->validateRevenuePayment($revenue);
+
+            if ($revenueExists) {
+                throw new RuntimeException(
+                    'This revenue already has a payment transaction.'
+                );
+            }
+
+            return $this->repository->delete($revenue);
+        });
+    }
+
+    private function validateRevenuePayment(Revenue $revenue): bool
+    {
+        return CashTransaction::where('revenue_id', $revenue->id)
+            ->where('transaction_type', 'revenue')
+            ->exists();
     }
 
     public function prepareRevenueInfo(array $revenue_request)

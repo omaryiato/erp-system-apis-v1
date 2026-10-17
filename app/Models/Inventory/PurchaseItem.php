@@ -19,10 +19,10 @@ class PurchaseItem extends Model
         'quantity',
         'unit_price',
         'notes',
-        'payment_method',
+        // 'payment_method',
         'total_amount',
-        'cheques_id',
-        'financial_account_id',
+        // 'cheques_id',
+        // 'financial_account_id',
     ];
 
     protected $casts = [
@@ -63,21 +63,21 @@ class PurchaseItem extends Model
     //     );
     // }
 
-    public function financialAccount(): BelongsTo
-    {
-        return $this->belongsTo(
-            FinancialAccount::class,
-            'financial_account_id',
-            'id'
-        );
-    }
+    // public function financialAccount(): BelongsTo
+    // {
+    //     return $this->belongsTo(
+    //         FinancialAccount::class,
+    //         'financial_account_id',
+    //         'id'
+    //     );
+    // }
 
-    public function cheque(): BelongsTo
-    {
-        return $this->belongsTo(
-            Cheque::class,
-            'cheque_id',
-            'id'
-        );
-    }
+    // public function cheque(): BelongsTo
+    // {
+    //     return $this->belongsTo(
+    //         Cheque::class,
+    //         'cheque_id',
+    //         'id'
+    //     );
+    // }
 }

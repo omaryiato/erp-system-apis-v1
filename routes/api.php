@@ -541,6 +541,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
             FinancialAccountController::class
         );
 
+        Route::get(
+            'full-report',
+            [FinancialAccountController::class, 'fullReport']
+        );
+
 
         /*
         |--------------------------------------------------------------------------

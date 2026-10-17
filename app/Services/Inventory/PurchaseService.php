@@ -2,12 +2,15 @@
 
 namespace App\Services\Inventory;
 
+use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Purchase;
 use App\Repositories\Inventory\PurchaseRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use App\Services\ChequeService;
 use App\Services\FinancialAccountService;
+use RuntimeException;
+
 
 class PurchaseService
 {
@@ -38,25 +41,25 @@ class PurchaseService
             $purchase = $this->repository->create($this->preparePurchaseInfo($purchase_request));
 
             foreach ($purchase_items as $purchase_items_data) {
-                $cheque_info = null;
+                // $cheque_info = null;
 
-                if (isset($purchase_items_data['payment_method']) &&
-                    $purchase_items_data['payment_method'] == 'cheques' &&
-                    !isset($purchase_items_data['cheque_id'])  ) {
+                // if (isset($purchase_items_data['payment_method']) &&
+                //     $purchase_items_data['payment_method'] == 'cheques' &&
+                //     !isset($purchase_items_data['cheque_id'])  ) {
 
-                    $cheque_info = $this->chequeService->create(
-                        $purchase_items_data['cheque']
-                    );
+                //     $cheque_info = $this->chequeService->create(
+                //         $purchase_items_data['cheque']
+                //     );
 
-                    $purchase_items_data['cheques_id'] = $cheque_info->id;
-                    $purchase_items_data['amount'] = $cheque_info->amount;
-                }
+                //     $purchase_items_data['cheques_id'] = $cheque_info->id;
+                //     $purchase_items_data['amount'] = $cheque_info->amount;
+                // }
 
                 $purchase_items_info = $this->preparePurchaseItemInfo($purchase_items_data);
 
                 $purchase_item = $purchase->items()->create( $purchase_items_info );
 
-                $this->financialAccountService->updateAccountBalance($purchase_items_info, "purchase");
+                // $this->financialAccountService->updateAccountBalance($purchase_items_info, "purchase");
 
                 foreach (
                     $purchase_items_data['allocations'] ?? []
@@ -108,6 +111,15 @@ class PurchaseService
             if (!$purchase) {
                 throw new \Exception('Purchase not found.');
             }
+
+            $purchaseExists = $this->validatePurchasePayment($purchase);
+
+            if ($purchaseExists) {
+                throw new RuntimeException(
+                    'This purchase already has a payment transaction.'
+                );
+            }
+
 
             $purchase_items = $purchase_request['items'] ?? [];
 
@@ -180,10 +192,10 @@ class PurchaseService
                 /*
                 * Apply new financial transaction
                 */
-                $this->financialAccountService->updateAccountBalance(
-                    $purchase_items_info,
-                    'purchase'
-                );
+                // $this->financialAccountService->updateAccountBalance(
+                //     $purchase_items_info,
+                //     'purchase'
+                // );
 
                 /*
                 * Create allocations
@@ -214,6 +226,14 @@ class PurchaseService
 
             if (!$purchase) {
                 throw new \Exception('Purchase not found.');
+            }
+
+            $purchaseExists = $this->validatePurchasePayment($purchase);
+
+            if ($purchaseExists) {
+                throw new RuntimeException(
+                    'This purchase already has a payment transaction.'
+                );
             }
 
             /*
@@ -251,6 +271,13 @@ class PurchaseService
         });
     }
 
+    private function validatePurchasePayment(Purchase $purchase): bool
+    {
+        return CashTransaction::where('purchase_id', $purchase->id)
+            ->where('transaction_type', 'purchase')
+            ->exists();
+    }
+
 
     public function preparePurchaseInfo(array $purchase_request)
     {
@@ -260,6 +287,7 @@ class PurchaseService
             'purchase_date' => $purchase_request['purchase_date'] ?? now(),
             'reference_number' => $purchase_request['reference_number'] ?? null,
             'notes' => $purchase_request['notes'] ?? null,
+            'amount' => $purchase_request['amount'] ?? 0,
         ];
 
         return $purchase_data;
@@ -271,12 +299,12 @@ class PurchaseService
             'item_id' => $purchase_item_request['item_id'] ?? null,
             'quantity' => $purchase_item_request['quantity'] ?? null,
             'unit_price' => $purchase_item_request['unit_price'] ?? null,
-            'payment_method' => $purchase_item_request['payment_method'] ?? 'cash',
+            // 'payment_method' => $purchase_item_request['payment_method'] ?? 'cash',
             // 'total_amount' => $purchase_item_request['total_amount'] ?? null,
             'notes' => $purchase_item_request['notes'] ?? null,
-            'cheques_id' => $purchase_item_request['cheques_id'] ?? null,
-            'financial_account_id' => $purchase_item_request['financial_account_id'] ?? null,
-            'cheque_amount' => $purchase_item_request['cheque_amount'] ?? null,
+            // 'cheques_id' => $purchase_item_request['cheques_id'] ?? null,
+            // 'financial_account_id' => $purchase_item_request['financial_account_id'] ?? null,
+            // 'cheque_amount' => $purchase_item_request['cheque_amount'] ?? null,
         ];
 
         return $purchase_item_data;
