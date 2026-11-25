@@ -28,17 +28,6 @@ class DataValidation
             }
         }
 
-        $response = $next($request);
-
-        // Legacy controllers can return a server error without throwing.
-        if ($response->getStatusCode() === 500) {
-            return ResponseHelper::error(
-                ['en' => 'An internal error occurred.', 'ar' => 'حدث خطأ داخلي.'],
-                (object) ['code' => 'INTERNAL_ERROR'],
-                500
-            );
-        }
-
-        return $response;
+        return $next($request);
     }
 }

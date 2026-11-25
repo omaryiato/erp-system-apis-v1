@@ -54,19 +54,6 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request, \Throwable $e): bool => $request->is('api/*') || $request->expectsJson()
         );
 
-        $exceptions->respond(function (Response $response, \Throwable $e, Request $request): Response {
-            if ($request->is('api/*') && $response->getStatusCode() === 500) {
-                return ResponseHelper::error(
-                    ['en' => 'An internal error occurred.', 'ar' => 'حدث خطأ داخلي.'],
-                    (object) ['code' => 'INTERNAL_ERROR'],
-                    500
-                );
-            }
-
-            return $response;
-        });
-
-
         $exceptions->render(function (ModelNotFoundException $e, Request $request) {
 
             if ($request->is('api/*')) {
