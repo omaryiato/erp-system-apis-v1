@@ -586,7 +586,7 @@ Route::middleware([
 
         Route::get(
             'get/{document}/version/{documentVersion}',
-            [DocumentController::class, 'getVersion']
+            [DocumentController::class, 'getDocumentVersion']
         )->name('get.document.version');
     });
 
