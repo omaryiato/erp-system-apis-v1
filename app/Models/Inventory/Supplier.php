@@ -30,9 +30,16 @@ class Supplier extends Model
     {
         return $this->hasMany(
             CashTransaction::class,
-            'supplier_id'
+            'expense_id'
         );
     }
+    // public function cashTransactions(): HasMany
+    // {
+    //     return $this->hasMany(
+    //         CashTransaction::class,
+    //         'supplier_id'
+    //     );
+    // }
 
     public function purchases(): HasMany
     {

@@ -50,9 +50,16 @@ class Project extends Model
     {
         return $this->hasMany(
             CashTransaction::class,
-            'project_id'
+            'revenue_id'
         );
     }
+    // public function cashTransactions(): HasMany
+    // {
+    //     return $this->hasMany(
+    //         CashTransaction::class,
+    //         'project_id'
+    //     );
+    // }
 
 
 }
