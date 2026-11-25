@@ -16,12 +16,12 @@ class ReportExpenses extends BaseRequest
         return [
             'from' => [
                 'nullable',
-                'date_format:m/Y'
+                'date_format:Y-m'
             ],
 
             'to' => [
                 'nullable',
-                'date_format:m/Y',
+                'date_format:Y-m',
                 'after_or_equal:from',
             ],
         ];
