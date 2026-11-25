@@ -55,13 +55,15 @@ class ExpenseRepository
         $query = Expense::query();
 
         if ($from) {
-            $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
+            $fromDate = Carbon::createFromFormat('Y-m-d', $from);
+            // $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
 
             $query->whereDate('expense_date', '>=', $fromDate);
         }
 
         if ($to) {
-            $toDate = Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
+            $toDate = Carbon::createFromFormat('Y-m-d', $to);
+            // $toDate = Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
 
             $query->whereDate('expense_date', '<=', $toDate);
         }

@@ -61,7 +61,11 @@ class PurchaseRepository
             $fromDate = Carbon::createFromFormat(
                 'Y-m-d',
                 $from
-            )->startOfMonth();
+            );
+            // $fromDate = Carbon::createFromFormat(
+            //     'Y-m-d',
+            //     $from
+            // )->startOfMonth();
 
             $query->whereDate(
                 'purchase_date',
@@ -74,7 +78,11 @@ class PurchaseRepository
             $toDate = Carbon::createFromFormat(
                 'Y-m-d',
                 $to
-            )->endOfMonth();
+            );
+            // $toDate = Carbon::createFromFormat(
+            //     'Y-m-d',
+            //     $to
+            // )->endOfMonth();
 
             $query->whereDate(
                 'purchase_date',
