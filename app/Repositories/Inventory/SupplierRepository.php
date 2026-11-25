@@ -96,8 +96,9 @@ class SupplierRepository
 
         $totalPaid = (float) $cashQuery
             ->whereIn('transaction_type', [
-                'supplier_payment',
                 'expense',
+                // 'supplier_payment',
+                // 'expense',
             ])
             ->sum('amount');
 

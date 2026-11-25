@@ -74,9 +74,10 @@ class ProjectRepository
 
         $received = (float) $cashQuery
             ->whereIn('transaction_type', [
-                'income',
-                'other_income',
-                'revenue_payment',
+                // 'income',
+                // 'other_income',
+                // 'revenue_payment',
+                'revenue',
             ])
             ->sum('amount');
 
