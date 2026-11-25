@@ -44,11 +44,11 @@ use App\Http\Controllers\Document\DocumentController;
 
 Route::post('/login', [AuthController::class, 'login']); //->middleware('throttle:erp-login')->name('login');
 
-// Route::middleware([
-//     'auth:sanctum',
-//     'throttle:erp-api',
-//     'admin.access',
-// ])->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    'throttle:erp-api',
+    'admin.access',
+])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -597,4 +597,4 @@ Route::post('/login', [AuthController::class, 'login']); //->middleware('throttl
 
 
 
-// });
+});
