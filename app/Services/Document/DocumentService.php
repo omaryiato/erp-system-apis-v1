@@ -33,14 +33,17 @@ class DocumentService
 
     public function create(
         array $document_request,
-        object $request
+        object $request,
+        int $actorId
     ): Document {
 
-        return DB::transaction(function () use ($document_request, $request) {
+        return DB::transaction(function () use ($document_request, $request, $actorId) {
 
-            $document = $this->repository->create($this->prepareDocumentInfo($document_request));
+            $document = $this->repository->create(
+                $this->prepareDocumentInfo($document_request) + ['created_by' => $actorId]
+            );
 
-            $this->uploadVersion($document, $request->file('file'), $document_request['description']);
+            $this->uploadVersion($document, $request->file('file'), $actorId, $document_request['description']);
 
             return $document->load([
                     'category',
@@ -52,17 +55,18 @@ class DocumentService
     public function update(
         Document $document,
         array $document_request,
-        object $request
+        object $request,
+        int $actorId
     ): Document {
 
-        return DB::transaction(function () use ($document, $document_request, $request) {
+        return DB::transaction(function () use ($document, $document_request, $request, $actorId) {
 
             $document = $this->repository->update(
                 $document,
-                $this->prepareDocumentInfo($document_request)
+                $this->prepareDocumentInfo($document_request) + ['updated_by' => $actorId]
             );
 
-            $this->uploadVersion($document, $request->file('file'), $document_request['description']);
+            $this->uploadVersion($document, $request->file('file'), $actorId, $document_request['description']);
 
             return $document->load([
                         'category',
@@ -71,7 +75,7 @@ class DocumentService
         });
     }
 
-    public function delete(Document $document): bool
+    public function delete(Document $document, int $actorId): bool
     {
 
         /*
@@ -84,6 +88,7 @@ class DocumentService
             $document,
             [
                 'status' => 'DELETED',
+                'updated_by' => $actorId,
             ]
         ) !== null;
     }
@@ -91,11 +96,13 @@ class DocumentService
     public function uploadVersion(
         Document $document,
         UploadedFile $file,
+        int $actorId,
         ?string $description = null
     ): DocumentVersion {
         return DB::transaction(function () use (
             $document,
             $file,
+            $actorId,
             $description
         ) {
 
@@ -175,7 +182,7 @@ class DocumentService
                     'description' =>
                         $description,
 
-                    'uploaded_by' => $document->updated_by,
+                    'uploaded_by' => $actorId,
 
                     'created_at' =>
                         now(),
@@ -207,14 +214,6 @@ class DocumentService
             'reference_type' => $document_request['reference_type'] ?? null,
             'reference_id' => $document_request['reference_id'] ?? null,
         ];
-
-        if (isset($document_request['created_by'])) {
-            $document_data['created_by'] = $document_request['created_by'];
-        }
-
-        if (isset($document_request['updated_by'])) {
-            $document_data['updated_by'] = $document_request['updated_by'];
-        }
 
         return $document_data;
     }

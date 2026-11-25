@@ -26,7 +26,8 @@ class CashTransactionController extends Controller
             return ResponseHelper::success(
                 new CashTransactionResource(
                     $this->service->create(
-                        $request->validated()
+                        $request->validated(),
+                        $request->user()->id
                     )
                 ),
                 [

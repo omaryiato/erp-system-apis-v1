@@ -42,7 +42,8 @@ class RevenueController extends Controller
 
             return ResponseHelper::success(
                     new RevenueResource($this->service->create(
-                            $request->validated()
+                            $request->validated(),
+                            $request->user()->id
                         )),
                     [
                         'en' => trans('validation.add_new_revenue', [], 'en'),
@@ -85,7 +86,8 @@ class RevenueController extends Controller
                     new RevenueResource(
                         $this->service->update(
                             $revenue,
-                            $request->validated()
+                            $request->validated(),
+                            $request->user()->id
                         )),
                     [
                         'en' => trans('validation.update_supplier', [], 'en'),

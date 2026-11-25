@@ -17,6 +17,7 @@ beforeEach(function () {
             $table->string($column)->nullable();
         }
         $table->integer('status')->default(1);
+        $table->unsignedBigInteger('created_by')->nullable();
         $table->unsignedBigInteger('updated_by')->nullable();
         $table->timestamps();
     });
@@ -112,7 +113,7 @@ test('account security changes revoke existing tokens', function () {
         'password' => 'new-test-password',
         'status' => 0,
         'user_type' => 'admin',
-    ], $user);
+    ], $user, $user->id);
 
     expect($user->tokens()->count())->toBe(0);
 });
@@ -128,4 +129,36 @@ test('authenticated requests are limited per user', function () {
     $this->withToken($token)->getJson('/api/refresh')
         ->assertTooManyRequests()
         ->assertHeader('Retry-After');
+});
+
+test('audit fields on users come from the authenticated actor', function () {
+    $creator = createSecurityTestUser();
+    $editor = createSecurityTestUser(['user_name' => 'security-editor', 'phone_number' => '0790000001']);
+    $payload = [
+        'full_name' => 'Created Through API',
+        'user_name' => 'audit-subject',
+        'phone_number' => '0790000002',
+        'password' => 'test-password',
+        'user_type' => 'employee',
+        'status' => 1,
+        'created_by' => $editor->id,
+        'updated_by' => $creator->id,
+    ];
+
+    $this->postJson('/api/user', $payload)->assertUnauthorized();
+
+    $this->withToken($creator->createToken('creator')->plainTextToken)
+        ->postJson('/api/user', $payload)->assertCreated();
+    $subject = User::query()->where('user_name', 'audit-subject')->firstOrFail();
+    expect($subject->created_by)->toBe($creator->id);
+    expect($subject->updated_by)->toBeNull();
+
+    Auth::forgetGuards();
+    $payload['created_by'] = $editor->id;
+    $this->withToken($editor->createToken('editor')->plainTextToken)
+        ->putJson('/api/user/'.$subject->id, $payload)->assertSuccessful();
+
+    $subject->refresh();
+    expect($subject->created_by)->toBe($creator->id);
+    expect($subject->updated_by)->toBe($editor->id);
 });

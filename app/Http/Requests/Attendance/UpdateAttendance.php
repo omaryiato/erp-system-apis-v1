@@ -57,10 +57,6 @@ public function rules(): array
             'string',
         ],
 
-        'updated_by' => [
-            'required',
-            'integer',
-        ],
     ];
 }
 

@@ -63,7 +63,7 @@ class UserController extends Controller
 
     public function store(AddUser $request)
     {
-        $user = $this->userService->addNewUser($request->validated());
+        $user = $this->userService->addNewUser($request->validated(), $request->user()->id);
 
         return ResponseHelper::success(
             new UserResource($user),
@@ -77,9 +77,7 @@ class UserController extends Controller
 
     public function update(UpdateUser $request, User $user)
     {
-        $attributes = $request->validated();
-        $attributes['updated_by'] = $request->user()->getAuthIdentifier();
-        $user = $this->userService->updateUser($attributes, $user);
+        $user = $this->userService->updateUser($request->validated(), $user, $request->user()->id);
 
         return ResponseHelper::success(
             new UserResource($user),

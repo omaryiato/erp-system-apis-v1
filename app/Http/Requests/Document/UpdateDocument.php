@@ -70,11 +70,6 @@ class UpdateDocument extends BaseRequest
                 'max:51200',
             ],
 
-            'updated_by' => [
-                'required',
-                'integer',
-                'exists:users_v1,id'
-            ],
         ];
     }
 }

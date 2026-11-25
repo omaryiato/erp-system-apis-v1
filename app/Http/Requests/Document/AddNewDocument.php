@@ -65,17 +65,7 @@ class AddNewDocument extends BaseRequest
                 'max:51200',
             ],
 
-            'created_by' => [
-                'required',
-                'integer',
-                'exists:users_v1,id'
-            ],
 
-            'updated_by' => [
-                'required',
-                'integer',
-                'exists:users_v1,id'
-            ],
         ];
     }
 }

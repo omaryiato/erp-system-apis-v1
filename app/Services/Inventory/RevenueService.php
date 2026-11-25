@@ -24,21 +24,22 @@ class RevenueService
         return $this->repository->getDetails($revenue);
     }
 
-    public function create(array $revenue_request): Revenue
+    public function create(array $revenue_request, int $actorId): Revenue
     {
-        return DB::transaction(function () use ($revenue_request) {
+        return DB::transaction(function () use ($revenue_request, $actorId) {
 
             return $this->repository->create(
-                $this->prepareRevenueInfo($revenue_request)
+                $this->prepareRevenueInfo($revenue_request) + ['created_by' => $actorId]
             );
         });
     }
 
     public function update(
         Revenue $revenue,
-        array $revenue_request
+        array $revenue_request,
+        int $actorId
     ): Revenue {
-        return DB::transaction(function () use ($revenue_request, $revenue) {
+        return DB::transaction(function () use ($revenue_request, $revenue, $actorId) {
             $revenueExists = $this->validateRevenuePayment($revenue);
 
             if ($revenueExists) {
@@ -49,7 +50,7 @@ class RevenueService
 
             return $this->repository->update(
                 $revenue,
-                $this->prepareRevenueInfo($revenue_request)
+                $this->prepareRevenueInfo($revenue_request) + ['updated_by' => $actorId]
             );
         });
     }

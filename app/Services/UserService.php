@@ -31,14 +31,16 @@ class UserService
     }
 
     // addNewUser Funtion To Add new User
-    public function addNewUser(array $user_request)
+    public function addNewUser(array $user_request, int $actorId)
     {
-        return $this->userRepository->addNewUser($this->prepareRequestInfo($user_request));
+        return $this->userRepository->addNewUser(
+            $this->prepareRequestInfo($user_request) + ['created_by' => $actorId]
+        );
     }
 
-    public function updateUser(array $user_request, User $user): User
+    public function updateUser(array $user_request, User $user, int $actorId): User
     {
-        $attributes = $this->prepareRequestInfo($user_request);
+        $attributes = $this->prepareRequestInfo($user_request) + ['updated_by' => $actorId];
 
         return DB::transaction(function () use ($user, $attributes): User {
             $user = $this->userRepository->lockById($user);
@@ -75,14 +77,6 @@ class UserService
             'status' => $request_info['status'] ?? null,
             'user_type' => $request_info['user_type'] ?? null,
         ];
-
-        if (isset($request_info['created_by'])) {
-            $request_data['created_by'] = $request_info['created_by'];
-        }
-
-        if (isset($request_info['updated_by'])) {
-            $request_data['updated_by'] = $request_info['updated_by'];
-        }
 
         return $request_data;
     }

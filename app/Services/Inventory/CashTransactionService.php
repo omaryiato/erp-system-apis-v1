@@ -23,9 +23,9 @@ class CashTransactionService
         protected FinancialAccountService $financialAccountService,
     ) {}
 
-    public function create(array $data): CashTransaction
+    public function create(array $data, int $actorId): CashTransaction
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $actorId) {
             $cheque_info = null;
 
             if (isset($data['payment_method']) &&
@@ -65,11 +65,8 @@ class CashTransactionService
             $data['transaction_number'] =
                 $this->generateTransactionNumber();
 
-            // $data['created_by'] =
-            //     auth()->id();
-
-            // $data['updated_by'] =
-            //     auth()->id();
+            $data['created_by'] = $actorId;
+            unset($data['updated_by']);
 
             $transaction_details =  $this->repository->create(
                 $data

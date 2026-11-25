@@ -25,16 +25,19 @@ class ExpenseService
         return $this->repository->getDetails($expense);
     }
 
-    public function create(array $expense_request): Expense
+    public function create(array $expense_request, int $actorId): Expense
     {
-        return   $this->repository->create($this->prepareExpenseInfo($expense_request));
+        return $this->repository->create(
+            $this->prepareExpenseInfo($expense_request) + ['created_by' => $actorId]
+        );
     }
 
     public function update(
         Expense $expense,
-        array $expense_request
+        array $expense_request,
+        int $actorId
     ): Expense {
-        return DB::transaction(function () use ($expense, $expense_request) {
+        return DB::transaction(function () use ($expense, $expense_request, $actorId) {
             $expenseExists = $this->validateExpensePayment($expense);
 
             if ($expenseExists) {
@@ -45,7 +48,7 @@ class ExpenseService
 
             return $this->repository->update(
                 $expense,
-                $this->prepareExpenseInfo($expense_request)
+                $this->prepareExpenseInfo($expense_request) + ['updated_by' => $actorId]
             );
         });
     }

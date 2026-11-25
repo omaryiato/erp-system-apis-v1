@@ -40,7 +40,8 @@ class ExpenseController extends Controller
 
             return ResponseHelper::success(
                     new ExpenseResource($this->service->create(
-                            $request->validated()
+                            $request->validated(),
+                            $request->user()->id
                         )),
                     [
                         'en' => trans('validation.add_new_expense', [], 'en'),
@@ -83,7 +84,8 @@ class ExpenseController extends Controller
                     new ExpenseResource(
                         $this->service->update(
                             $expense,
-                            $request->validated()
+                            $request->validated(),
+                            $request->user()->id
                         )),
                     [
                         'en' => trans('validation.update_supplier', [], 'en'),

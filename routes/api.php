@@ -42,7 +42,7 @@ use App\Http\Controllers\Document\DocumentCategoryController;
 use App\Http\Controllers\Document\DocumentController;
 
 
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:erp-login')->name('login');
+Route::post('/login', [AuthController::class, 'login']); //->middleware('throttle:erp-login')->name('login');
 
 // Route::middleware([
 //     'auth:sanctum',
@@ -346,7 +346,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:er
             Route::apiResource(
                 'expenses',
                 ExpenseController::class
-            );
+            )->middlewareFor(['store', 'update'], ['auth:sanctum', 'admin.access']);
 
             Route::get(
                 'expenses-report',
@@ -362,7 +362,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:er
             Route::apiResource(
                 'revenues',
                 RevenueController::class
-            );
+            )->middlewareFor(['store', 'update'], ['auth:sanctum', 'admin.access']);
 
             Route::get(
                 'revenues-report',
@@ -378,7 +378,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:er
             Route::post(
                 'cash-transactions',
                 [CashTransactionController::class, 'store']
-            );
+            )->middleware(['auth:sanctum', 'admin.access']);
 
             /*
             |--------------------------------------------------------------------------
@@ -565,7 +565,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:er
         Route::apiResource(
             'documents',
             DocumentController::class
-        );
+        )->middlewareFor(['store', 'update', 'destroy'], ['auth:sanctum', 'admin.access']);
 
 
         /*
@@ -592,7 +592,8 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:er
 
     /***************************************** Users *******************************************/
 
-    Route::apiResource('user', UserController::class);
+    Route::apiResource('user', UserController::class)
+        ->middlewareFor(['store', 'update'], ['auth:sanctum', 'admin.access']);
 
 
 

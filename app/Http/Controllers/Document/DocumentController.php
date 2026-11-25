@@ -12,6 +12,7 @@ use App\Models\Document\Document;
 use App\Models\Document\DocumentVersion;
 use App\Services\Document\DocumentService;
 use Exception;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DocumentController extends Controller
@@ -42,7 +43,8 @@ class DocumentController extends Controller
             return ResponseHelper::success(
                     new DocumentResource($this->service->create(
                                     $request->validated(),
-                                    $request
+                                    $request,
+                                    $request->user()->id
                                 )),
                     [
                         'en' => trans('validation.add_new_category', [], 'en'),
@@ -84,7 +86,8 @@ class DocumentController extends Controller
                         $this->service->update(
                                 $document,
                                 $request->validated(),
-                                $request
+                                $request,
+                                $request->user()->id
                             )),
                     [
                         'en' => trans('validation.update_category', [], 'en'),
@@ -103,10 +106,10 @@ class DocumentController extends Controller
         }
     }
 
-    public function destroy(Document $document)
+    public function destroy(Request $request, Document $document)
     {
         return ResponseHelper::success(
-                $this->service->delete($document),
+                $this->service->delete($document, $request->user()->id),
                 [
                     'en' => trans('validation.delete_category', [], 'en'),
                     'ar' => trans('validation.delete_category', [], 'ar'),
