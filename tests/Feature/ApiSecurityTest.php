@@ -25,6 +25,14 @@ beforeEach(function () {
     (require database_path('migrations/2026_08_24_155025_create_personal_access_tokens_table.php'))->up();
 });
 
+test('protected API requests return JSON 401 without requesting JSON', function () {
+    foreach ([[], ['Accept' => 'text/html']] as $headers) {
+        $this->get('/api/refresh', $headers)
+            ->assertUnauthorized()
+            ->assertJsonPath('errors.code', 'UNAUTHENTICATED');
+    }
+});
+
 function createSecurityTestUser(array $attributes = []): User
 {
     return User::create($attributes + [

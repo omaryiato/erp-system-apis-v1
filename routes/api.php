@@ -42,7 +42,7 @@ use App\Http\Controllers\Document\DocumentCategoryController;
 use App\Http\Controllers\Document\DocumentController;
 
 
-Route::post('/login', [AuthController::class, 'login']); //->middleware('throttle:erp-login')->name('login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:erp-login')->name('login');
 
 Route::middleware([
     'auth:sanctum',
