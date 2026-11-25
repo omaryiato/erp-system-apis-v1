@@ -29,7 +29,7 @@ class ReportRepository
         $purchase = Purchase::query();
 
         if ($from) {
-            $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+            $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
 
             $revenue->whereDate('revenue_date', '>=', $fromDate);
             $purchase->whereDate('purchase_date', '>=', $fromDate);
@@ -37,7 +37,7 @@ class ReportRepository
         }
 
         if ($to) {
-            $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+            $toDate = Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
 
             $revenue->whereDate('revenue_date', '<=', $toDate);
             $purchase->whereDate('purchase_date', '<=', $toDate);

@@ -58,7 +58,7 @@ class SupplierRepository
         $cashQuery = CashTransaction::query();
 
         if ($from) {
-            $fromDate = Carbon::createFromFormat('m/Y', $from)
+            $fromDate = Carbon::createFromFormat('Y-m-d', $from)
                 ->startOfMonth();
 
             $purchaseQuery->whereDate(
@@ -75,7 +75,7 @@ class SupplierRepository
         }
 
         if ($to) {
-            $toDate = Carbon::createFromFormat('m/Y', $to)
+            $toDate = Carbon::createFromFormat('Y-m-d', $to)
                 ->endOfMonth();
 
             $purchaseQuery->whereDate(
@@ -125,13 +125,13 @@ class SupplierRepository
     //     $cashQuery = $supplier->cashTransactions();
 
     //     // if ($from) {
-    //     //     $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+    //     //     $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
 
     //     //     $supplier->whereDate('revenue_date', '>=', $fromDate);
     //     // }
 
     //     // if ($to) {
-    //     //     $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+    //     //     $toDate = Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
 
     //     //     $supplier->whereDate('revenue_date', '<=', $toDate);
     //     // }

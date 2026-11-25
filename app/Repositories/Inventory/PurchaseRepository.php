@@ -59,7 +59,7 @@ class PurchaseRepository
 
         if ($from) {
             $fromDate = Carbon::createFromFormat(
-                'm/Y',
+                'Y-m-d',
                 $from
             )->startOfMonth();
 
@@ -72,7 +72,7 @@ class PurchaseRepository
 
         if ($to) {
             $toDate = Carbon::createFromFormat(
-                'm/Y',
+                'Y-m-d',
                 $to
             )->endOfMonth();
 

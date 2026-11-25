@@ -53,7 +53,7 @@ class ProjectRepository
         $cashQuery = CashTransaction::query();
 
         if ($from) {
-            $fromDate = Carbon::createFromFormat('m/Y', $from)
+            $fromDate = Carbon::createFromFormat('Y-m-d', $from)
                 ->startOfMonth();
 
             $revenueQuery->whereDate('revenue_date', '>=', $fromDate);
@@ -62,7 +62,7 @@ class ProjectRepository
         }
 
         if ($to) {
-            $toDate = Carbon::createFromFormat('m/Y', $to)
+            $toDate = Carbon::createFromFormat('Y-m-d', $to)
                 ->endOfMonth();
 
             $revenueQuery->whereDate('revenue_date', '<=', $toDate);
@@ -106,13 +106,13 @@ class ProjectRepository
     //         ->cashTransactions();
 
     //     // if ($from) {
-    //     //     $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+    //     //     $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
 
     //     //     $project->whereDate('revenue_date', '>=', $fromDate);
     //     // }
 
     //     // if ($to) {
-    //     //     $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+    //     //     $toDate = Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
 
     //     //     $project->whereDate('revenue_date', '<=', $toDate);
     //     // }

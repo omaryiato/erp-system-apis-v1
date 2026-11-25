@@ -9,8 +9,8 @@ class RevenueRepository
 {
     public function getAll() {
         return Revenue::with([
-                'project', 
-                'cashTransactions', 
+                'project',
+                'cashTransactions',
             ])
             ->get();
     }
@@ -19,7 +19,7 @@ class RevenueRepository
     {
         return $revenue->load([
                 'project',
-                'cashTransactions', 
+                'cashTransactions',
             ]);
     }
 
@@ -56,13 +56,13 @@ class RevenueRepository
         $query = Revenue::query();
 
         if ($from) {
-            $fromDate = Carbon::createFromFormat('m/Y', $from)->startOfMonth();
+            $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
 
             $query->whereDate('revenue_date', '>=', $fromDate);
         }
 
         if ($to) {
-            $toDate = Carbon::createFromFormat('m/Y', $to)->endOfMonth();
+            $toDate = Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
 
             $query->whereDate('revenue_date', '<=', $toDate);
         }
@@ -70,7 +70,7 @@ class RevenueRepository
         $revenues = $query
             ->with([
                 'project',
-                'cashTransactions', 
+                'cashTransactions',
             ])
             ->get();
 
