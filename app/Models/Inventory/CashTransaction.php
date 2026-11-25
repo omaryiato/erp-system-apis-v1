@@ -16,8 +16,8 @@ class CashTransaction extends Model
     protected $fillable = [
         'transaction_number',
         'transaction_type',
-        'project_id',
-        'supplier_id',
+        // 'project_id',
+        // 'supplier_id',
         'expense_id',
         'revenue_id',
         'employee_payment_id',
