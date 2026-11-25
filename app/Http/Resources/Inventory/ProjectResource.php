@@ -31,15 +31,15 @@ class ProjectResource extends JsonResource
 
             'description' => $this->description,
 
-            'start_date' => $this->start_date,
+            'start_date' => $this->start_date?->format('Y-m-d') ?? null,
 
-            'end_date' => $this->end_date,
+            'end_date' => $this->end_date?->format('Y-m-d') ?? null,
 
             'status' => $this->status,
 
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s') ?? null,
 
-            'updated_at' => $this->updated_at,
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s') ?? null,
 
             'total_amount' => $totalRevenue,
 

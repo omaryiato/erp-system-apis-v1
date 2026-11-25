@@ -40,7 +40,7 @@ class ItemSnapshotResource extends JsonResource
                 'name' => $this->changedBy?->full_name,
             ],
 
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s') ?? null,
         ];
     }
 }

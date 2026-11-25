@@ -52,10 +52,10 @@ class RevenueResource extends JsonResource
                 $this->notes,
 
             'created_at' =>
-                $this->created_at,
+                $this->created_at?->format('Y-m-d H:i:s') ?? null,
 
             'updated_at' =>
-                $this->updated_at,
+                $this->updated_at?->format('Y-m-d H:i:s') ?? null,
 
             'cheques' => ChequeResource::collection(
                 $this->whenLoaded('cheques')
