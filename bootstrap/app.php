@@ -8,7 +8,6 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Http\Middleware\ApiAuditLogger;
 use App\Http\Middleware\DataValidation;
 use App\Http\Middleware\UserAccessibility;
 use Illuminate\Auth\AuthenticationException;
@@ -22,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-        $middleware->api(prepend: [
+        $middleware->api(append: [
 
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 
@@ -30,17 +29,40 @@ return Application::configure(basePath: dirname(__DIR__))
 
         ]);
 
+        $middleware->prependToPriorityList(
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            UserAccessibility::class
+        );
+
+        $middleware->appendToPriorityList(
+            \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            DataValidation::class
+        );
+
         $middleware->alias([
 
             'admin.access' => UserAccessibility::class,
 
-            'audit' => ApiAuditLogger::class,
-
         ]);
 
-        $middleware->trustProxies(at: '*');
     })
-    ->withExceptions(function ($exceptions) {
+    ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request, \Throwable $e): bool => $request->is('api/*') || $request->expectsJson()
+        );
+
+        $exceptions->respond(function (Response $response, \Throwable $e, Request $request): Response {
+            if ($request->is('api/*') && $response->getStatusCode() === 500) {
+                return ResponseHelper::error(
+                    ['en' => 'An internal error occurred.', 'ar' => 'حدث خطأ داخلي.'],
+                    (object) ['code' => 'INTERNAL_ERROR'],
+                    500
+                );
+            }
+
+            return $response;
+        });
+
 
         $exceptions->render(function (ModelNotFoundException $e, Request $request) {
 
@@ -75,11 +97,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ) {
             if ($request->is('api/*')) {
                 return ResponseHelper::error(
-                    null,
                     [
-                        'en' => trans('validation.unauthenticated', [], 'en'),
-                        'ar' => trans('validation.unauthenticated', [], 'ar'),
+                        'en' => 'Authentication required.',
+                        'ar' => 'المصادقة مطلوبة.',
                     ],
+                    (object) ['code' => 'UNAUTHENTICATED'],
                     Response::HTTP_UNAUTHORIZED
                 );
             }

@@ -76,11 +76,6 @@ class UpdateUser extends BaseRequest
                 'in:employee,admin,manager,owner',
             ],
 
-            'updated_by' => [
-                'required',
-                'integer',
-                'exists:users_v1,id'
-            ],
         ];
     }
 }

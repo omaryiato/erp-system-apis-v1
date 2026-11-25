@@ -91,7 +91,7 @@ return [
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'erp_system_v1'),
             'username' => env('DB_USERNAME', 'root_dev'),
-            'password' => env('DB_PASSWORD', 'Root@o&a'),
+            'password' => env('DB_PASSWORD', ''),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,

@@ -5,151 +5,49 @@ namespace App\Http\Controllers\API;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\Login;
-use App\Models\User;
+use App\Http\Resources\Auth\SessionResource;
+use App\Services\Auth\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly AuthService $authService) {}
 
-    public function login(Login $request)
+    public function login(Login $request): JsonResponse
     {
-        $login = $request->login;
+        $credentials = $request->validated();
+        $session = $this->authService->login($credentials['login'], $credentials['password']);
 
-        $user_details = User::where(function ($query) use ($login) {
-                $query->where('user_name', $login)
-                    ->orWhere('phone_number', $login);
-            })
-            ->where('status', 1)
-            ->first();
-
-        // $user_details = User::where('email', $request->email)
-        //     ->where('status', 1)
-        //     ->first();
-
-        if (!$user_details) {
+        if ($session === null) {
             return ResponseHelper::error(
-                null,
-                [
-                    'en' => trans('validation.invalid_credentials'),
-                    'ar' => trans('validation.invalid_credentials'),
-                ],
+                ['en' => 'Invalid login credentials.', 'ar' => 'بيانات تسجيل الدخول غير صحيحة.'],
+                (object) ['code' => 'INVALID_CREDENTIALS'],
                 401
             );
         }
-
-        if (!Hash::check($request->password, $user_details->password)) {
-            return ResponseHelper::error(
-                null,
-                [
-                    'en' => trans('validation.invalid_credentials'),
-                    'ar' => trans('validation.invalid_credentials'),
-                ],
-                401
-            );
-        }
-
-        // Delete all previous tokens
-        $user_details->tokens()->delete();
-
-        // Create new token
-        $tokenResult = $user_details->createToken('auth_token');
-
-        $tokenResult->accessToken->expires_at = now()->addHours(2);
-        $tokenResult->accessToken->save();
-
-        $token = $tokenResult->plainTextToken;
-
-        // $tokenResult = $user_details->createToken('auth_token');
-
-        // $tokenResult->accessToken->expires_at = now()->addHours(10);
-        // $tokenResult->accessToken->save();
-
-        // $token = $tokenResult->plainTextToken;
-        $user_details['token'] = $token;
-        $user_details['expires_at'] = $tokenResult->accessToken->expires_at;
 
         return ResponseHelper::success(
-            $user_details,
-            [
-                'en' => trans('validation.logged_in'),
-                'ar' => trans('validation.logged_in'),
+            SessionResource::make($session['user'])->resolve($request) + [
+                'token' => $session['token'],
+                'expires_at' => $session['expires_at'],
             ],
-            200
-        );
+            ['en' => 'Signed in successfully.', 'ar' => 'تم تسجيل الدخول بنجاح.']
+        )->header('Cache-Control', 'no-store');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $this->authService->logout($request->user());
 
-        if ($user && $user->currentAccessToken()) {
-            $user->currentAccessToken()->delete();
-        }
-
-        return ResponseHelper::success(
-                null,
-                [
-                    'en' => trans('validation.logged_out'),
-                    'ar' => trans('validation.logged_out'),
-                ],
-                200
-            );
+        return ResponseHelper::success(null, ['en' => 'Signed out successfully.', 'ar' => 'تم تسجيل الخروج بنجاح.']);
     }
 
-    // public function refresh(Request $request)
-    // {
-    //     return ResponseHelper::success(
-    //             $request->user(),
-    //             [
-    //                 'en' => trans('validation.token_available'),
-    //                 'ar' => trans('validation.token_available'),
-    //             ],
-    //             200
-    //         );
-    // }
-
-
-
-    public function refresh(Request $request)
+    public function refresh(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        // No user (no token or invalid token)
-        if (!$user) {
-            return ResponseHelper::error(
-                null,
-                [
-                    'en' => 'Unauthenticated or token missing.',
-                    'ar' => 'غير مصرح أو التوكن غير موجود.',
-                ],
-                401
-            );
-        }
-
-        // Optional: check if token exists in DB (Sanctum)
-        $token = $user->currentAccessToken();
-
-        if (!$token) {
-            return ResponseHelper::error(
-                null,
-                [
-                    'en' => 'Token not found or expired.',
-                    'ar' => 'التوكن غير موجود أو منتهي.',
-                ],
-                401
-            );
-        }
-
         return ResponseHelper::success(
-            $user,
-            [
-                'en' => trans('validation.token_available'),
-                'ar' => trans('validation.token_available'),
-            ],
-            200
-        );
+            SessionResource::make($request->user()),
+            ['en' => 'The session is valid.', 'ar' => 'الجلسة صالحة.']
+        )->header('Cache-Control', 'no-store');
     }
-
-
 }

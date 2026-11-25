@@ -9,6 +9,42 @@ use App\Models\User;
 class UserRepository
 {
 
+    public function findForLogin(string $login): ?User
+    {
+        $matches = User::query()
+            ->where(fn ($query) => $query->where('user_name', $login)->orWhere('phone_number', $login))
+            ->orderBy('id')
+            ->limit(2)
+            ->lockForUpdate()
+            ->get();
+
+        return $matches->count() === 1 ? $matches->first() : null;
+    }
+
+    public function lockById(User $user): User
+    {
+        return User::query()->lockForUpdate()->findOrFail($user->getKey());
+    }
+
+    public function revokeTokens(User $user): void
+    {
+        $user->tokens()->delete();
+    }
+
+    public function issueToken(User $user): \Laravel\Sanctum\NewAccessToken
+    {
+        return $user->createToken('auth_token', ['*'], now()->addHours(2));
+    }
+
+    public function revokeCurrentToken(User $user): void
+    {
+        $token = $user->currentAccessToken();
+
+        if ($token instanceof \Laravel\Sanctum\PersonalAccessToken) {
+            $token->delete();
+        }
+    }
+
     // getUsersList Funtion To Get Users List
     public function getUsersList()
     {

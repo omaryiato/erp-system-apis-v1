@@ -61,101 +61,47 @@ class UserController extends Controller
 
     }
 
-    //  Funtion To Add New User
     public function store(AddUser $request)
     {
-        try{
+        $user = $this->userService->addNewUser($request->validated());
 
-            $user_details = $this->userService->addNewUser($request->validated());
-            return ResponseHelper::success(
-                new UserResource($user_details),
-                [
-                    'en' => trans('validation.data_added', [], 'en'),
-                    'ar' => trans('validation.data_added', [], 'ar'),
-                ],
-                Response::HTTP_CREATED);
-
-        } catch(\Exception $exception){
-            return ResponseHelper::error(
-                [
-                    'en' => trans('validation.exception_error', [], 'en'),
-                    'ar' => trans('validation.exception_error', [], 'ar'),
-                ],
-                $exception->getMessage(),
-                500);
-        }
-
+        return ResponseHelper::success(
+            new UserResource($user),
+            [
+                'en' => trans('validation.data_added', [], 'en'),
+                'ar' => trans('validation.data_added', [], 'ar'),
+            ],
+            Response::HTTP_CREATED
+        );
     }
 
-    //  Funtion To Update User
     public function update(UpdateUser $request, User $user)
     {
-        try {
+        $attributes = $request->validated();
+        $attributes['updated_by'] = $request->user()->getAuthIdentifier();
+        $user = $this->userService->updateUser($attributes, $user);
 
-            $user_details =  $this->userService->updateUser($request->validated(), $user);
-
-            if (!$user_details) {
-                return ResponseHelper::error(
-                    new UserResource($user_details),
-                    [
-                        'en' => trans('validation.data_not_found', [], 'en'),
-                        'ar' => trans('validation.data_not_found', [], 'ar'),
-                    ],
-                    Response::HTTP_NOT_FOUND);
-            }
-
-            return ResponseHelper::success(
-                new UserResource($user_details),
-                [
-                    'en' => trans('validation.data_updated', [], 'en'),
-                    'ar' => trans('validation.data_updated', [], 'ar'),
-                ],
-                Response::HTTP_CREATED);
-
-        } catch (\Exception $exception) {
-            return ResponseHelper::error(
-                [
-                    'en' => trans('validation.exception_error', [], 'en'),
-                    'ar' => trans('validation.exception_error', [], 'ar'),
-                ],
-                $exception->getMessage(),
-                500);
-        }
+        return ResponseHelper::success(
+            new UserResource($user),
+            [
+                'en' => trans('validation.data_updated', [], 'en'),
+                'ar' => trans('validation.data_updated', [], 'ar'),
+            ],
+            Response::HTTP_CREATED
+        );
     }
 
-    // deleteUser Funtion To Delete User
-    public function destroy(Request $request, User $user)
+    public function destroy(User $user)
     {
-        try {
+        $this->userService->deleteUser($user);
 
-            $user_details = $this->userService->deleteUser($request->all(), $user);
-
-            if (!$user_details) {
-                return ResponseHelper::error(
-                    $user_details,
-                    [
-                        'en' => trans('validation.data_not_found', [], 'en'),
-                        'ar' => trans('validation.data_not_found', [], 'ar'),
-                    ],
-                    Response::HTTP_NOT_FOUND);
-            }
-
-            return ResponseHelper::success(
-                    null,
-                    [
-                        'en' => trans('validation.data_deleted', [], 'en'),
-                        'ar' => trans('validation.data_deleted', [], 'ar'),
-                    ],
-                    Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            return ResponseHelper::error(
-                [
-                    'en' => trans('validation.exception_error', [], 'en'),
-                    'ar' => trans('validation.exception_error', [], 'ar'),
-                ],
-                $exception->getMessage(),
-                500);
-        }
+        return ResponseHelper::success(
+            null,
+            [
+                'en' => trans('validation.data_deleted', [], 'en'),
+                'ar' => trans('validation.data_deleted', [], 'ar'),
+            ],
+            Response::HTTP_OK
+        );
     }
-
 }

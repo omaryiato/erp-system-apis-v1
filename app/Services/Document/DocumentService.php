@@ -111,8 +111,7 @@ class DocumentService
                 $this->versionRepository
                     ->getNextVersionNumber($document->id);
 
-            // $disk = 'local';
-            $disk = 'public';
+            $disk = 'local';
 
             $directory =
                 'documents/' .

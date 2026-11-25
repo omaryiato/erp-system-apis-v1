@@ -2,11 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\ResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Helpers\ResponseHelper;
-use Illuminate\Support\Facades\Auth;
 
 class UserAccessibility
 {
@@ -14,27 +13,21 @@ class UserAccessibility
     {
         $user = $request->user();
 
-        if (!$user) {
+        if ($user === null) {
             return ResponseHelper::error(
-                null,
-                [
-                    'en' => trans('validation.unauthenticated'),
-                    'ar' => trans('validation.unauthenticated'),
-                ],
+                ['en' => 'Authentication required.', 'ar' => 'المصادقة مطلوبة.'],
+                (object) ['code' => 'UNAUTHENTICATED'],
                 401
             );
         }
 
-        // if ($user->user_type !== 'admin') {
-        //     return ResponseHelper::error(
-        //         null,
-        //         [
-        //             'en' => trans('validation.unauthorized'),
-        //             'ar' => trans('validation.unauthorized'),
-        //         ],
-        //         403
-        //     );
-        // }
+        if ((int) $user->status !== 1 || $user->user_type !== 'admin') {
+            return ResponseHelper::error(
+                ['en' => 'Access denied.', 'ar' => 'غير مصرح بالوصول.'],
+                (object) ['code' => 'FORBIDDEN'],
+                403
+            );
+        }
 
         return $next($request);
     }

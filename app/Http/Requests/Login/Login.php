@@ -30,11 +30,13 @@ class Login extends BaseRequest
             'password' => [
                 'required',
                 'string',
+                'max:255',
             ],
             
             'login' => [
                 'required',
                 'string',
+                'max:255',
             ],
         ];
     }

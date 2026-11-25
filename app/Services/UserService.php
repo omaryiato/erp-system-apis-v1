@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
@@ -35,24 +36,30 @@ class UserService
         return $this->userRepository->addNewUser($this->prepareRequestInfo($user_request));
     }
 
-    // updateUser Funtion To Update User info
-    public function updateUser(array $user_request, User $user)
+    public function updateUser(array $user_request, User $user): User
     {
-        // $user_details = $this->userRepository->getUserDetails($id);
-        // if(!$user_details){
-        //     return null;
-        // }
-        return $this->userRepository->updateUser($user, $this->prepareRequestInfo($user_request));
+        $attributes = $this->prepareRequestInfo($user_request);
+
+        return DB::transaction(function () use ($user, $attributes): User {
+            $user = $this->userRepository->lockById($user);
+            $user = $this->userRepository->updateUser($user, $attributes);
+
+            if ($user->wasChanged(['password', 'status', 'user_type'])) {
+                $this->userRepository->revokeTokens($user);
+            }
+
+            return $user;
+        });
     }
 
-    // deleteUser Funtion To Delete User
-    public function deleteUser($user_request, User $user)
+    public function deleteUser(User $user): User
     {
-        // $user_details = $this->userRepository->getUserDetails($user);
-        // if(!$user_details){
-        //     return null;
-        // }
-        return $this->userRepository->deleteUser($user);
+        return DB::transaction(function () use ($user): User {
+            $user = $this->userRepository->lockById($user);
+            $this->userRepository->revokeTokens($user);
+
+            return $this->userRepository->deleteUser($user);
+        });
     }
 
     public function prepareRequestInfo(array $request_info)

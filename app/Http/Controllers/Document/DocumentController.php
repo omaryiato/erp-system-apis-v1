@@ -124,14 +124,11 @@ class DocumentController extends Controller
             $documentVersion
         );
 
-        return response()->file(
-            $file['path'],
-            [
-                'Content-Type' => $file['mime_type'],
-                'Content-Disposition' =>
-                    'inline; filename="' . $file['file_name'] . '"',
-            ]
-        );
+        return response()->download($file['path'], $file['file_name'], [
+            'Content-Type' => 'application/octet-stream',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
+        ]);
     }
 
     // public function uploadVersion(

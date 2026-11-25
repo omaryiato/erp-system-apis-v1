@@ -4,7 +4,6 @@ namespace App\Http\Resources\Document;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class DocumentVersionResource extends JsonResource
 {
@@ -22,10 +21,10 @@ class DocumentVersionResource extends JsonResource
             'original_file_name' =>
                 $this->original_file_name ?? null,
 
-            'file_path' =>   asset('storage/' . $this->file_path) ?? null,
-
-            // 'file_path' => $this->file_path ?? null,
-
+            'file_path' => route('get.document.version', [
+                'document' => $this->document_id,
+                'documentVersion' => $this->id,
+            ]),
             'storage_disk' => $this->storage_disk ?? null,
 
             'mime_type' => $this->mime_type ?? null,
@@ -45,13 +44,6 @@ class DocumentVersionResource extends JsonResource
                 'Y-m-d H:i:s'
             ) ?? null,
 
-            // 'file_url' => route(
-            //     'get.document.version',
-            //     [
-            //         'document' => $this->document_id,
-            //         'documentVersion' => $this->id,
-            //     ]
-            // ),
         ];
     }
 }
