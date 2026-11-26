@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\ChequeRequest;
+use App\Http\Requests\UpdateChequeRequest;
 use App\Http\Resources\ChequeResource;
 use App\Models\Cheque;
 use App\Services\ChequeService;
@@ -82,7 +83,7 @@ class ChequeController extends Controller
     }
 
     public function update(
-        ChequeRequest $request,
+        UpdateChequeRequest $request,
         Cheque $cheque
     ) {
 

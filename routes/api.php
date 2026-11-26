@@ -40,7 +40,7 @@ use App\Http\Controllers\FinancialAccountController;
 
 use App\Http\Controllers\Document\DocumentCategoryController;
 use App\Http\Controllers\Document\DocumentController;
-
+use Illuminate\Support\Facades\DB;
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:erp-login')->name('login');
 
@@ -384,7 +384,7 @@ Route::middleware([
                 'cash-transactions',
                 [CashTransactionController::class, 'store']
             )->middleware(['auth:sanctum', 'admin.access']);
-            
+
             Route::post(
                 'cash-transactions/{cashTransaction}',
                 [CashTransactionController::class, 'update']
@@ -439,20 +439,20 @@ Route::middleware([
 
             Route::get('truncate', function () {
 
-                // DB::statement('TRUNCATE TABLE
-                //     categories_v1,
-                //     items_v1,
-                //     item_snapshots_v1,
-                //     projects_v1,
-                //     suppliers_v1,
-                //     purchases_v1,
-                //     purchase_items_v1,
-                //     purchase_allocations_v1,
-                //     expenses_v1,
-                //     revenues_v1,
-                //     cash_transactions_v1
-                //     RESTART IDENTITY CASCADE
-                // ');
+                DB::statement('TRUNCATE TABLE
+                    categories_v1,
+                    items_v1,
+                    item_snapshots_v1,
+                    projects_v1,
+                    suppliers_v1,
+                    purchases_v1,
+                    purchase_items_v1,
+                    purchase_allocations_v1,
+                    expenses_v1,
+                    revenues_v1,
+                    cash_transactions_v1
+                    RESTART IDENTITY CASCADE
+                ');
 
                 return response()->json([
                     'success' => true,
@@ -501,13 +501,13 @@ Route::middleware([
 
             Route::get('truncate', function () {
 
-                // DB::statement('TRUNCATE TABLE
-                //     asset_categories_v1,
-                //     assets_v1,
-                //     asset_maintenance_v1,
-                //     asset_expenses_v1
-                //     RESTART IDENTITY CASCADE
-                // ');
+                DB::statement('TRUNCATE TABLE
+                    asset_categories_v1,
+                    assets_v1,
+                    asset_maintenance_v1,
+                    asset_expenses_v1
+                    RESTART IDENTITY CASCADE
+                ');
 
                 return response()->json([
                     'success' => true,
