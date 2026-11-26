@@ -56,20 +56,30 @@ class CashTransactionService
                 $data
             );
 
-            $this->validateRevenuePayment(
-                $data
-            );
+            if($type == 'revenue'){
 
-            $this->validateExpensePayment(
-                $data
-            );
+                $this->validateRevenuePayment(
+                    $data
+                );
+            }
 
-            $this->validatePurchasePayment(
-                $data
-            );
+            if($type == 'expense'){
 
-            $data['transaction_number'] =
-                $this->generateTransactionNumber();
+                $this->validateExpensePayment(
+                    $data
+                );
+
+            }
+
+            if($type == 'purchase'){
+
+                $this->validatePurchasePayment(
+                    $data
+                );
+            }
+
+            // $data['transaction_number'] =
+            //     $this->generateTransactionNumber();
 
             $data['created_by'] = $actorId;
             unset($data['updated_by']);
