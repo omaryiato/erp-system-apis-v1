@@ -84,6 +84,11 @@ class AddCashTransaction extends BaseRequest
                 'nullable',
                 'string',
             ],
+            'transaction_number' => [
+                'bail',
+                'required',
+                'string',
+            ],
         ];
     }
 }

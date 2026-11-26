@@ -82,19 +82,19 @@ class AddNewPurchase extends BaseRequest
                 'gte:0',
             ],
 
-            'items.*.payment_method' => [
-                'bail',
-                'required',
-                'string',
-                'in:cash,cheques,debts,bank_transfer',
-            ],
+            // 'items.*.payment_method' => [
+            //     'bail',
+            //     'required',
+            //     'string',
+            //     'in:cash,cheques,debts,bank_transfer',
+            // ],
 
-            'items.*.financial_account_id' => [
-                'bail',
-                'required',
-                'integer',
-                'exists:financial_accounts_v1,id',
-            ],
+            // 'items.*.financial_account_id' => [
+            //     'bail',
+            //     'required',
+            //     'integer',
+            //     'exists:financial_accounts_v1,id',
+            // ],
 
             'items.*.notes' => [
                 'bail',
