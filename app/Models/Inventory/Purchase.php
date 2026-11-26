@@ -31,6 +31,12 @@ class Purchase extends Model
         );
     }
 
+    public function cashTransactions(): HasMany
+    {
+        return $this->hasMany(CashTransaction::class, 'reference_id')
+            ->where('cash_transactions_v1.transaction_type', 'purchase');
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(

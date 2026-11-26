@@ -142,19 +142,19 @@ class ReportRepository
             $filters
         );
 
-        $this->applyProjectFilter(
-            $cashQuery,
-            $filters
-        );
+        $this->applyCashTransactionProjectFilter($cashQuery, $filters);
 
         $totalExpenses = (float) $expenseQuery->sum('amount');
 
         $totalRevenues = (float) $revenueQuery->sum('amount');
 
         $totalPaid = (float) $cashQuery
+            ->clone()
             ->whereIn('transaction_type', [
                 'expense',
+                'purchase',
                 'supplier_payment',
+                'employee',
                 'employee_payment',
                 'other_expense',
             ])
@@ -162,6 +162,7 @@ class ReportRepository
 
         $totalReceived = (float) $cashQuery
             ->whereIn('transaction_type', [
+                'revenue',
                 'income',
                 'other_income',
             ])
@@ -193,14 +194,12 @@ class ReportRepository
             $filters
         );
 
-        $this->applyProjectFilter(
-            $query,
-            $filters
-        );
+        $this->applyCashTransactionProjectFilter($query, $filters);
 
         $income = (float) $query
             ->clone()
             ->whereIn('transaction_type', [
+                'revenue',
                 'income',
                 'other_income',
             ])
@@ -210,7 +209,9 @@ class ReportRepository
             ->clone()
             ->whereIn('transaction_type', [
                 'expense',
+                'purchase',
                 'supplier_payment',
+                'employee',
                 'employee_payment',
                 'other_expense',
             ])
@@ -357,31 +358,16 @@ class ReportRepository
         array $filters,
         int $perPage = 20
     ): LengthAwarePaginator {
-        $query = CashTransaction::query()
-            ->with([
-                'project',
-                'supplier',
-                'expense',
-                'revenue',
-                'employeePayment',
-                'purchaseOrder',
-            ]);
+        $query = CashTransaction::query()->with(['financialAccount', 'cheque']);
 
-        $this->applyDateFilter(
-            $query,
-            'transaction_date',
-            $filters
-        );
+        $this->applyDateFilter($query, 'transaction_date', $filters);
 
-        $this->applyProjectFilter(
-            $query,
-            $filters
-        );
+        $this->applyCashTransactionProjectFilter($query, $filters);
 
-        $this->applySupplierFilter(
-            $query,
-            $filters
-        );
+        if (!empty($filters['supplier_id'])) {
+            $query->where('transaction_type', 'purchase')
+                ->whereIn('reference_id', Purchase::query()->where('supplier_id', $filters['supplier_id'])->select('id'));
+        }
 
         if (!empty($filters['transaction_type'])) {
             $query->where(
@@ -525,6 +511,14 @@ class ReportRepository
                 '<=',
                 $filters['to']
             );
+        }
+    }
+
+    private function applyCashTransactionProjectFilter($query, array $filters): void
+    {
+        if (!empty($filters['project_id'])) {
+            $query->where('transaction_type', 'revenue')
+                ->whereIn('reference_id', Revenue::query()->where('project_id', $filters['project_id'])->select('id'));
         }
     }
 

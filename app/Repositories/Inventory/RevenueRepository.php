@@ -7,6 +7,11 @@ use Carbon\Carbon;
 
 class RevenueRepository
 {
+    public function hasPayments(Revenue $revenue): bool
+    {
+        return $revenue->cashTransactions()->exists();
+    }
+
     public function getAll() {
         return Revenue::with([
                 'project',

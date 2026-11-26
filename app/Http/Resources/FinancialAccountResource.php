@@ -13,20 +13,20 @@ class FinancialAccountResource extends JsonResource
         |--------------------------------------------------------------------------
         | Revenues
         |--------------------------------------------------------------------------
-        | Cash transactions that have revenue_id
+        | Cash transactions that are revenue receipts
         */
         $revenues = $this->cashTransactions
-            ->whereNotNull('revenue_id')
+            ->where('transaction_type', 'revenue')
             ->sum('amount');
 
         /*
         |--------------------------------------------------------------------------
         | Cash Expenses
         |--------------------------------------------------------------------------
-        | Cash transactions that have expense_id
+        | Cash transactions that are expense payments
         */
         $cashExpenses = $this->cashTransactions
-            ->whereNotNull('expense_id')
+            ->where('transaction_type', 'expense')
             ->sum('amount');
 
         /*
@@ -39,7 +39,7 @@ class FinancialAccountResource extends JsonResource
         // $purchaseExpenses = $this->purchaseItems->sum('total_amount');
 
         $purchaseExpenses = $this->cashTransactions
-            ->whereNotNull('purchase_id')
+            ->where('transaction_type', 'purchase')
             ->sum('amount');
 
         $employeePaymentExpenses = $this->employeePayments->sum('amount');

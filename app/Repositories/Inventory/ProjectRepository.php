@@ -13,7 +13,8 @@ class ProjectRepository
     {
         return Project::with([
             'revenues',
-            'cashTransactions'
+            'cashTransactions.financialAccount',
+            'cashTransactions.cheque'
             ])->get();
     }
 
@@ -21,7 +22,8 @@ class ProjectRepository
     {
         return $project->load([
             'revenues',
-            'cashTransactions'
+            'cashTransactions.financialAccount',
+            'cashTransactions.cheque'
             ]);
     }
 
@@ -48,9 +50,10 @@ class ProjectRepository
         ?string $from = null,
         ?string $to = null
     ): array {
-        $revenueQuery = Revenue::query();
+        $revenueQuery = Revenue::query()->whereNotNull('project_id');
 
-        $cashQuery = CashTransaction::query();
+        $cashQuery = CashTransaction::query()
+            ->whereIn('reference_id', Revenue::query()->whereNotNull('project_id')->select('id'));
 
         if ($from) {
             $fromDate = Carbon::createFromFormat('Y-m-d', $from);

@@ -7,6 +7,11 @@ use Carbon\Carbon;
 
 class ExpenseRepository
 {
+    public function hasPayments(Expense $expense): bool
+    {
+        return $expense->cashTransactions()->exists();
+    }
+
     public function getAll() {
         return Expense::with([
                 'expensesCategory',

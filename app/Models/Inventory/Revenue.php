@@ -41,8 +41,8 @@ class Revenue extends Model
     {
         return $this->hasMany(
             CashTransaction::class,
-            'revenue_id'
-        );
+            'reference_id'
+        )->where('cash_transactions_v1.transaction_type', 'revenue');
     }
 
 }

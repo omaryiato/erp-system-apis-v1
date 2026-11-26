@@ -13,8 +13,9 @@ class SupplierRepository
     public function getAll()
     {
         return Supplier::with([
-            'cashTransactions',
-            'purchases',
+            'cashTransactions.financialAccount',
+            'cashTransactions.cheque',
+            'purchases.supplier',
             'purchases.items',
         ])->get();
     }
@@ -22,8 +23,9 @@ class SupplierRepository
     public function getDetails(Supplier $supplier): ?Supplier
     {
         return $supplier->load([
-            'cashTransactions',
-            'purchases',
+            'cashTransactions.financialAccount',
+            'cashTransactions.cheque',
+            'purchases.supplier',
             'purchases.items',
         ]);
     }
@@ -53,7 +55,7 @@ class SupplierRepository
         ?string $to = null
     ): array {
         // $purchaseQuery = Purchase::query();
-        $purchaseQuery = PurchaseItem::query();
+        $purchaseQuery = PurchaseItem::query()->whereHas('purchase', fn ($query) => $query->whereNotNull('supplier_id'));
 
         $cashQuery = CashTransaction::query();
 
@@ -62,11 +64,7 @@ class SupplierRepository
             // $fromDate = Carbon::createFromFormat('Y-m-d', $from)
             //     ->startOfMonth();
 
-            $purchaseQuery->whereDate(
-                'purchase_date',
-                '>=',
-                $fromDate
-            );
+            $purchaseQuery->whereHas('purchase', fn ($query) => $query->whereDate('purchase_date', '>=', $fromDate));
 
             $cashQuery->whereDate(
                 'transaction_date',
@@ -80,11 +78,7 @@ class SupplierRepository
             // $toDate = Carbon::createFromFormat('Y-m-d', $to)
             //     ->endOfMonth();
 
-            $purchaseQuery->whereDate(
-                'purchase_date',
-                '<=',
-                $toDate
-            );
+            $purchaseQuery->whereHas('purchase', fn ($query) => $query->whereDate('purchase_date', '<=', $toDate));
 
             $cashQuery->whereDate(
                 'transaction_date',
@@ -97,11 +91,8 @@ class SupplierRepository
             ->sum('total_amount');
 
         $totalPaid = (float) $cashQuery
-            ->whereIn('transaction_type', [
-                'expense',
-                // 'supplier_payment',
-                // 'expense',
-            ])
+            ->where('transaction_type', 'purchase')
+            ->whereIn('reference_id', Purchase::query()->whereNotNull('supplier_id')->select('id'))
             ->sum('amount');
 
         return [

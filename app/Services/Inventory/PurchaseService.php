@@ -2,7 +2,6 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Purchase;
 use App\Repositories\Inventory\PurchaseRepository;
 use Illuminate\Support\Facades\DB;
@@ -273,9 +272,7 @@ class PurchaseService
 
     private function validatePurchasePayment(Purchase $purchase): bool
     {
-        return CashTransaction::where('purchase_id', $purchase->id)
-            ->where('transaction_type', 'purchase')
-            ->exists();
+        return $this->repository->hasPayments($purchase);
     }
 
 

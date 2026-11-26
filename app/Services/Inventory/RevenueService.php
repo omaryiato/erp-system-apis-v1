@@ -2,7 +2,6 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Revenue;
 use App\Repositories\Inventory\RevenueRepository;
 use Illuminate\Support\Facades\DB;
@@ -73,9 +72,7 @@ class RevenueService
 
     private function validateRevenuePayment(Revenue $revenue): bool
     {
-        return CashTransaction::where('revenue_id', $revenue->id)
-            ->where('transaction_type', 'revenue')
-            ->exists();
+        return $this->repository->hasPayments($revenue);
     }
 
     public function prepareRevenueInfo(array $revenue_request)

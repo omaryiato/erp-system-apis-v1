@@ -2,17 +2,11 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\Attendance\EmployeePayment;
 use App\Models\Inventory\CashTransaction;
-use App\Models\Inventory\Expense;
-use App\Models\Inventory\Purchase;
-use App\Models\Inventory\Revenue;
 use App\Repositories\Inventory\CashTransactionRepository;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
-use RuntimeException;
+use Illuminate\Validation\ValidationException;
 use App\Services\ChequeService;
-use App\Services\FinancialAccountService;
 
 
 class CashTransactionService
@@ -20,7 +14,6 @@ class CashTransactionService
     public function __construct(
         private CashTransactionRepository $repository,
         protected ChequeService $chequeService,
-        protected FinancialAccountService $financialAccountService,
     ) {}
 
     public function getAll()
@@ -32,11 +25,13 @@ class CashTransactionService
     public function create(array $data, int $actorId): CashTransaction
     {
         return DB::transaction(function () use ($data, $actorId) {
-            $cheque_info = null;
-
             if (isset($data['payment_method']) &&
                 $data['payment_method'] == 'cheques' &&
                 !isset($data['cheque_id']) ) {
+
+                if (! isset($data['cheque'])) {
+                    throw ValidationException::withMessages(['payment_method' => 'Cheque details are required.']);
+                }
 
                 $cheque_info = $this->chequeService->create(
                     $data['cheque']
@@ -46,37 +41,7 @@ class CashTransactionService
                 $data['cheque_amount'] = $cheque_info->amount;
             }
 
-            $type = $data['transaction_type'];
-
-            $this->validateTransactionType(
-                $data
-            );
-
-            $this->validateAmount(
-                $data
-            );
-
-            if($type == 'revenue'){
-
-                $this->validateRevenuePayment(
-                    $data
-                );
-            }
-
-            if($type == 'expense'){
-
-                $this->validateExpensePayment(
-                    $data
-                );
-
-            }
-
-            if($type == 'purchase'){
-
-                $this->validatePurchasePayment(
-                    $data
-                );
-            }
+            $this->validatePayment($data);
 
             // $data['transaction_number'] =
             //     $this->generateTransactionNumber();
@@ -84,262 +49,49 @@ class CashTransactionService
             $data['created_by'] = $actorId;
             unset($data['updated_by']);
 
-            $transaction_details =  $this->repository->create(
-                $data
-            );
-
-            // if(isset($data['expense_id'])){
-
-            //     $this->financialAccountService->updateAccountBalance($data, "transaction_expense");
-            // } elseif(isset($data['revenue_id'])){
-
-            //     $this->financialAccountService->updateAccountBalance($data, "transaction_revenue");
-            // } elseif(isset($data['purchase_id'])){
-
-            //     $this->financialAccountService->updateAccountBalance($data, "transaction_purchase");
-            // }
-
-            return $transaction_details;
+            return $this->repository->create($data);
         });
     }
 
-    private function validateTransactionType(
-        array $data
-    ): void {
+    public function update(CashTransaction $transaction, array $data, int $actorId): CashTransaction
+    {
+        return DB::transaction(function () use ($transaction, $data, $actorId): CashTransaction {
+            $transaction = $this->repository->lockById($transaction->id);
 
+            if ($transaction->employee_payment_id !== null
+                || ! in_array($transaction->transaction_type, ['expense', 'revenue', 'purchase'], true)) {
+                throw ValidationException::withMessages([
+                    'transaction_type' => 'This transaction cannot be edited through this endpoint.',
+                ]);
+            }
+
+            if ($data['payment_method'] !== $transaction->payment_method
+                && in_array('cheques', [$data['payment_method'], $transaction->payment_method], true)) {
+                throw ValidationException::withMessages([
+                    'payment_method' => 'This endpoint cannot change a cheque payment method.',
+                ]);
+            }
+
+            $this->validatePayment($data, $transaction->id);
+            $data['updated_by'] = $actorId;
+
+            return $this->repository->update($transaction, $data);
+        });
+    }
+
+    private function validatePayment(array $data, ?int $exceptId = null): void
+    {
         $type = $data['transaction_type'];
+        $referenceId = (int) $data['reference_id'];
+        $expected = $this->repository->lockReferenceAmount($type, $referenceId);
+        $paid = $this->repository->sumForReference($type, $referenceId, $exceptId);
+        $remaining = round((float) $expected - (float) $paid, 2);
 
-        switch ($type) {
-
-            case 'revenue':
-
-                if (empty($data['revenue_id'])) {
-                    throw new InvalidArgumentException(
-                        'Revenue ID is required.'
-                    );
-                }
-
-                $this->validateRevenuePayment(
-                    $data
-                );
-
-                break;
-
-            case 'expense':
-
-                if (empty($data['expense_id'])) {
-                    throw new InvalidArgumentException(
-                        'Expense ID is required.'
-                    );
-                }
-
-                $this->validateExpensePayment(
-                    $data
-                );
-
-                break;
-
-            case 'employee':
-
-                if (empty($data['employee_payment_id'])) {
-                    throw new InvalidArgumentException(
-                        'Employee payment ID is required.'
-                    );
-                }
-
-                $this->validateEmployeePayment(
-                    $data
-                );
-
-                break;
-
-            case 'purchase':
-
-                if (empty($data['purchase_id'])) {
-                    throw new InvalidArgumentException(
-                        'Purchase ID is required.'
-                    );
-                }
-
-                $this->validatePurchasePayment(
-                    $data
-                );
-
-                break;
-
-            case 'other_income':
-            case 'other_expense':
-
-                break;
-
-            default:
-
-                throw new InvalidArgumentException(
-                    'Invalid transaction type.'
-                );
+        if ((float) $data['amount'] > $remaining) {
+            throw ValidationException::withMessages([
+                'amount' => 'Payment amount exceeds the remaining amount.',
+            ]);
         }
-    }
-
-    private function validateAmount(
-        array $data
-    ): void {
-
-        if (
-            !isset($data['amount']) ||
-            $data['amount'] <= 0
-        ) {
-            throw new InvalidArgumentException(
-                'Amount must be greater than zero.'
-            );
-        }
-    }
-
-    private function validateRevenuePayment(
-        array $data
-    ): void {
-
-        $revenue = Revenue::query()
-            ->with('cashTransactions')
-            ->lockForUpdate()
-            ->findOrFail(
-                $data['revenue_id']
-            );
-
-        $received = $revenue
-            ->cashTransactions
-            ->sum('amount');
-
-        $remaining =
-            (float) $revenue->amount -
-            (float) $received;
-
-        if (
-            (float) $data['amount'] >
-            $remaining
-        ) {
-            throw new RuntimeException(
-                'Payment amount exceeds remaining revenue amount.'
-            );
-        }
-
-        if ($remaining <= 0) {
-            throw new RuntimeException(
-                'This revenue has already been fully paid.'
-            );
-        }
-
-        // if (
-        //     empty($data['project_id']) &&
-        //     $revenue->project_id
-        // ) {
-        //     $data['project_id'] =
-        //         $revenue->project_id;
-        // }
-    }
-
-    private function validateExpensePayment(
-        array $data
-    ): void {
-
-        $expense =  Expense::query()
-            ->with('cashTransactions')
-            ->lockForUpdate()
-            ->findOrFail(
-                $data['expense_id']
-            );
-
-        $paid = $expense
-            ->cashTransactions
-            ->sum('amount');
-
-        $remaining =
-            (float) $expense->amount -
-            (float) $paid;
-
-        if (
-            (float) $data['amount'] >
-            $remaining
-        ) {
-            throw new RuntimeException(
-                'Payment amount exceeds remaining expense amount.'
-            );
-        }
-
-        if ($remaining <= 0) {
-            throw new RuntimeException(
-                'This expense has already been fully paid.'
-            );
-        }
-
-        // if (
-        //     empty($data['project_id']) &&
-        //     $expense->project_id
-        // ) {
-        //     $data['project_id'] =
-        //         $expense->project_id;
-        // }
-    }
-
-    private function validateEmployeePayment(
-        array $data
-    ): void {
-
-        $payment = EmployeePayment::query()
-                ->findOrFail(
-                    $data['employee_payment_id']
-                );
-
-        if (
-            (float) $data['amount'] !=
-            (float) $payment->amount
-        ) {
-            throw new RuntimeException(
-                'Cash transaction amount must match employee payment amount.'
-            );
-        }
-    }
-
-    private function validatePurchasePayment(
-        array $data
-    ): void {
-
-        $purchase =  Purchase::query()
-            ->with('cashTransactions')
-            ->lockForUpdate()
-            ->findOrFail(
-                $data['purchase_id']
-            );
-
-        $paid = $purchase
-            ->cashTransactions
-            ->sum('amount');
-
-        $remaining =
-            (float) $purchase->amount -
-            (float) $paid;
-
-        if (
-            (float) $data['amount'] >
-            $remaining
-        ) {
-            throw new RuntimeException(
-                'Payment amount exceeds remaining purchase amount.'
-            );
-        }
-
-        if ($remaining <= 0) {
-            throw new RuntimeException(
-                'This purchase has already been fully paid.'
-            );
-        }
-
-        // if (
-        //     empty($data['project_id']) &&
-        //     $expense->project_id
-        // ) {
-        //     $data['project_id'] =
-        //         $expense->project_id;
-        // }
     }
 
     private function generateTransactionNumber(): string

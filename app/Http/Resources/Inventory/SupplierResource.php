@@ -10,7 +10,7 @@ class SupplierResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $totalPurchase = (float) $this->purchase?->items->sum('total_amount');
+        $totalPurchase = (float) $this->purchases->sum(fn ($purchase) => $purchase->items->sum('total_amount'));
 
         $paidAmount = (float) $this->cashTransactions->sum('amount');
 

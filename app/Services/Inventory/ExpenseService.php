@@ -2,7 +2,6 @@
 
 namespace App\Services\Inventory;
 
-use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Expense;
 use App\Repositories\Inventory\ExpenseRepository;
 use Illuminate\Support\Facades\DB;
@@ -55,9 +54,7 @@ class ExpenseService
 
     private function validateExpensePayment(Expense $expense): bool
     {
-        return CashTransaction::where('expense_id', $expense->id)
-            ->where('transaction_type', 'expense')
-            ->exists();
+        return $this->repository->hasPayments($expense);
     }
 
     public function delete(

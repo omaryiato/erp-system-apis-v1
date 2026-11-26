@@ -35,17 +35,8 @@ class CashTransactionResource extends JsonResource
             //     'name' => $this->supplier?->name,
             // ],
 
-            'expense_id' =>
-                $this->expense_id,
-
-            'revenue_id' =>
-                $this->revenue_id,
-
-            'employee_payment_id' =>
-                $this->employee_payment_id,
-
-            'purchase_id' =>
-                $this->purchase_id,
+            'reference_id' => $this->reference_id,
+            'employee_payment_id' => $this->employee_payment_id,
 
             'description' =>
                 $this->description,
@@ -61,10 +52,10 @@ class CashTransactionResource extends JsonResource
 
             'payment_method' => $this->payment_method,
             'financial_account_id' => $this->financial_account_id ?? null,
-            'financial_account_name' => $this->financialAccount?->name ?? null,
+            'financial_account_name' => $this->whenLoaded('financialAccount', fn () => $this->financialAccount?->name, null),
 
             'cheque_id' =>  $this->cheque_id ?? null,
-            'cheque_number' =>  $this->cheque?->cheque_number ?? null,
+            'cheque_number' =>  $this->whenLoaded('cheque', fn () => $this->cheque?->cheque_number, null),
         ];
     }
 }

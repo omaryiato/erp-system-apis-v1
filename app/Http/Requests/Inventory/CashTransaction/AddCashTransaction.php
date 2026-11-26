@@ -14,6 +14,13 @@ class AddCashTransaction extends BaseRequest
 
     public function rules(): array
     {
+        $referenceTable = match ($this->input('transaction_type')) {
+            'expense' => 'expenses_v1',
+            'revenue' => 'revenues_v1',
+            'purchase' => 'purchases_v1',
+            default => null,
+        };
+
         return [
             'transaction_type' => [
                 'bail',
@@ -30,52 +37,13 @@ class AddCashTransaction extends BaseRequest
                 ]),
             ],
 
-            'revenue_id' => [
+            'reference_id' => [
                 'bail',
-                'nullable',
+                'required',
                 'integer',
-                'exists:revenues_v1,id',
-                'required_if:transaction_type,revenue',
+                'min:1',
+                ...($referenceTable === null ? [] : [Rule::exists($referenceTable, 'id')]),
             ],
-
-            'expense_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:expenses_v1,id',
-                'required_if:transaction_type,expense',
-            ],
-
-            // 'supplier_id' => [
-            //     'bail',
-            //     'nullable',
-            //     'integer',
-            //     'exists:suppliers_v1,id',
-            //     'required_if:transaction_type,supplier',
-            // ],
-
-            'employee_payment_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:employee_payments_v1,id',
-                'required_if:transaction_type,employee',
-            ],
-
-            'purchase_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:purchase_orders_v1,id',
-                'required_if:transaction_type,supplier',
-            ],
-
-            // 'project_id' => [
-            //     'bail',
-            //     'nullable',
-            //     'integer',
-            //     'exists:projects_v1,id',
-            // ],
 
             'payment_method' => [
                 'bail',
@@ -95,6 +63,7 @@ class AddCashTransaction extends BaseRequest
                 'bail',
                 'required',
                 'numeric',
+                'decimal:0,2',
                 'gt:0',
             ],
 

@@ -7,7 +7,6 @@ use App\Models\Cheque;
 use App\Models\FinancialAccount;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CashTransaction extends Model
 {
@@ -18,10 +17,8 @@ class CashTransaction extends Model
         'transaction_type',
         // 'project_id',
         // 'supplier_id',
-        'expense_id',
-        'revenue_id',
+        'reference_id',
         'employee_payment_id',
-        'purchase_id',
         'amount',
         'transaction_date',
         'description',
@@ -54,36 +51,9 @@ class CashTransaction extends Model
     //     );
     // }
 
-    public function expense(): BelongsTo
+    public function employeePayment(): BelongsTo
     {
-        return $this->belongsTo(
-            Expense::class,
-            'expense_id'
-        );
-    }
-
-    public function revenue(): BelongsTo
-    {
-        return $this->belongsTo(
-            Revenue::class,
-            'revenue_id'
-        );
-    }
-
-    // public function employeePayment(): BelongsTo
-    // {
-    //     return $this->belongsTo(
-    //         EmployeePayment::class,
-    //         'employee_payment_id'
-    //     );
-    // }
-
-    public function purchase(): BelongsTo
-    {
-        return $this->belongsTo(
-            Purchase::class,
-            'purchase_id'
-        );
+        return $this->belongsTo(EmployeePayment::class, 'employee_payment_id');
     }
 
     public function financialAccount(): BelongsTo

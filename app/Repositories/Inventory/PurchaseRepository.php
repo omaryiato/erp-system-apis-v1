@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PurchaseRepository
 {
+    public function hasPayments(Purchase $purchase): bool
+    {
+        return $purchase->cashTransactions()->exists();
+    }
+
     public function getAll()
     {
         return Purchase::with([

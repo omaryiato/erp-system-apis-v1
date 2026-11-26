@@ -30,8 +30,8 @@ class Expense extends Model
     {
         return $this->hasMany(
             CashTransaction::class,
-            'expense_id'
-        );
+            'reference_id'
+        )->where('cash_transactions_v1.transaction_type', 'expense');
     }
 
     public function expensesCategory(): BelongsTo

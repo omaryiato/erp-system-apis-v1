@@ -4,6 +4,7 @@ namespace App\Models\Inventory;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Project extends Model
 {
@@ -46,12 +47,10 @@ class Project extends Model
         );
     }
 
-    public function cashTransactions(): HasMany
+    public function cashTransactions(): HasManyThrough
     {
-        return $this->hasMany(
-            CashTransaction::class,
-            'revenue_id'
-        );
+        return $this->hasManyThrough(CashTransaction::class, Revenue::class, 'project_id', 'reference_id')
+            ->where('cash_transactions_v1.transaction_type', 'revenue');
     }
     // public function cashTransactions(): HasMany
     // {

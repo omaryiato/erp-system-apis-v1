@@ -41,7 +41,7 @@ class ReportFilterRequest extends BaseRequest
             'transaction_type' => [
                 'nullable',
                 'string',
-                'in:income,expense,supplier_payment,employee_payment,other_income,other_expense',
+                'in:revenue,expense,purchase,employee,income,supplier_payment,employee_payment,other_income,other_expense',
             ],
 
             'category' => [

@@ -135,7 +135,7 @@ class FinancialAccountRepository
         $total_purchases = (float) $purchases->sum('amount');
 
         $paid_purchases = (float) $purchases->sum(
-            fn (Expense $purchase) =>
+            fn (Purchase $purchase) =>
                 $purchase->cashTransactions->sum('amount')
         );
 
