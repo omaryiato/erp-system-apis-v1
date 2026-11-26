@@ -23,6 +23,12 @@ class CashTransactionService
         protected FinancialAccountService $financialAccountService,
     ) {}
 
+    public function getAll()
+    {
+        return  $this->repository->getAll();
+    }
+
+
     public function create(array $data, int $actorId): CashTransaction
     {
         return DB::transaction(function () use ($data, $actorId) {

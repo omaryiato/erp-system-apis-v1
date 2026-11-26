@@ -25,15 +25,15 @@ class CashTransactionResource extends JsonResource
             'transaction_date' =>
                 $this->transaction_date,
 
-            'project' => [
-                'id' => $this->project?->id,
-                'name' => $this->project?->project_name,
-            ],
+            // 'project' => [
+            //     'id' => $this->project?->id,
+            //     'name' => $this->project?->project_name,
+            // ],
 
-            'supplier' => [
-                'id' => $this->supplier?->id,
-                'name' => $this->supplier?->name,
-            ],
+            // 'supplier' => [
+            //     'id' => $this->supplier?->id,
+            //     'name' => $this->supplier?->name,
+            // ],
 
             'expense_id' =>
                 $this->expense_id,
@@ -44,8 +44,8 @@ class CashTransactionResource extends JsonResource
             'employee_payment_id' =>
                 $this->employee_payment_id,
 
-            'purchase_order_id' =>
-                $this->purchase_order_id,
+            'purchase_id' =>
+                $this->purchase_id,
 
             'description' =>
                 $this->description,

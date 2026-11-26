@@ -20,12 +20,13 @@ class AddCashTransaction extends BaseRequest
                 'required',
                 'string',
                 Rule::in([
-                    'revenue_payment',
-                    'expense_payment',
-                    'supplier_payment',
-                    'employee_payment',
-                    'other_income',
-                    'other_expense',
+                    'revenue',
+                    'expense',
+                    // 'supplier',
+                    // 'employee',
+                    // 'other_income',
+                    // 'other_expense',
+                    'purchase',
                 ]),
             ],
 
@@ -34,7 +35,7 @@ class AddCashTransaction extends BaseRequest
                 'nullable',
                 'integer',
                 'exists:revenues_v1,id',
-                'required_if:transaction_type,revenue_payment',
+                'required_if:transaction_type,revenue',
             ],
 
             'expense_id' => [
@@ -42,39 +43,39 @@ class AddCashTransaction extends BaseRequest
                 'nullable',
                 'integer',
                 'exists:expenses_v1,id',
-                'required_if:transaction_type,expense_payment',
+                'required_if:transaction_type,expense',
             ],
 
-            'supplier_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:suppliers_v1,id',
-                'required_if:transaction_type,supplier_payment',
-            ],
+            // 'supplier_id' => [
+            //     'bail',
+            //     'nullable',
+            //     'integer',
+            //     'exists:suppliers_v1,id',
+            //     'required_if:transaction_type,supplier',
+            // ],
 
             'employee_payment_id' => [
                 'bail',
                 'nullable',
                 'integer',
                 'exists:employee_payments_v1,id',
-                'required_if:transaction_type,employee_payment',
+                'required_if:transaction_type,employee',
             ],
 
-            'purchase_order_id' => [
+            'purchase_id' => [
                 'bail',
                 'nullable',
                 'integer',
                 'exists:purchase_orders_v1,id',
-                'required_if:transaction_type,supplier_payment',
+                'required_if:transaction_type,supplier',
             ],
 
-            'project_id' => [
-                'bail',
-                'nullable',
-                'integer',
-                'exists:projects_v1,id',
-            ],
+            // 'project_id' => [
+            //     'bail',
+            //     'nullable',
+            //     'integer',
+            //     'exists:projects_v1,id',
+            // ],
 
             'payment_method' => [
                 'bail',

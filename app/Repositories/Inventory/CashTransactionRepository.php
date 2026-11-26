@@ -28,7 +28,7 @@ class CashTransactionRepository
             ->findOrFail($id);
     }
 
-    public function getAll(): Collection
+    public function getAll()
     {
         return CashTransaction::query()
             ->with([

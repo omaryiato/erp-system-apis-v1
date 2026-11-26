@@ -375,9 +375,19 @@ Route::middleware([
             |--------------------------------------------------------------------------
             */
 
+            Route::get(
+                'cash-transactions',
+                [CashTransactionController::class, 'index']
+            );
+
             Route::post(
                 'cash-transactions',
                 [CashTransactionController::class, 'store']
+            )->middleware(['auth:sanctum', 'admin.access']);
+            
+            Route::post(
+                'cash-transactions/{cashTransaction}',
+                [CashTransactionController::class, 'update']
             )->middleware(['auth:sanctum', 'admin.access']);
 
             /*

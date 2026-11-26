@@ -38,21 +38,21 @@ class CashTransaction extends Model
         'amount' => 'decimal:2',
     ];
 
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(
-            Project::class,
-            'project_id'
-        );
-    }
+    // public function project(): BelongsTo
+    // {
+    //     return $this->belongsTo(
+    //         Project::class,
+    //         'project_id'
+    //     );
+    // }
 
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(
-            Supplier::class,
-            'supplier_id'
-        );
-    }
+    // public function supplier(): BelongsTo
+    // {
+    //     return $this->belongsTo(
+    //         Supplier::class,
+    //         'supplier_id'
+    //     );
+    // }
 
     public function expense(): BelongsTo
     {
@@ -70,13 +70,13 @@ class CashTransaction extends Model
         );
     }
 
-    public function employeePayment(): BelongsTo
-    {
-        return $this->belongsTo(
-            EmployeePayment::class,
-            'employee_payment_id'
-        );
-    }
+    // public function employeePayment(): BelongsTo
+    // {
+    //     return $this->belongsTo(
+    //         EmployeePayment::class,
+    //         'employee_payment_id'
+    //     );
+    // }
 
     public function purchase(): BelongsTo
     {

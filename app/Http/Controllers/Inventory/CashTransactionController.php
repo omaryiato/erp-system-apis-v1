@@ -18,7 +18,76 @@ class CashTransactionController extends Controller
         private CashTransactionService $service
     ) {}
 
+    public function index() {
+            return ResponseHelper::success(
+                CashTransactionResource::collection(
+                    $this->service->getAll()
+                ),
+                [
+                    'en' => trans(
+                        'validation.add_new_cash_transaction',
+                        [],
+                        'en'
+                    ),
+                    'ar' => trans(
+                        'validation.add_new_cash_transaction',
+                        [],
+                        'ar'
+                    ),
+                ],
+                Response::HTTP_OK
+            );
+    }
+
     public function store(
+    AddCashTransaction $request
+    ) {
+        try {
+
+            return ResponseHelper::success(
+                new CashTransactionResource(
+                    $this->service->create(
+                        $request->validated(),
+                        $request->user()->id
+                    )
+                ),
+                [
+                    'en' => trans(
+                        'validation.add_new_cash_transaction',
+                        [],
+                        'en'
+                    ),
+                    'ar' => trans(
+                        'validation.add_new_cash_transaction',
+                        [],
+                        'ar'
+                    ),
+                ],
+                Response::HTTP_CREATED
+            );
+
+        } catch (Exception $exception) {
+
+            return ResponseHelper::error(
+                [
+                    'en' => trans(
+                        'validation.exception_error',
+                        [],
+                        'en'
+                    ),
+                    'ar' => trans(
+                        'validation.exception_error',
+                        [],
+                        'ar'
+                    ),
+                ],
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function update(
     AddCashTransaction $request
     ) {
         try {
