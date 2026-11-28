@@ -439,20 +439,20 @@ Route::middleware([
 
             Route::get('truncate', function () {
 
-                DB::statement('TRUNCATE TABLE
-                    categories_v1,
-                    items_v1,
-                    item_snapshots_v1,
-                    projects_v1,
-                    suppliers_v1,
-                    purchases_v1,
-                    purchase_items_v1,
-                    purchase_allocations_v1,
-                    expenses_v1,
-                    revenues_v1,
-                    cash_transactions_v1
-                    RESTART IDENTITY CASCADE
-                ');
+                // DB::statement('TRUNCATE TABLE
+                //     categories_v1,
+                //     items_v1,
+                //     item_snapshots_v1,
+                //     projects_v1,
+                //     suppliers_v1,
+                //     purchases_v1,
+                //     purchase_items_v1,
+                //     purchase_allocations_v1,
+                //     expenses_v1,
+                //     revenues_v1,
+                //     cash_transactions_v1
+                //     RESTART IDENTITY CASCADE
+                // ');
 
                 return response()->json([
                     'success' => true,

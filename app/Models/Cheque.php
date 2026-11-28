@@ -57,14 +57,14 @@ class Cheque extends Model
         );
     }
 
-    public function purchaseItems(): HasOne
-    {
-        return $this->hasOne(
-            PurchaseItem::class,
-            'financial_account_id',
-            'id'
-        );
-    }
+    // public function purchaseItems(): HasOne
+    // {
+    //     return $this->hasOne(
+    //         PurchaseItem::class,
+    //         'financial_account_id',
+    //         'id'
+    //     );
+    // }
 
     public function employeePayments(): HasOne
     {

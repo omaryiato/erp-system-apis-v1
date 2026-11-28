@@ -51,7 +51,10 @@ class UpdateFinancialAccount extends BaseRequest
                 'nullable',
                 'string',
                 'max:100',
-                'unique:financial_accounts_v1,iban',
+                // 'unique:financial_accounts_v1,iban',
+                Rule::unique('financial_accounts_v1', 'iban')
+                        ->ignore($accountId)
+                        ->where('id', $this->input('id')),
             ],
 
             'bank_name' => [
