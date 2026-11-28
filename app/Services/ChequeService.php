@@ -159,7 +159,7 @@ class ChequeService
         /*
          * Status must not be changed through normal update.
          */
-        unset($cheque_request['status']);
+        // unset($cheque_request['status']);
 
         return $this->repository->update(
             $cheque,
