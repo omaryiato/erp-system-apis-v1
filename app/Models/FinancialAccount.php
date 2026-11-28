@@ -53,14 +53,14 @@ class FinancialAccount extends Model
         );
     }
 
-    public function purchaseItems(): HasMany
-    {
-        return $this->hasMany(
-            PurchaseItem::class,
-            'financial_account_id',
-            'id'
-        );
-    }
+    // public function purchaseItems(): HasMany
+    // {
+    //     return $this->hasMany(
+    //         PurchaseItem::class,
+    //         'financial_account_id',
+    //         'id'
+    //     );
+    // }
 
     public function employeePayments(): HasMany
     {
