@@ -9,6 +9,21 @@ class PurchaseResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $paidAmount = $this->relationLoaded(
+            'cashTransactions'
+        )
+            ? $this->cashTransactions->sum('amount')
+            : null;
+
+
+        $total_amount = $this->when(
+                $this->relationLoaded('items'),
+                fn () => $this->items->sum(
+                    fn ($item) => $item->total_amount
+                )
+            );
+
+
         return [
             'id' => $this->id,
 
@@ -27,12 +42,11 @@ class PurchaseResource extends JsonResource
                 $this->whenLoaded('items')
             ),
 
-            'total_amount' => $this->when(
-                $this->relationLoaded('items'),
-                fn () => $this->items->sum(
-                    fn ($item) => $item->total_amount
-                )
-            ),
+            'paid_amount' => $paidAmount,
+
+            'remaining_amount' => max( $total_amount - $paidAmount, 0 ),
+
+            'total_amount' => $total_amount,
 
             'notes' => $this->notes,
 

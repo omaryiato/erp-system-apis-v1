@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Inventory;
 
+use App\Models\Inventory\CashTransaction;
 use App\Models\Inventory\Purchase;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,6 +20,7 @@ class PurchaseRepository
                 'supplier',
                 'items.item',
                 'items.allocations.project',
+                'cashTransactions',
                 // 'items.cheque',
                 // 'items.financialAccount',
             ])
@@ -31,6 +33,7 @@ class PurchaseRepository
                 'supplier',
                 'items.item',
                 'items.allocations.project',
+                'cashTransactions',
                 // 'items.cheque',
                 // 'items.financialAccount',
             ]);
@@ -62,6 +65,9 @@ class PurchaseRepository
 
         $query = Purchase::query();
 
+        $cashQuery = CashTransaction::query()
+            ->whereIn('reference_id', Purchase::query()->whereNotNull('supplier_id')->select('id'));
+
         if ($from) {
             $fromDate = Carbon::createFromFormat(
                 'Y-m-d',
@@ -77,6 +83,8 @@ class PurchaseRepository
                 '>=',
                 $fromDate
             );
+
+            $cashQuery->whereDate('transaction_date', '>=', $fromDate);
         }
 
         if ($to) {
@@ -94,6 +102,8 @@ class PurchaseRepository
                 '<=',
                 $toDate
             );
+
+            $cashQuery->whereDate('transaction_date', '<=', $toDate);
         }
 
         $purchases = $query
@@ -101,10 +111,19 @@ class PurchaseRepository
                 'supplier',
                 'items.item',
                 'items.allocations.project',
-                'items.cheque',
-                'items.financialAccount',
+                // 'items.cheque',
+                // 'items.financialAccount',
+                'cashTransactions',
             ])
             ->get();
+
+            $paid = (float) $purchases->sum(
+                fn (Purchase $purchase) =>
+                    $purchase->cashTransactions->sum('amount')
+            );
+
+
+
 
         /*
         |--------------------------------------------------------------------------
@@ -205,6 +224,8 @@ class PurchaseRepository
             'cancelled_count' => $cancelledCount,
 
             'purchases' => $purchases,
+            
+            'paid ' => $paid ,
         ];
     }
 

@@ -13,9 +13,9 @@ class PurchaseAllocationResource extends JsonResource
             'id' => $this->id,
 
             'project' => [
-                'id' => $this->project?->id,
-                'name' => $this->project?->project_name,
-                'code' => $this->project?->project_code,
+                'id' => $this->project?->id ?? null,
+                'name' => $this->project?->project_name ?? null,
+                'code' => $this->project?->project_code ?? null,
             ],
 
             'quantity' => $this->quantity,

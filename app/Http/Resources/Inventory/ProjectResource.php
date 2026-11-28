@@ -47,6 +47,10 @@ class ProjectResource extends JsonResource
 
             'remaining_amount' => max( $totalRevenue - $paidAmount, 0 ),
 
+            'allocations' => PurchaseAllocationResource::collection(
+                $this->whenLoaded('purchaseAllocations')
+            ),
+
             'revenues' => RevenueResource::collection($this->whenLoaded('revenues')),
 
             'cash_transactions' => CashTransactionResource::collection($this->whenLoaded('cashTransactions'))
