@@ -115,7 +115,7 @@ class ChequeService
             [
                 'cheques',
                 'cashTransactions',
-                'purchaseItems',
+                // 'purchaseItems',
                 'employeePayments',
                 'assetExpenses',
             ])->findOrFail($cheque_request['financial_account_id']);
